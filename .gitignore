@@ -13,6 +13,7 @@ venv
 /build
 
 /lhsffl-servers/app/scripts/.env
+/lhsffl-servers/.flaskenv
 
 # misc
 .DS_Store
