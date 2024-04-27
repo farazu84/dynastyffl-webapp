@@ -30,6 +30,7 @@ CREATE TABLE Players (
     player_id INT unsigned NOT NULL AUTO_INCREMENT,
     first_name VARCHAR(64) NOT NULL,
     last_name VARCHAR(64) NOT NULL,
+    birth_date VARCHAR(64) DEFAULT NULL,
     team_id INT unsigned DEFAULT NULL,
     nfl_team VARCHAR(64) DEFAULT NULL,
     college VARCHAR(64) DEFAULT NULL,

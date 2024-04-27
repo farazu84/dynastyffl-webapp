@@ -9,3 +9,4 @@ Werkzeug==3.0.2
 flask-sqlalchemy
 pymysql
 cryptography
+marshmallow
