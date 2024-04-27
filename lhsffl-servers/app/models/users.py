@@ -1,14 +1,26 @@
 from .. import db
+from sqlalchemy.dialects.mysql import BIGINT
+from app.models.schemas.users import UsersJSONSchema
 
 
 class Users(db.Model):
     __tablename__ = 'Users'
      
-    user_id = db.Column(db.Integer(), primary_key=True)
+    user_id = db.Column(db.Integer(), nullable=False, primary_key=True)
 
-    first_name = db.Column(db.String(64))
+    user_name = db.Column(db.String(64), nullable=False)
 
-    last_name = db.Column(db.String(64))
+    first_name = db.Column(db.String(64), nullable=False, default='')
+
+    last_name = db.Column(db.String(64), nullable=False, default='')
+
+    sleeper_user_id = db.Column(BIGINT(unsigned=True), nullable=True)
+
+    password = db.Column(db.String(64), nullable=False, default='')
+
+    admin = db.Column(db.Boolean(), nullable=False, default='0')
+
+    team_owner = db.Column(db.Boolean(), nullable=False, default='0')
 
     def get_user(self, user_id):
         '''
@@ -22,8 +34,4 @@ class Users(db.Model):
         return result
 
     def serialize(self):
-        return {
-            'user_id': self.user_id,
-            'first_name': self.first_name,
-            'last_name': self.last_name
-        }
+        return UsersJSONSchema().dump(self)
