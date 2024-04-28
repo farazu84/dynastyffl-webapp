@@ -9,8 +9,11 @@ def get_teams():
 
     return jsonify(success=True, teams=[ team.serialize() for team in teams ])
 
-@teams.route('/team/<int:team_id>', methods=['GET', 'OPTIONS'])
+@teams.route('/teams/<int:team_id>', methods=['GET', 'OPTIONS'])
 def get_team(team_id):
-    pass
+    team = Teams.query.get(team_id)
+
+    return jsonify(success=True, team=team.serialize())
+
 
 
