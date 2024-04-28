@@ -103,10 +103,25 @@ def create_tables(cursor):
                     )
                     '''
 
+    article_table = '''
+                    CREATE TABLE Articles (
+                        article_id INT unsigned NOT NULL AUTO_INCREMENT,
+                        article_type ENUM('power_ranking', 'team_analysis', 'rumors', 'trade_analysis', 'injury', 'matchup_analysis', 'matchup_breakdown') DEFAULT NULL,
+                        author VARCHAR(128) DEFAULT NULL,
+                        title TINYTEXT NOT NULL,
+                        content TEXT NOT NULL,
+                        thumbnail VARCHAR(128) NOT NULL,
+                        team_id INT unsigned DEFAULT NULL,
+                        creation_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+                        PRIMARY KEY (article_id)
+                    )
+                    '''
+
     tables.append(users_table)
     tables.append(teams_table)
     tables.append(team_owners_table)
     tables.append(players_table)
+    table.append(article_table)
 
     for table_query in tables:
         cursor.execute(table_query)

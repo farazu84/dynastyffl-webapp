@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import TeamItem from './../../components/league/TeamItem'
+import ArticleHeader from './../../components/league/ArticleHeader';
 import '../../styles/League.css'
 
 const League = () => {
@@ -28,6 +29,7 @@ const League = () => {
 
     return (
         <main>
+            <ArticleHeader />
             <ul className="teamList">
                 {teams.map((team) => (
                     <TeamItem key={team.team_id} team={team} />

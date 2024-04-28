@@ -16,18 +16,13 @@ class Teams(db.Model):
 
     team_owners = relationship('TeamOwners', back_populates='team')
 
-    players = relationship('Players', back_populates='team')
+    players = relationship('Players', back_populates='team', order_by='Players.position')
 
 
 
     def serialize(self):
         return TeamsJSONSchema().dump(self)
 
-    def get_owners(self):
-        return TeamOwners.query.filter(team_id=self.team_id)
-
-    def get_players(self):
-        return Players.query.filter(team_id=self.team_id)
 
 
 '''

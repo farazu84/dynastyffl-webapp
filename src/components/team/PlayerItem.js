@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 
 
-const TeamItem = ( { player }) => {
+const PlayerItem = ( { player }) => {
 
     return (
         <li className="team" key={player.player_id}>
@@ -19,4 +19,4 @@ const TeamItem = ( { player }) => {
     )
 }
 
-export default TeamItem
+export default PlayerItem
