@@ -8,7 +8,7 @@ const Header = () => {
             <div className='header-menu'>
                 <button>Home</button>
                 <button>Teams</button>
-                <button>Players</button>
+                <button>News</button>
             </div>
         </header>
     )
