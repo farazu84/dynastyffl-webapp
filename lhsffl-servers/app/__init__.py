@@ -14,12 +14,14 @@ def create_app(config=None):
         from app.endpoints import (
             test,
             users,
-            teams
+            teams,
+            articles
         )
 
         app.register_blueprint(test.test)
         app.register_blueprint(users.users)
         app.register_blueprint(teams.teams)
+        app.register_blueprint(articles.articles)
 
     return app
 

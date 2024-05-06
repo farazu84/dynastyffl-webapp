@@ -1,3 +1,6 @@
+import { Link } from 'react-router-dom';
+
+
 const Header = () => {
     return (
         <header>
@@ -5,7 +8,7 @@ const Header = () => {
             <div className='header-menu'>
                 <button>Home</button>
                 <button>Teams</button>
-                <button>Players</button>
+                <button>News</button>
             </div>
         </header>
     )

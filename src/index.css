@@ -9,9 +9,17 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-.header-menu {
+.header-menu button{
   background-color: black;
-  
+  margin: 0;
+  width: 150px;
+  height: 40px;
+  align-items: center;
+  cursor: pointer;
+  background: rgb(43, 43, 43);
+  position: relative;
+  color: white;
+  border-radius: 7px;
 }
 
 footer {

@@ -1,0 +1,14 @@
+  .teamList ul li {
+    margin: 0;
+    width: 350px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    margin: 1.5em;
+    cursor: pointer;
+    padding: 1em;
+    background: rgb(43, 43, 43);
+    position: relative;
+    color: white;
+    border-radius: 5px;
+  }

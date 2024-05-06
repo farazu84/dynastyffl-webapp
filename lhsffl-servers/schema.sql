@@ -43,3 +43,15 @@ CREATE TABLE Players (
     starter tinyint(4) NOT NULL DEFAULT '0',
     PRIMARY KEY (player_id)
 )
+
+CREATE TABLE Articles (
+    article_id INT unsigned NOT NULL AUTO_INCREMENT,
+    article_type ENUM('power_ranking', 'team_analysis', 'rumors', 'trade_analysis', 'injury', 'matchup_analysis', 'matchup_breakdown') DEFAULT NULL,
+    author VARCHAR(128) DEFAULT NULL,
+    title TEXT NOT NULL,
+    content TEXT NOT NULL,
+    thumbnail VARCHAR(128) NOT NULL,
+    team_id INT unsigned DEFAULT NULL,
+    creation_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (article_id)
+)
