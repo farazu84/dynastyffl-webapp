@@ -14,6 +14,7 @@ CREATE TABLE Teams (
     team_id INT unsigned NOT NULL AUTO_INCREMENT,
     team_name VARCHAR(128) NOT NULL DEFAULT '',
     championships INT unsigned NOT NULL DEFAULT 0,
+    sleeper_roster_id INT unsigned NOT NULL,
     PRIMARY KEY (team_id)
 )
 
@@ -54,4 +55,14 @@ CREATE TABLE Articles (
     team_id INT unsigned DEFAULT NULL,
     creation_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (article_id)
+)
+
+CREATE TABLE Matchups (
+    matchup_id INT unsigned NOT NULL AUTO_INCREMENT,
+    year INT NOT NULL,
+    week INT NOT NULL, 
+    sleeper_matchup_id INT NOT NULL,
+    sleeper_roster_id INT NOT NULL,
+    INDEX idx_matchup_hash (matchup_hash),
+    INDEX idx_year_week (year, week)
 )

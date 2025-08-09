@@ -8,6 +8,7 @@ class TeamsJSONSchema(Schema):
     team_id = fields.Int()
     team_name = fields.Str()
     championships = fields.Int()
+    sleeper_roster_id = fields.Int()
     team_owners = fields.Nested(TeamOwnersJSONSchema, many=True)
     players = fields.Nested(PlayersJSONSchema, many=True)
     roster_size = fields.Int()

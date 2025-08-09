@@ -15,6 +15,8 @@ class Teams(db.Model):
 
     championships = db.Column(db.Integer(), nullable=False, default=0)
 
+    sleeper_roster_id = db.Column(db.Integer(), nullable=False)
+
     team_owners = relationship('TeamOwners', back_populates='team')
 
     owners = association_proxy('team_owners', 'user')
