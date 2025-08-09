@@ -13,5 +13,5 @@ class PlayersJSONSchema(Schema):
     position = fields.Str()
     age = fields.Int()
     #player_number = fields.Int()
-    #taxi = fields.Bool()
+    taxi = fields.Bool()
     starter = fields.Bool()

@@ -2,6 +2,8 @@ from .. import db
 from sqlalchemy.dialects.mysql import BIGINT
 from app.models.schemas.users import UsersJSONSchema
 
+from sqlalchemy.orm import relationship
+
 
 class Users(db.Model):
     __tablename__ = 'Users'
@@ -21,6 +23,8 @@ class Users(db.Model):
     admin = db.Column(db.Boolean(), nullable=False, default='0')
 
     team_owner = db.Column(db.Boolean(), nullable=False, default='0')
+
+    owner_groups = db.relationship('TeamOwners', back_populates='user')
 
     def get_user(self, user_id):
         '''

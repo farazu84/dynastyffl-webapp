@@ -12,7 +12,7 @@ def get_teams():
 @teams.route('/teams/<int:team_id>', methods=['GET', 'OPTIONS'])
 def get_team(team_id):
     team = Teams.query.get(team_id)
-
+    print(team.serialize())
     return jsonify(success=True, team=team.serialize())
 
 
