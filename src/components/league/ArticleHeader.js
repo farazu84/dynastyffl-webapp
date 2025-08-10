@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import fallbackImage from '../../studio-gib-1.png';
 
 
 const ArticleHeader = () => {
@@ -25,12 +26,25 @@ const ArticleHeader = () => {
         fetchArticle()
     }, [])
 
+    const handleImageError = (e) => {
+        e.target.src = fallbackImage;
+    };
+
+    const getImageSrc = () => {
+        return article.thumbnail && article.thumbnail.trim() !== '' ? article.thumbnail : fallbackImage;
+    };
     
     return (
         <>
             <h3>News</h3>
             <Link to={`/articles/${article.article_id}`} state={{ article: article }} >
-                <img src={article.thumbnail} height='600px' width='600px'></img>
+                <img 
+                    src={getImageSrc()} 
+                    height='600px' 
+                    width='600px'
+                    alt={article.title || 'League News'}
+                    onError={handleImageError}
+                />
             </Link>
         </>
     )
