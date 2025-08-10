@@ -2,6 +2,7 @@ from marshmallow import Schema, fields
 from app.models.schemas.team_owners import TeamOwnersJSONSchema
 from app.models.schemas.players import PlayersJSONSchema
 from app.models.schemas.users import UsersJSONSchema
+#from app.models.schemas.matchups import MatchupsJSONSchema
 
 
 class TeamsJSONSchema(Schema):
@@ -15,3 +16,4 @@ class TeamsJSONSchema(Schema):
     average_age = fields.Float()
     average_starter_age = fields.Float()
     owners = fields.Nested(UsersJSONSchema, many=True)
+    #matchups = fields.Nested(MatchupsJSONSchema, many=True)

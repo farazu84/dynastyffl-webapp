@@ -63,6 +63,6 @@ CREATE TABLE Matchups (
     week INT NOT NULL, 
     sleeper_matchup_id INT NOT NULL,
     sleeper_roster_id INT NOT NULL,
-    INDEX idx_matchup_hash (matchup_hash),
-    INDEX idx_year_week (year, week)
+    opponent_sleeper_roster_id INT NOT NULL,
+    PRIMARY KEY (matchup_id)
 )

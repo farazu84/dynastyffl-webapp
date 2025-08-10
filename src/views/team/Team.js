@@ -5,6 +5,7 @@ import Starters from './../../components/team/Starters'
 import Bench from './../../components/team/Bench'
 import Taxi from './../../components/team/Taxi'
 import TeamHeader from './../../components/team/TeamHeader'
+import CurrentMatchups from './../../components/team/CurrentMatchups'
 
 
 
@@ -19,15 +20,22 @@ const Team = ( ) => {
     const [taxi, setTaxi] = useState([]);
     const [fetchError, setFetchError] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [matchups, setMatchups] = useState([]);
+
     
     useEffect(() => {
         const fetchTeam = async () => {
             try{
+                // Pull in Team and Matchup data.
                 const response = await fetch(`${teamId}`);
+                const matchupsResponse = await fetch(`${teamId}/matchups`);
+                const matchups = await matchupsResponse.json();
+                console.log(matchups);
                 const selectedTeam = await response.json()
                 const teamStarters = selectedTeam.team.players.filter(player  => player.starter === true)
                 const teamBench = selectedTeam.team.players.filter(player  => player.taxi === false && player.starter === false)
                 const teamTaxi = selectedTeam.team.players.filter(player  => player.taxi === true)
+                setMatchups(matchups.matchups);
                 setTeam(selectedTeam.team);
                 setStarters(teamStarters);
                 setBench(teamBench);
@@ -58,9 +66,17 @@ const Team = ( ) => {
     return (
         <main>
             <TeamHeader team={pickedTeam} />
-            <Starters starters={starters} />
-            <Bench benchPlayers={bench} />
-            <Taxi taxiSquad={taxi} />
+            <div className="team-content-split">
+                <div className="team-left-section">
+                    <Starters starters={starters} />
+                    <Bench benchPlayers={bench} />
+                    <Taxi taxiSquad={taxi} />
+                </div>
+                <div className="team-right-section">
+                    <CurrentMatchups matchups={matchups} />
+
+                </div>
+            </div>
         </main>
     )
 }

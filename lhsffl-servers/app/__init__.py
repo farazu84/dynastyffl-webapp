@@ -15,7 +15,8 @@ def create_app(config=None):
             test,
             users,
             teams,
-            articles
+            articles,
+            matchups
         )
 
         app.register_blueprint(test.test)

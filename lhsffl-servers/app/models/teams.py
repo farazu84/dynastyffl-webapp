@@ -23,17 +23,22 @@ class Teams(db.Model):
 
     players = relationship('Players', back_populates='team', order_by='Players.position')
 
+    @property
+    def matchups(self):
+        """Get matchups for this team by querying the database."""
+        from app.models.matchups import Matchups
+        return Matchups.query.filter_by(sleeper_roster_id=self.sleeper_roster_id).order_by(Matchups.week).all()
 
     def serialize(self):
         # Debug: Check what data exists
-        print(f"=== Team {self.team_name} (ID: {self.team_id}) ===")
-        print(f"Team owners count: {len(self.team_owners) if self.team_owners else 0}")
-        print(f"Players count: {len(self.players) if self.players else 0}")
-        print(f"Roster size: {self.roster_size}")
-        print(f"Average age: {self.average_age}")
+        #print(f"=== Team {self.team_name} (ID: {self.team_id}) ===")
+        #print(f"Team owners count: {len(self.team_owners) if self.team_owners else 0}")
+        #print(f"Players count: {len(self.players) if self.players else 0}")
+        #print(f"Roster size: {self.roster_size}")
+        #print(f"Average age: {self.average_age}")
         
         result = TeamsJSONSchema().dump(self)
-        print(f"Schema result keys: {list(result.keys())}")
+        #print(f"Schema result keys: {list(result.keys())}")
         return result
 
 
@@ -98,4 +103,3 @@ class Teams(db.Model):
         
         db.session.query.all()
 '''
-    

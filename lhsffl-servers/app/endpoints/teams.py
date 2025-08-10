@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify
 from app.models.teams import Teams
+from app.models.matchups import Matchups
 
 teams = Blueprint('teams', __name__)
 
@@ -12,8 +13,12 @@ def get_teams():
 @teams.route('/teams/<int:team_id>', methods=['GET', 'OPTIONS'])
 def get_team(team_id):
     team = Teams.query.get(team_id)
-    print(team.serialize())
     return jsonify(success=True, team=team.serialize())
 
+@teams.route('/teams/<int:team_id>/matchups', methods=['GET', 'OPTIONS'])
+def get_team_matchups(team_id):
+    team = Teams.query.get(team_id)
+    matchups = Matchups.query.filter_by(sleeper_roster_id=team.sleeper_roster_id).order_by(Matchups.week).all()
+    return jsonify(success=True, matchups=[ matchup.serialize() for matchup in matchups ])
 
 
