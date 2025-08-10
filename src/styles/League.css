@@ -1,14 +1,141 @@
+  .teamList {
+    width: 100%;
+    max-width: 100%;
+  }
+
   .teamList ul li {
     margin: 0;
-    width: 350px;
     height: 30px;
     display: flex;
     align-items: center;
-    margin: 1.5em;
-    cursor: pointer;
+    margin: 1.5em 0;
     padding: 1em;
     background: rgb(43, 43, 43);
     position: relative;
     color: white;
     border-radius: 5px;
+    box-sizing: border-box;
+    width: fit-content;
+    min-width: 200px;
+  }
+
+  .team-link {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+  }
+
+  .team-link:hover {
+    color: inherit;
+  }
+
+  .team-link p {
+    margin: 0;
+    padding: 0;
+  }
+
+  .matchup-card {
+    display: flex;
+    width: 100%;
+    max-width: 100%;
+    margin: 1.5em 0;
+    padding: 1em;
+    background: rgb(63, 125, 187);
+    border-radius: 5px;
+    color: white;
+    align-items: flex-start;
+    justify-content: center;
+    box-sizing: border-box;
+  }
+
+  .matchup-team {
+    flex: 1;
+    margin: 0 10px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .matchup-vs {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0 20px;
+    min-width: 60px;
+  }
+
+  /* Player column styling for matchups */
+  .matchup-player-col {
+    min-width: 60px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .matchup-player-position {
+    margin: 2px 0;
+    font-size: 0.9em;
+    font-weight: bold;
+  }
+
+  .matchup-player-name {
+    margin: 2px 0;
+    font-size: 0.8em;
+    line-height: 1.1;
+  }
+
+  .matchup-player-team {
+    margin: 2px 0;
+    font-size: 0.75em;
+    color: white;
+  }
+
+  /* League page split layout */
+  .league-content-split {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 20px;
+    min-height: calc(100vh - 200px);
+    padding: 0 20px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .league-left-section {
+    flex: 1 !important;
+    width: 50% !important;
+    max-width: 50% !important;
+    overflow-y: auto;
+    padding-right: 10px;
+    box-sizing: border-box;
+  }
+
+  .league-right-section {
+    flex: 1 !important;
+    width: 50% !important;
+    max-width: 50% !important;
+    overflow-y: auto;
+    padding-left: 10px;
+    box-sizing: border-box;
+  }
+
+  /* Responsive design for smaller screens */
+  @media (max-width: 768px) {
+    .league-content-split {
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    .league-left-section,
+    .league-right-section {
+      max-width: 100%;
+      flex: none;
+    }
   }

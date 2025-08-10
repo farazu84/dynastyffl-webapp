@@ -36,7 +36,7 @@ CREATE TABLE Players (
     nfl_team VARCHAR(64) DEFAULT NULL,
     college VARCHAR(64) DEFAULT NULL,
     sleeper_id INT unsigned NOT NULL,
-    year_exp INT unsigned DEFAULT 0,
+    years_exp INT unsigned DEFAULT 0,
     position ENUM('QB', 'RB', 'WR', 'TE', 'K') DEFAULT NULL,
     age INT unsigned DEFAULT NULL,
     player_number INT unsigned DEFAULT NULL,

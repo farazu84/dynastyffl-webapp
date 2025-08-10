@@ -2,6 +2,12 @@ import { Link } from 'react-router-dom';
 
 
 const PlayerItem = ( { player }) => {
+    // Format years of experience from player data
+    const formatExperience = (yearsExp) => {
+        if (!yearsExp || yearsExp === 0) return "Rookie";
+        if (yearsExp === 1) return "1 year";
+        return `${yearsExp} years`;
+    };
 
     return (
         <li className="team" key={player.player_id}>
@@ -11,6 +17,7 @@ const PlayerItem = ( { player }) => {
                     <h3>{player.first_name} {player.last_name}</h3>
                     <p>Team: {player.nfl_team ?? "Free Agent"}</p>
                     <p>Age: {player.age ?? "Unknown"}</p>
+                    <p>Experience: {formatExperience(player.years_exp)}</p>
                     <p>College: {player.college ?? "Ball So Hard U"}</p>
                 </div>
             </div>

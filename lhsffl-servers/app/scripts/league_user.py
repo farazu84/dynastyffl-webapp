@@ -94,7 +94,7 @@ def create_tables(cursor):
                         nfl_team VARCHAR(64) DEFAULT NULL,
                         college VARCHAR(64) DEFAULT NULL,
                         sleeper_id INT unsigned NOT NULL,
-                        year_exp INT unsigned DEFAULT 0,
+                        years_exp INT unsigned DEFAULT 0,
                         position ENUM('QB', 'RB', 'WR', 'TE', 'K') DEFAULT NULL,
                         age INT unsigned DEFAULT NULL,
                         player_number INT unsigned DEFAULT NULL,
@@ -175,7 +175,7 @@ def import_players():
     players_json_file = open('players.json', 'r')
     players_json_data = json.load(players_json_file)
 
-    player_query = 'INSERT INTO Players (first_name,last_name,birth_date,team_id,nfl_team,college,sleeper_id,year_exp,position,age,player_number,taxi) VALUES '
+    player_query = 'INSERT INTO Players (first_name,last_name,birth_date,team_id,nfl_team,college,sleeper_id,years_exp,position,age,player_number,taxi) VALUES '
 
     for player_id, player in players_json_data.items():
         if player.get('position') in ['QB', 'RB', 'WR', 'TE', 'K'] and player.get('status') == 'Active':
