@@ -24,6 +24,10 @@ class Teams(db.Model):
     players = relationship('Players', back_populates='team', order_by='Players.position')
 
     @property
+    def starters(self):
+        return [player for player in self.players if player.starter]
+
+    @property
     def matchups(self):
         """Get matchups for this team by querying the database."""
         from app.models.matchups import Matchups

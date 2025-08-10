@@ -10,7 +10,7 @@ const ArticleHeader = () => {
     useEffect(() => {
         const fetchArticle = async () => {
             try{
-                const response = await fetch('articles/1');
+                const response = await fetch('articles/6');
                 const articleJSON = await response.json()
                 setArticle(articleJSON.article);
                 setFetchError(null);
