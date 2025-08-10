@@ -1,20 +1,26 @@
 import { useState, useEffect } from 'react';
-import TeamItem from './../../components/league/TeamItem'
+import TeamItem from './../../components/league/TeamItem';
 import ArticleHeader from './../../components/league/ArticleHeader';
-import '../../styles/League.css'
+import '../../styles/League.css';
+import MatchupItem from './../../components/league/MatchupItem';
 
 const League = () => {
 
     const [teams, setTeams] = useState([]);
     const [fetchError, setFetchError] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [matchups, setMatchups] = useState([]);
     
     useEffect(() => {
         const fetchTeams = async () => {
             try{
                 const response = await fetch('teams');
+                const matchupsResponse = await fetch('matchups/1');
+                const matchups = await matchupsResponse.json();
+                console.log(matchups);
                 const leagueTeams = await response.json()
                 setTeams(leagueTeams.teams);
+                setMatchups(matchups.matchups);
                 setFetchError(null);
                 console.log(leagueTeams)
             } catch (error) {
@@ -30,11 +36,22 @@ const League = () => {
     return (
         <main>
             <ArticleHeader />
-            <ul className="teamList">
-                {teams.map((team) => (
-                    <TeamItem key={team.team_id} team={team} />
-                ))}
-            </ul>
+            <div className="league-content-split" style={{ display: 'flex', flexDirection: 'row', gap: '20px', width: '100%' }}>
+                <div className="league-left-section" style={{ flex: 1, width: '50%', maxWidth: '50%' }}>
+                    <h2>League Teams</h2>
+                    <ul className="teamList">
+                        {teams.map((team) => (
+                            <TeamItem key={team.team_id} team={team} />
+                        ))}
+                    </ul>
+                </div>
+                <div className="league-right-section" style={{ flex: 1, width: '50%', maxWidth: '50%' }}>
+                    <h2>Week 1 Matchups</h2>
+                    {matchups.map((matchup) => (
+                        <MatchupItem key={matchup.matchup_id} matchup={matchup} />
+                    ))}
+                </div>
+            </div>
         </main>
     )
 }

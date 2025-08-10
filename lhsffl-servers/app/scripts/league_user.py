@@ -68,6 +68,7 @@ def create_tables(cursor):
                     team_id INT unsigned NOT NULL AUTO_INCREMENT,
                     team_name VARCHAR(128) NOT NULL DEFAULT '',
                     championships INT unsigned NOT NULL DEFAULT 0,
+                    sleeper_roster_id INT unsigned NOT NULL,
                     PRIMARY KEY (team_id)
                 )
                  '''
@@ -93,7 +94,7 @@ def create_tables(cursor):
                         nfl_team VARCHAR(64) DEFAULT NULL,
                         college VARCHAR(64) DEFAULT NULL,
                         sleeper_id INT unsigned NOT NULL,
-                        year_exp INT unsigned DEFAULT 0,
+                        years_exp INT unsigned DEFAULT 0,
                         position ENUM('QB', 'RB', 'WR', 'TE', 'K') DEFAULT NULL,
                         age INT unsigned DEFAULT NULL,
                         player_number INT unsigned DEFAULT NULL,
@@ -138,23 +139,24 @@ def import_users_and_teams():
     roster_json_data = json.load(roster_json_file)
     roster_json_file.close()
     
-    # Get list of active roster owner IDs
-    active_owners = {str(roster['owner_id']) for roster in roster_json_data}
+    # Create mapping of owner_id to roster_id
+    owner_to_roster = {str(roster['owner_id']): roster['roster_id'] for roster in roster_json_data}
 
-    team_query = 'INSERT INTO Teams (team_name, championships) VALUES '
+    team_query = 'INSERT INTO Teams (team_name, championships, sleeper_roster_id) VALUES '
     user_query = 'INSERT INTO Users (user_name, sleeper_user_id, team_owner) VALUES '
 
     for user in user_json_data:
         user_query += f"""("{user.get('display_name')}", {user['user_id']}, 1),"""
         
         # Check if user has active roster
-        if user['user_id'] in active_owners:
+        if user['user_id'] in owner_to_roster:
+            roster_id = owner_to_roster[user['user_id']]
             if 'team_name' in user['metadata']:
-                team_query += f"""("{user['metadata']['team_name']}", 0),"""
+                team_query += f"""("{user['metadata']['team_name']}", 0, {roster_id}),"""
             else:
                 # Create default team name for users with rosters but no team name
                 default_team_name = f"{user.get('display_name')}'s Team"
-                team_query += f"""("{default_team_name}", 0),"""
+                team_query += f"""("{default_team_name}", 0, {roster_id}),"""
 
     user_query = user_query[:-1]
     team_query = team_query[:-1]
@@ -173,7 +175,7 @@ def import_players():
     players_json_file = open('players.json', 'r')
     players_json_data = json.load(players_json_file)
 
-    player_query = 'INSERT INTO Players (first_name,last_name,birth_date,team_id,nfl_team,college,sleeper_id,year_exp,position,age,player_number,taxi) VALUES '
+    player_query = 'INSERT INTO Players (first_name,last_name,birth_date,team_id,nfl_team,college,sleeper_id,years_exp,position,age,player_number,taxi) VALUES '
 
     for player_id, player in players_json_data.items():
         if player.get('position') in ['QB', 'RB', 'WR', 'TE', 'K'] and player.get('status') == 'Active':
@@ -234,7 +236,7 @@ def update_team_owners(cursor, connection):
                 FROM Teams;
                 '''
     cursor.execute(get_teams)
-    for (team_id, team_name, championships) in cursor:
+    for (team_id, team_name, championships, sleeper_roster_id) in cursor:
         for user, values in user_to_team.items():
             if 'team' in values and values['team'] == team_name:
                 values['team_id'] = team_id
