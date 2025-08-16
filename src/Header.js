@@ -13,6 +13,7 @@ const Header = () => {
                     <button onClick={() => handleNavigation('/')}>Home</button>
                     <button>Teams</button>
                     <button>News</button>
+                    <button onClick={() => handleNavigation('/rumors')}>Rumor Mill</button>
                 </nav>
             </div>
         </header>

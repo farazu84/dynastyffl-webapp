@@ -52,9 +52,15 @@ CREATE TABLE Articles (
     title TEXT NOT NULL,
     content TEXT NOT NULL,
     thumbnail VARCHAR(128) NOT NULL,
-    team_id INT unsigned DEFAULT NULL,
     creation_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (article_id)
+)
+
+CREATE TABLE ArticleTeams (
+    article_team_id INT unsigned NOT NULL AUTO_INCREMENT,
+    article_id INT unsigned NOT NULL,
+    team_id INT unsigned NOT NULL,
+    PRIMARY KEY (article_team_id)
 )
 
 CREATE TABLE Matchups (

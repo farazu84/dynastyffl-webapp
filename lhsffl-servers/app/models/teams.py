@@ -21,6 +21,8 @@ class Teams(db.Model):
 
     owners = association_proxy('team_owners', 'user')
 
+    article_teams = relationship('ArticleTeams', back_populates='team')
+
     players = relationship('Players', back_populates='team', order_by='Players.position')
 
     @property
