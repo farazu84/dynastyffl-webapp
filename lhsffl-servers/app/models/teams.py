@@ -104,6 +104,12 @@ class Teams(db.Model):
             print(f"Error calculating average_starter_age for team {getattr(self, 'team_name', 'Unknown')}: {e}")
             return 0.0
 
+    @property
+    def articles(self):
+        from app.models.articles import Articles
+
+        return db.session.query(Articles).filter(Articles.article_teams.any(team_id=self.team_id)).order_by(Articles.creation_date.desc()).all()
+
 '''
     def get_all_teams():
         
