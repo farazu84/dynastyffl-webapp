@@ -7,7 +7,7 @@ const MatchupItem = ( {matchup} ) => {
     };
 
     const getTeamOwner = (team) => {
-        if (!team.team_owners || team.owners.length === 0) return 'Unknown Owner';
+        if (!team.team_owners || team.team_owners.length === 0) return 'Unknown Owner';
         return team.team_owners[0].user.user_name;
     };
 
