@@ -204,7 +204,7 @@ class Articles(db.Model):
         article = Articles(
             article_type='rumors',
             author='openai/gpt-4o-mini',
-            title=title,
+            title='Rumor: ' + rumor,
             content=full_content,
             thumbnail='',
         )

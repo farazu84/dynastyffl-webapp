@@ -21,4 +21,10 @@ def get_team_matchups(team_id):
     matchups = Matchups.query.filter_by(sleeper_roster_id=team.sleeper_roster_id).order_by(Matchups.week).all()
     return jsonify(success=True, matchups=[ matchup.serialize() for matchup in matchups ])
 
+@teams.route('/teams/<int:team_id>/articles', methods=['GET', 'OPTIONS'])
+def get_team_articles(team_id):
+    team = Teams.query.get(team_id)
+    articles = team.articles
+    return jsonify(success=True, articles=[ article.serialize() for article in articles ])
+
 
