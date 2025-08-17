@@ -92,3 +92,37 @@ p {
 h3, h2 {
     margin: 0;
 }
+
+/* Team page split layout */
+.team-content-split {
+    display: flex;
+    gap: 20px;
+    min-height: calc(100vh - 200px); /* Adjust based on header height */
+    padding: 0 20px;
+}
+
+.team-left-section {
+    flex: 1;
+    max-width: 50%;
+    overflow-y: auto;
+}
+
+.team-right-section {
+    flex: 1;
+    max-width: 50%;
+    overflow-y: auto;
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 768px) {
+    .team-content-split {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .team-left-section,
+    .team-right-section {
+        max-width: 100%;
+        flex: none;
+    }
+}

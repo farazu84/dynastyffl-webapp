@@ -15,13 +15,15 @@ def create_app(config=None):
             test,
             users,
             teams,
-            articles
+            articles,
+            matchups
         )
 
         app.register_blueprint(test.test)
         app.register_blueprint(users.users)
         app.register_blueprint(teams.teams)
         app.register_blueprint(articles.articles)
+        app.register_blueprint(matchups.matchups)
 
     return app
 

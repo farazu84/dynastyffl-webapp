@@ -21,7 +21,7 @@ class Players(db.Model):
 
     sleeper_id = db.Column(db.Integer(), nullable=False, default=False)
 
-    year_exp = db.Column(db.Integer(), default=0)
+    years_exp = db.Column(db.Integer(), default=0)
 
     position = db.Column(db.Enum('QB', 'RB', 'WR', 'TE', 'K'), nullable=True)
 

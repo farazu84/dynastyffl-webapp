@@ -14,6 +14,7 @@ CREATE TABLE Teams (
     team_id INT unsigned NOT NULL AUTO_INCREMENT,
     team_name VARCHAR(128) NOT NULL DEFAULT '',
     championships INT unsigned NOT NULL DEFAULT 0,
+    sleeper_roster_id INT unsigned NOT NULL,
     PRIMARY KEY (team_id)
 )
 
@@ -35,7 +36,7 @@ CREATE TABLE Players (
     nfl_team VARCHAR(64) DEFAULT NULL,
     college VARCHAR(64) DEFAULT NULL,
     sleeper_id INT unsigned NOT NULL,
-    year_exp INT unsigned DEFAULT 0,
+    years_exp INT unsigned DEFAULT 0,
     position ENUM('QB', 'RB', 'WR', 'TE', 'K') DEFAULT NULL,
     age INT unsigned DEFAULT NULL,
     player_number INT unsigned DEFAULT NULL,
@@ -51,7 +52,23 @@ CREATE TABLE Articles (
     title TEXT NOT NULL,
     content TEXT NOT NULL,
     thumbnail VARCHAR(128) NOT NULL,
-    team_id INT unsigned DEFAULT NULL,
     creation_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (article_id)
+)
+
+CREATE TABLE ArticleTeams (
+    article_team_id INT unsigned NOT NULL AUTO_INCREMENT,
+    article_id INT unsigned NOT NULL,
+    team_id INT unsigned NOT NULL,
+    PRIMARY KEY (article_team_id)
+)
+
+CREATE TABLE Matchups (
+    matchup_id INT unsigned NOT NULL AUTO_INCREMENT,
+    year INT NOT NULL,
+    week INT NOT NULL, 
+    sleeper_matchup_id INT NOT NULL,
+    sleeper_roster_id INT NOT NULL,
+    opponent_sleeper_roster_id INT NOT NULL,
+    PRIMARY KEY (matchup_id)
 )
