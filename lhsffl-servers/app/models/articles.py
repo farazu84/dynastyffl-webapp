@@ -162,7 +162,7 @@ class Articles(db.Model):
         Search the internet for any recent information about the player and include it if it is relevant.
         For the players mentioned in the rumor make sure to reference stringified json object I will pass is in
         so that you don't hallucinate about the player position or nfl_team.
-        Give this article a title at the start of the article and have it surrounded by # so I can parse it out.
+        Give this article a title at the start of the article and have it surrounded by /* <TITLE> */ so I can parse it out.
         Here are the teams involved:
         {json.dumps(team_dict, indent=4)}
         """
@@ -199,14 +199,13 @@ class Articles(db.Model):
 
         print(response_json['choices'][0]['message']['content'])
 
-        title = response_json['choices'][0]['message']['content'].split('#')[0].strip()
-        content = response_json['choices'][0]['message']['content'].split('#')[1].strip()
+        full_content = response_json['choices'][0]['message']['content']
 
         article = Articles(
             article_type='rumors',
             author='openai/gpt-4o-mini',
             title=title,
-            content=content,
+            content=full_content,
             thumbnail='',
         )
         db.session.add(article)

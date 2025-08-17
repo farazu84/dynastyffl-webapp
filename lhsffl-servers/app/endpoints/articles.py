@@ -23,3 +23,9 @@ def generate_rumor():
     article = Articles.generate_rumor(rumor, team_ids)
 
     return jsonify(success=True, article=article.serialize())
+
+
+@articles.route('/articles/get_news', methods=['GET', 'OPTIONS'])
+def get_news():
+    articles = Articles.query.order_by(Articles.creation_date.desc()).all()
+    return jsonify(success=True, articles=[ article.serialize() for article in articles ])

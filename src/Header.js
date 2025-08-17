@@ -12,7 +12,7 @@ const Header = () => {
                 <nav className='header-menu'>
                     <button onClick={() => handleNavigation('/')}>Home</button>
                     <button>Teams</button>
-                    <button>News</button>
+                    <button onClick={() => handleNavigation('/news')}>News</button>
                     <button onClick={() => handleNavigation('/rumors')}>Rumor Mill</button>
                 </nav>
             </div>

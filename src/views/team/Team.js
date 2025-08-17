@@ -6,6 +6,7 @@ import Bench from './../../components/team/Bench'
 import Taxi from './../../components/team/Taxi'
 import TeamHeader from './../../components/team/TeamHeader'
 import CurrentMatchups from './../../components/team/CurrentMatchups'
+import NewsBar from './../../components/team/NewsBar'
 
 
 
@@ -21,6 +22,7 @@ const Team = ( ) => {
     const [fetchError, setFetchError] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [matchups, setMatchups] = useState([]);
+    const [articles, setArticles] = useState([]);
 
     
     useEffect(() => {
@@ -40,6 +42,7 @@ const Team = ( ) => {
                 setStarters(teamStarters);
                 setBench(teamBench);
                 setTaxi(teamTaxi);
+                setArticles(selectedTeam.team.articles);
                 console.log(bench)
                 setFetchError(null);
             } catch (error) {
@@ -66,6 +69,7 @@ const Team = ( ) => {
     return (
         <main>
             <TeamHeader team={pickedTeam} />
+            <NewsBar articles={articles} />
             <div className="team-content-split">
                 <div className="team-left-section">
                     <Starters starters={starters} />
@@ -74,7 +78,6 @@ const Team = ( ) => {
                 </div>
                 <div className="team-right-section">
                     <CurrentMatchups matchups={matchups} />
-
                 </div>
             </div>
         </main>
