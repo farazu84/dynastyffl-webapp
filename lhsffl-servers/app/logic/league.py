@@ -23,7 +23,6 @@ def synchronize_teams():
         
         
         # First, reset all players to not be on any team and clear positions
-        print("Resetting all player positions...")
         reset_count = Players.query.update({
             Players.team_id: None,
             Players.starter: False,
@@ -33,41 +32,32 @@ def synchronize_teams():
         for roster in rosters:
             team = Teams.query.filter_by(sleeper_roster_id=roster['roster_id']).first()
             if not team:
-                print(f"Warning: No team found for sleeper_roster_id {roster['roster_id']}")
                 continue
             
-            # Get all players on this roster from different categories
             all_player_ids = roster.get('players', [])
             starter_ids = roster.get('starters', [])
             taxi_ids = roster.get('taxi', [])
 
-            # Update all players on this roster to belong to this team
             if all_player_ids:
-                # Convert sleeper_ids to integers for proper comparison
                 all_player_ids_int = [int(pid) for pid in all_player_ids if pid]
                 players_updated = Players.query.filter(Players.sleeper_id.in_(all_player_ids_int)).update(
                     {Players.team_id: team.team_id}, 
                     synchronize_session=False
                 )
-                total_players_assigned += players_updated
             
-            # Set starter status
             if starter_ids:
                 starter_ids_int = [int(pid) for pid in starter_ids if pid]
                 starters_updated = Players.query.filter(Players.sleeper_id.in_(starter_ids_int)).update(
                     {Players.starter: True}, 
                     synchronize_session=False
                 )
-                total_starters_set += starters_updated
             
-            # Set taxi status
             if taxi_ids:
                 taxi_ids_int = [int(pid) for pid in taxi_ids if pid]
                 taxi_updated = Players.query.filter(Players.sleeper_id.in_(taxi_ids_int)).update(
                     {Players.taxi: True}, 
                     synchronize_session=False
                 )
-                total_taxi_set += taxi_updated
         
         # Commit all changes in one transaction
         db.session.commit()
@@ -92,4 +82,3 @@ def synchronize_teams():
         db.session.rollback()
         print("All changes have been rolled back.")
         raise
-        
