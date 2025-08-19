@@ -9,6 +9,5 @@ def synchronize_teams_endpoint():
     Synchronizes the teams with the sleeper API.
     This will update the players on each team in the database, along with the starter, bench, and taxi postions.
     '''
-    print('Synchronizing teams')
     synchronize_teams()
     return jsonify(success=True, message='Teams synchronized')
