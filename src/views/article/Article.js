@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import '../../styles/Article.css'
 import fallbackImage from '../../studio-gib-1.png';
+import config from '../../config';
 
 
 const Article = ( ) => {
@@ -14,7 +15,7 @@ const Article = ( ) => {
     useEffect(() => {
         const fetchArticle = async () => {
             try {
-                const response = await fetch(`/articles/${articleId}`);
+                const response = await fetch(`${config.API_BASE_URL}/articles/${articleId}`);
                 const data = await response.json();
                 console.log(data);
                 

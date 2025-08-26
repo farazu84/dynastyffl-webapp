@@ -14,6 +14,10 @@ def setupConnection():
     password = os.getenv('SQL_PASSWORD')
     host = os.getenv('SQL_HOST')
     database = os.getenv('DB_NAME')
+    prod_user = os.getenv('PROD_DYNASTY_DB_USER')
+    prod_password = os.getenv('PROD_DYNASTY_DB_PASSWORD')
+    prod_host = os.getenv('PROD_SQL_HOST')
+    prod_database = os.getenv('PROD_DB_NAME')
 
     mydb = mysql.connector.connect(
         host=host,
@@ -23,7 +27,16 @@ def setupConnection():
         auth_plugin='mysql_native_password'
     )
 
-    return mydb
+    prod_db = mysql.connector.connect(
+        host=prod_host,
+        user=prod_user,
+        password=prod_password,
+        database=prod_database,
+        port=3307,
+        auth_plugin='mysql_native_password'
+    )
+
+    return prod_db
 
 def drop_tables(cursor):
     '''

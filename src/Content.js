@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
+import config from './config';
 
 const Content = () => {
     const [name, setName] = useState('Faraz')
     const [user, setUser] = useState({});
 
   useEffect(() => {
-    fetch('/user/1').then(res => res.json()).then(data => {
+    fetch(`${config.API_BASE_URL}/user/1`).then(res => res.json()).then(data => {
       console.log(data)
       setUser(data.user);
     });

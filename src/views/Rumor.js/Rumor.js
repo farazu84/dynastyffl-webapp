@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import '../../styles/Rumor.css';
+import config from '../../config';
 
 const Rumor = () => {
     const [rumorText, setRumorText] = useState('');
@@ -12,7 +13,7 @@ const Rumor = () => {
     useEffect(() => {
         const fetchTeams = async () => {
             try {
-                const response = await fetch('/teams');
+                const response = await fetch(`${config.API_BASE_URL}/teams`);
                 const data = await response.json();
                 setTeams(data.teams || []);
             } catch (error) {
@@ -42,7 +43,7 @@ const Rumor = () => {
         setSubmitMessage('');
 
         try {
-            const response = await fetch('/articles/generate_rumor', {
+            const response = await fetch(`${config.API_BASE_URL}/articles/generate_rumor`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

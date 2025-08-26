@@ -14,12 +14,26 @@ def setupConnection():
     password = os.getenv('SQL_PASSWORD')
     host = os.getenv('SQL_HOST')
     database = os.getenv('DB_NAME')
+    prod_user = os.getenv('PROD_DYNASTY_DB_USER')
+    prod_password = os.getenv('PROD_DYNASTY_DB_PASSWORD')
+    prod_host = os.getenv('PROD_SQL_HOST')
+    prod_database = os.getenv('PROD_DB_NAME')
 
+    '''
     mydb = mysql.connector.connect(
         host=host,
         user=server_user,
         password=password,
         database=database,
+        auth_plugin='mysql_native_password'
+    )
+    '''
+    mydb = mysql.connector.connect(
+        host=prod_host,
+        user=prod_user,
+        password=prod_password,
+        database=prod_database,
+        port=3307,
         auth_plugin='mysql_native_password'
     )
 
@@ -100,6 +114,28 @@ def create_tables(cursor):
                         player_number INT unsigned DEFAULT NULL,
                         taxi tinyint(4) NOT NULL DEFAULT '0',
                         starter tinyint(4) NOT NULL DEFAULT '0',
+                        height VARCHAR(10) DEFAULT NULL,
+                        weight INT unsigned DEFAULT NULL,
+                        high_school VARCHAR(128) DEFAULT NULL,
+                        status ENUM('Active', 'Inactive', 'Practice Squad', 'Injured Reserve') DEFAULT NULL,
+                        active BOOLEAN DEFAULT NULL,
+                        depth_chart_order INT DEFAULT NULL,
+                        injury_status VARCHAR(64) DEFAULT NULL,
+                        injury_body_part VARCHAR(64) DEFAULT NULL,
+                        injury_start_date DATE DEFAULT NULL,
+                        practice_participation VARCHAR(32) DEFAULT NULL,
+                        espn_id INT DEFAULT NULL,
+                        yahoo_id INT DEFAULT NULL,
+                        fantasy_data_id INT DEFAULT NULL,
+                        rotowire_id INT DEFAULT NULL,
+                        rotoworld_id INT DEFAULT NULL,
+                        sportradar_id VARCHAR(64) DEFAULT NULL,
+                        stats_id INT DEFAULT NULL,
+                        gsis_id VARCHAR(32) DEFAULT NULL,
+                        oddsjam_id INT DEFAULT NULL,
+                        pandascore_id INT DEFAULT NULL,
+                        opta_id INT DEFAULT NULL,
+                        swish_id INT DEFAULT NULL,
                         PRIMARY KEY (player_id)
                     )
                     '''
@@ -170,29 +206,105 @@ def import_users_and_teams():
 
 def import_players():
     '''
-    Imports player from Sleeper players API.
+    Imports player from Sleeper players API with all available fields.
     '''
     players_json_file = open('players.json', 'r')
     players_json_data = json.load(players_json_file)
 
-    player_query = 'INSERT INTO Players (first_name,last_name,birth_date,team_id,nfl_team,college,sleeper_id,years_exp,position,age,player_number,taxi) VALUES '
+    # Updated INSERT statement with all new fields
+    player_query = '''INSERT INTO Players (
+        first_name, last_name, birth_date, team_id, nfl_team, college, sleeper_id, years_exp, 
+        position, age, player_number, taxi, starter, height, weight, high_school, status, 
+        active, depth_chart_order, injury_status, injury_body_part, injury_start_date, 
+        practice_participation, espn_id, yahoo_id, fantasy_data_id, rotowire_id, rotoworld_id, 
+        sportradar_id, stats_id, gsis_id, oddsjam_id, pandascore_id, opta_id, swish_id
+    ) VALUES '''
 
     for player_id, player in players_json_data.items():
         if player.get('position') in ['QB', 'RB', 'WR', 'TE', 'K'] and player.get('status') == 'Active':
-            team = f'"{player["team"]}"' if player.get("team") and player["team"] is not None else "NULL"
-            college = f'"{player["college"]}"' if player.get("college") and player["college"] is not None else "NULL"
-            number = player['number'] if player.get('number') and player['number'] is not None else 0
-            age = player['age'] if player.get('age') and player['age'] is not None else 0
-            birth_date = f'"{player["birth_date"]}"' if player.get("birth_date") and player["birth_date"] is not None else "NULL"
-            first_name = player.get('first_name', '')
-            last_name = player.get('last_name', '')
+            # Helper function to safely format values
+            def safe_str(val):
+                if val is not None:
+                    # Escape single quotes and backslashes for SQL
+                    escaped_val = str(val).replace("'", "''").replace("\\", "\\\\")
+                    return f"'{escaped_val}'"
+                return "NULL"
+            
+            def safe_int(val):
+                if val is not None:
+                    try:
+                        return str(int(val))
+                    except (ValueError, TypeError):
+                        return "NULL"
+                return "NULL"
+            
+            def safe_date(val):
+                if val is not None:
+                    escaped_val = str(val).replace("'", "''").replace("\\", "\\\\")
+                    return f"'{escaped_val}'"
+                return "NULL"
+
+            # Basic fields
+            first_name = safe_str(player.get('first_name', ''))
+            last_name = safe_str(player.get('last_name', ''))
+            birth_date = safe_str(player.get('birth_date'))
+            nfl_team = safe_str(player.get('team'))
+            college = safe_str(player.get('college'))
+            sleeper_id = safe_int(player.get('player_id'))
             years_exp = player.get('years_exp', 0) if player.get('years_exp') is not None else 0
-            position = player.get('position', '')
-            player_id_val = int(player['player_id']) if player.get('player_id') else 0
-            player_query += f"""("{first_name}", "{last_name}", {birth_date}, NULL, {team}, {college}, {player_id_val}, {years_exp}, "{position}", {age}, {number}, 0),"""
+            position = safe_str(player.get('position', ''))
+            age = player.get('age') if player.get('age') is not None else 0
+            player_number = player.get('number') if player.get('number') is not None else 0
+            
+            # New physical fields
+            height = safe_str(player.get('height'))
+            weight = safe_int(int(player['weight']) if player.get('weight') and str(player['weight']).isdigit() else None)
+            high_school = safe_str(player.get('high_school'))
+            status = safe_str(player.get('status'))
+            active = "TRUE" if player.get('active') is True else ("FALSE" if player.get('active') is False else "NULL")
+            
+            # Depth chart and injury fields
+            depth_chart_order = safe_int(player.get('depth_chart_order'))
+            injury_status = safe_str(player.get('injury_status'))
+            injury_body_part = safe_str(player.get('injury_body_part'))
+            injury_start_date = safe_date(player.get('injury_start_date'))
+            practice_participation = safe_str(player.get('practice_participation'))
+            
+            # External API IDs
+            espn_id = safe_int(player.get('espn_id'))
+            yahoo_id = safe_int(player.get('yahoo_id'))
+            fantasy_data_id = safe_int(player.get('fantasy_data_id'))
+            rotowire_id = safe_int(player.get('rotowire_id'))
+            rotoworld_id = safe_int(player.get('rotoworld_id'))
+            sportradar_id = safe_str(player.get('sportradar_id'))
+            stats_id = safe_int(player.get('stats_id'))
+            gsis_id = safe_str(player.get('gsis_id'))
+            oddsjam_id = safe_int(player.get('oddsjam_id'))
+            pandascore_id = safe_int(player.get('pandascore_id'))
+            opta_id = safe_int(player.get('opta_id'))
+            swish_id = safe_int(player.get('swish_id'))
 
-    player_query = player_query[:-1]
+            # Debug: Print problematic values
+            values = [first_name, last_name, birth_date, "NULL", nfl_team, college, sleeper_id, years_exp, 
+                     position, age, player_number, 0, 0, height, weight, high_school, status, 
+                     active, depth_chart_order, injury_status, injury_body_part, injury_start_date, 
+                     practice_participation, espn_id, yahoo_id, fantasy_data_id, rotowire_id, rotoworld_id, 
+                     sportradar_id, stats_id, gsis_id, oddsjam_id, pandascore_id, opta_id, swish_id]
+            
+            # Check for any unquoted non-NULL values that should be quoted
+            for i, val in enumerate(values):
+                if val != "NULL" and not str(val).startswith("'") and not str(val).isdigit() and val not in ["TRUE", "FALSE"]:
+                    print(f"Warning: Unquoted value at position {i}: {val} for player {player.get('first_name')} {player.get('last_name')}")
+            
+            player_query += f"""(
+                {first_name}, {last_name}, {birth_date}, NULL, {nfl_team}, {college}, {sleeper_id}, {years_exp}, 
+                {position}, {age}, {player_number}, 0, 0, {height}, {weight}, {high_school}, {status}, 
+                {active}, {depth_chart_order}, {injury_status}, {injury_body_part}, {injury_start_date}, 
+                {practice_participation}, {espn_id}, {yahoo_id}, {fantasy_data_id}, {rotowire_id}, {rotoworld_id}, 
+                {sportradar_id}, {stats_id}, {gsis_id}, {oddsjam_id}, {pandascore_id}, {opta_id}, {swish_id}
+            ),"""
 
+    player_query = player_query[:-1]  # Remove last comma
     player_query += ';'
 
     players_json_file.close()

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import '../../styles/News.css';
 import fallbackImage from '../../studio-gib-1.png';
+import config from '../../config';
 
 const News = () => {
     const [articles, setArticles] = useState([]);
@@ -11,7 +12,7 @@ const News = () => {
     useEffect(() => {
         const fetchNews = async () => {
             try {
-                const response = await fetch('/articles/get_news');
+                const response = await fetch(`${config.API_BASE_URL}/articles/get_news`);
                 const data = await response.json();
                 console.log(data);
                 

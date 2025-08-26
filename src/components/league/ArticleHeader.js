@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import fallbackImage from '../../studio-gib-1.png';
 import '../../styles/LatestNews.css';
+import config from '../../config';
 
 
 const ArticleHeader = () => {
@@ -12,7 +13,7 @@ const ArticleHeader = () => {
     useEffect(() => {
         const fetchArticles = async () => {
             try{
-                const response = await fetch('articles/get_latest_articles');
+                const response = await fetch(`${config.API_BASE_URL}/articles/get_latest_articles`);
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }

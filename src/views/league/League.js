@@ -3,6 +3,7 @@ import TeamItem from './../../components/league/TeamItem';
 import ArticleHeader from './../../components/league/ArticleHeader';
 import '../../styles/League.css';
 import MatchupItem from './../../components/league/MatchupItem';
+import config from '../../config';
 
 const League = () => {
 
@@ -14,8 +15,8 @@ const League = () => {
     useEffect(() => {
         const fetchTeams = async () => {
             try{
-                const response = await fetch('teams');
-                const matchupsResponse = await fetch('matchups/1');
+                const response = await fetch(`${config.API_BASE_URL}/teams`);
+                const matchupsResponse = await fetch(`${config.API_BASE_URL}/matchups/1`);
                 const matchups = await matchupsResponse.json();
                 console.log(matchups);
                 const leagueTeams = await response.json()
