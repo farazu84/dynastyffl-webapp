@@ -1,7 +1,7 @@
 // API Configuration
 const config = {
-  // Use environment variable if available, otherwise use production API
-  API_BASE_URL: process.env.REACT_APP_API_URL || 'http://dynasty-api-prod-v2.eba-3xm8xpvu.us-west-2.elasticbeanstalk.com',
+  // Use environment variable if available, otherwise use CloudFront for production
+  API_BASE_URL: process.env.REACT_APP_API_URL || 'https://d34t1k2xpw6h8v.cloudfront.net',
 };
 
 export default config;

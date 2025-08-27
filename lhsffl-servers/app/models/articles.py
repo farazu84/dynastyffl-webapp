@@ -31,6 +31,8 @@ class Articles(db.Model):
 
     creation_date = db.Column(DATETIME, nullable=False, default=func.now())
 
+    published = db.Column(db.Boolean, nullable=False, default=False)
+
     def serialize(self):
         return ArticlesJSONSchema().dump(self)
 
@@ -50,28 +52,40 @@ class Articles(db.Model):
         team1_name = team1.team_name
         team2_name = team2.team_name
 
-        team1_starters_str = ", ".join([f"{player.first_name} {player.last_name} ({player.nfl_team})" for player in team1_starters])
-        team2_starters_str = ", ".join([f"{player.first_name} {player.last_name} ({player.nfl_team})" for player in team2_starters])
+        team1_starters_str = ", ".join([f"{player.position}: {player.first_name} {player.last_name} ({player.nfl_team})" for player in team1_starters])
+        team2_starters_str = ", ".join([f"{player.position}: {player.first_name} {player.last_name} ({player.nfl_team})" for player in team2_starters])
+
+        team1_owner = ", ".join([f"{owner.first_name} {owner.last_name}" for owner in team1.owners])
+        team2_owner = ", ".join([f"{owner.first_name} {owner.last_name}" for owner in team2.owners])
 
         system_prompt = f"""
         You are creating a pregame matchup article for a fantasy football league.
+        In a fantasy football league, the owner is the also the General Manager of the team.
         This is a PPR league, you will recieve starter from each team. This is for week {matchup.week} of the {matchup.year} season.
-        Use previous seasons Fantasy and Real NFL data to reason about the matchups.
-        Also consider how players could be coming off of injuries, and that they could be on a new team this year.
+        Here is the scoring rules for the league:
+        - 1 point for each reception
+        - .04 points for each throwing yard
+        - .1 points for each recieving yard
+        - .1 points for each rushing yard
+        - 6 points for each passing touchdown
+        - 6 points for each rushing touchdown
+        - 4 points for a throwing touchdown
+        - -4 point for each interception
+        - -2 point for each fumble lost
         Maybe talk about teams player positional advantages if they exist at certain positions.
-        Please return the article using markdown formatting. Use proper markdown syntax:
-        - Use ## for main sections and ### for subsections
-        - Use **bold** for emphasis and *italics* for highlights
-        - Only use bullet points (- ) when creating actual lists, not for regular sentences
-        - Write regular paragraphs as normal text without leading dashes
-        - You can be creative, but don't use leading dashes.
+        Please return the article using markdown formatting, do not use any html, MARKDOWN ONLY. Make sure things are formatted in a nice way to read as an article.
         """
 
         user_prompt = f"""
-        Team 1: {team1_name}
-        Starters: {team1_starters_str}
-        Team 2: {team2_name}
-        Starters: {team2_starters_str}
+        Here are the teams involved in this weeks matchup
+        Team 1:
+            Name: {team1_name}
+            Owner: {team1_owner}
+            Starters: {team1_starters_str}
+        Team 2:
+            Name: {team2_name}
+            Owner: {team2_owner}
+            Starters: {team2_starters_str}
         """
 
         print(system_prompt)
@@ -85,7 +99,7 @@ class Articles(db.Model):
                     "Content-Type": "application/json",
                 },
                 json={
-                    "model": "openai/gpt-oss-20b:free",
+                    "model": os.environ["OPENROUTER_MODEL"],
                     "messages": [
                         {
                             "role": "system",
@@ -107,7 +121,7 @@ class Articles(db.Model):
 
         article = Articles(
             article_type='matchup_breakdown',
-            author='openai/gpt-oss-20b',
+            author=os.environ["OPENROUTER_MODEL"],
             title=f'{team1_name} vs {team2_name} - Week {matchup.week}',
             content=response_json['choices'][0]['message']['content'],
             thumbnail='',
@@ -176,7 +190,7 @@ class Articles(db.Model):
                     "Content-Type": "application/json",
                 },
                 json={
-                    "model": "openai/gpt-4o-mini",
+                    "model": os.environ["OPENROUTER_MODEL"],
                     "messages": [
                         {
                             "role": "system",
@@ -203,7 +217,7 @@ class Articles(db.Model):
 
         article = Articles(
             article_type='rumors',
-            author='openai/gpt-4o-mini',
+            author=os.environ["OPENROUTER_MODEL"],
             title='Rumor: ' + rumor,
             content=full_content,
             thumbnail='',

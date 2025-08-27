@@ -11,7 +11,7 @@ def get_article(article_id):
 
 @articles.route('/articles/get_latest_articles', methods=['GET', 'OPTIONS'])
 def get_latest_articles():
-    articles = Articles.query.order_by(Articles.creation_date.desc()).limit(5).all()
+    articles = Articles.query.filter(Articles.published == True).order_by(Articles.creation_date.desc()).limit(5).all()
     return jsonify(success=True, articles=[ article.serialize() for article in articles ])
 
 

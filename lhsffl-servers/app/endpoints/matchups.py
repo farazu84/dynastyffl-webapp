@@ -23,7 +23,13 @@ def get_matchup_articles(matchup_id, week_number):
     '''
 
     matchup = Matchups.query.filter_by(week=week_number, sleeper_matchup_id=matchup_id).first()
+    
+    if not matchup:
+        return jsonify(success=False, error="Matchup not found"), 404
 
     article = Articles.generate_pregame_report(matchup)
+    
+    if not article:
+        return jsonify(success=False, error="Failed to generate pregame report. Check server logs for details."), 500
 
     return jsonify(success=True, article=article.serialize())

@@ -18,6 +18,8 @@
   "scripts": {
     "start": "react-scripts start",
     "start-api": "cd lhsffl-servers && venv/bin/flask run --no-debugger",
+    "start-local-api": "cd lhsffl-servers && FLASK_ENV=development venv/bin/flask run --host=localhost --port=5000",
+    "start-local-frontend": "REACT_APP_API_URL=http://localhost:5000 react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "test-api": "cd ../LHSFFL-Server && flask test",
