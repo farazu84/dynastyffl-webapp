@@ -1,50 +1,46 @@
- ul li {
-    margin: 0;
-    width: 350px;
-    height: 80px;
+/* Modern Team Page Styling */
+ul li {
+    background: linear-gradient(135deg, #1e1e1e 0%, #2d2d2d 100%);
+    border: 1px solid #333;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    height: auto;
+    min-height: 80px;
+    width: 100%;
+    max-width: 400px;
     display: flex;
     align-items: center;
-    margin: 1.5em;
+    margin: 15px auto;
     cursor: pointer;
-    padding: 1em;
-    background: rgb(43, 43, 43);
-    position: relative;
+    padding: 20px 24px;
     color: white;
-    border-radius: 5px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-ul li::before,
-ul li::after {
-    content: "";
+ul li::before {
+    content: '';
     position: absolute;
-    z-index: -1;
-    border-radius: 5px;
-    width: 105%;
-    transition: all 0.4s;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #61dafb, #21a9d8);
+    opacity: 0;
+    transition: opacity 0.3s ease;
 }
-/*
-ul li::before {
-    left: 0%;
-    height: 130%;
-    background: linear-gradient(to right, #021B79, #0575E6);
-}*/
-ul li::before {
-    left: 0%;
-    height: 130%;
-    background: linear-gradient(to right, rgb(8, 93, 179), rgb(63, 125, 187));
+
+ul li:hover {
+    transform: translateY(-2px);
+    border-color: #61dafb;
+    box-shadow: 0 8px 25px rgba(97, 218, 251, 0.2);
+    background: linear-gradient(135deg, #252525 0%, #343434 100%);
+    color: #61dafb;
 }
-ul li::after {
-    left: -10%;
-    height: 120%;
-    background: #ffffff56;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.164);
-}
+
 ul li:hover::before {
-    transform: translateX(-2.5%);
-}
-ul li:hover::after {
-    transform: translateX(15%);
+    opacity: 1;
 }
 
 
@@ -124,5 +120,22 @@ h3, h2 {
     .team-right-section {
         max-width: 100%;
         flex: none;
+    }
+
+    /* Mobile Team Card Styling */
+    ul li {
+        max-width: 100%;
+        margin: 10px 0;
+        padding: 18px 20px;
+        min-height: 70px;
+    }
+}
+
+/* Extra small screens */
+@media (max-width: 480px) {
+    ul li {
+        padding: 16px 18px;
+        min-height: 65px;
+        margin: 8px 0;
     }
 }

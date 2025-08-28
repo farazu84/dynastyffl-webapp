@@ -1,9 +1,20 @@
-/* Latest News Component Styling */
-.latest-news-container {
+/* News and Trending Container */
+.news-and-trending-container {
+    display: flex;
+    gap: 30px;
     margin: 40px 0;
     padding: 0 20px;
-    width: 65%;
+    width: 100%;
     max-width: 100%;
+    align-items: stretch;
+    min-height: 800px;
+}
+
+/* Latest News Component Styling */
+.latest-news-container {
+    flex: 2;
+    width: 65%;
+    max-width: 65%;
 }
 
 .news-feed {
@@ -479,5 +490,92 @@
     .compact-excerpt {
         font-size: 0.75em;
         -webkit-line-clamp: 2;
+    }
+}
+
+/* Trending Players Wrapper Styling */
+.trending-players-wrapper {
+    flex: 0 0 420px;
+    width: 420px;
+    max-width: 420px;
+    margin-right: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Title spacer to align with Latest News title */
+.trending-players-title-spacer {
+    height: 2.5em;
+    margin-bottom: 30px;
+}
+
+/* Override TrendingPlayers styles for this layout */
+.trending-players-wrapper .trending-players-container {
+    margin-top: 0;
+    padding: 20px;
+    background: rgb(43, 43, 43);
+    border-radius: 8px;
+    color: white;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.trending-players-wrapper .trending-players-container h3 {
+    margin: 0 0 15px 0;
+    font-size: 1.4em;
+    font-weight: bold;
+    text-align: center;
+    color: white;
+}
+
+.trending-players-wrapper .trending-players-embed {
+    width: 100%;
+    border-radius: 5px;
+    overflow: hidden;
+    background: white;
+    flex: 1;
+    display: flex;
+}
+
+.trending-players-wrapper .trending-players-embed iframe {
+    border: none;
+    border-radius: 5px;
+    width: 100%;
+    height: 100%;
+    min-height: 600px;
+}
+
+/* Responsive updates for news and trending layout */
+@media (max-width: 1200px) {
+    .news-and-trending-container {
+        flex-direction: column;
+        gap: 30px;
+        min-height: auto;
+    }
+    
+    .latest-news-container {
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    .trending-players-wrapper {
+        flex: none;
+        width: 100%;
+        max-width: 100%;
+        margin-right: 0;
+    }
+    
+    .trending-players-title-spacer {
+        display: none;
+    }
+    
+    .trending-players-wrapper .trending-players-container {
+        height: auto;
+    }
+    
+    .trending-players-wrapper .trending-players-embed iframe {
+        height: 400px;
+        min-height: 400px;
     }
 }

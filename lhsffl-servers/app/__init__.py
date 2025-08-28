@@ -27,12 +27,12 @@ def create_app(config=None):
         league
     )
 
-    app.register_blueprint(test.test)
-    app.register_blueprint(users.users)
-    app.register_blueprint(teams.teams)
-    app.register_blueprint(articles.articles)
-    app.register_blueprint(matchups.matchups)
-    app.register_blueprint(league.league)
+    app.register_blueprint(test.test, url_prefix='/v1')
+    app.register_blueprint(users.users, url_prefix='/v1')
+    app.register_blueprint(teams.teams, url_prefix='/v1')
+    app.register_blueprint(articles.articles, url_prefix='/v1')
+    app.register_blueprint(matchups.matchups, url_prefix='/v1')
+    app.register_blueprint(league.league, url_prefix='/v1')
 
     return app
 

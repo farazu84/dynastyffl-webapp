@@ -34,6 +34,8 @@ yarn-error.log*
 .aws/
 cloudfront-*.json
 bucket-policy.json
+deploy-frontend.sh
+deploy.config.js
 
 # Environment variables and secrets
 .env

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import fallbackImage from '../../studio-gib-1.png';
+import TrendingPlayers from './TrendingPlayers';
 import '../../styles/LatestNews.css';
 import config from '../../config';
 
@@ -152,39 +153,45 @@ const ArticleHeader = () => {
     }
     
     return (
-        <div className="latest-news-container">
-            <h2 className="latest-news-title">Latest News</h2>
-            <div className="news-feed">
-                {articles.length > 0 ? (
-                    <>
-                        {/* Featured Article - Latest/First Article */}
-                        {renderFeaturedArticle(articles[0])}
-                        
-                        {/* Compact Articles - Remaining Articles (Max 4) */}
-                        {articles.length > 1 && (
-                            <div className="compact-articles-section">
-                                <div className="compact-articles-grid">
-                                    {articles.slice(1, 5).map((article, index) => 
-                                        renderCompactArticle(article, index + 1)
-                                    )}
+        <div className="news-and-trending-container">
+            <div className="latest-news-container">
+                <h2 className="latest-news-title">Latest News</h2>
+                <div className="news-feed">
+                    {articles.length > 0 ? (
+                        <>
+                            {/* Featured Article - Latest/First Article */}
+                            {renderFeaturedArticle(articles[0])}
+                            
+                            {/* Compact Articles - Remaining Articles (Max 4) */}
+                            {articles.length > 1 && (
+                                <div className="compact-articles-section">
+                                    <div className="compact-articles-grid">
+                                        {articles.slice(1, 5).map((article, index) => 
+                                            renderCompactArticle(article, index + 1)
+                                        )}
+                                    </div>
                                 </div>
+                            )}
+                        </>
+                    ) : (
+                        <div className="news-card">
+                            <div className="news-content">
+                                <h3 className="news-title">No Articles Available</h3>
+                                <p className="news-excerpt">Check back later for the latest league news and updates!</p>
                             </div>
-                        )}
-                    </>
-                ) : (
-                    <div className="news-card">
-                        <div className="news-content">
-                            <h3 className="news-title">No Articles Available</h3>
-                            <p className="news-excerpt">Check back later for the latest league news and updates!</p>
                         </div>
+                    )}
+                </div>
+                {fetchError && (
+                    <div className="error-message">
+                        Unable to load latest news. {fetchError}
                     </div>
                 )}
             </div>
-            {fetchError && (
-                <div className="error-message">
-                    Unable to load latest news. {fetchError}
-                </div>
-            )}
+            <div className="trending-players-wrapper">
+                <div className="trending-players-title-spacer"></div>
+                <TrendingPlayers />
+            </div>
         </div>
     )
 }
