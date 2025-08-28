@@ -1,41 +1,97 @@
   .teamList {
     width: 100%;
     max-width: 100%;
+    padding: 0;
+    margin: 0;
+  }
+
+  .teamList ul {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 0;
+    margin: 0;
+    list-style: none;
   }
 
   .teamList ul li {
-    margin: 0;
-    height: 30px;
+    background: linear-gradient(135deg, #1e1e1e 0%, #2d2d2d 100%);
+    border: 1px solid #333;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    height: auto;
+    min-height: 80px;
     display: flex;
     align-items: center;
-    margin: 1.5em 0;
-    padding: 1em;
-    background: rgb(43, 43, 43);
-    position: relative;
-    color: white;
-    border-radius: 5px;
-    box-sizing: border-box;
-    width: fit-content;
-    min-width: 200px;
+    margin: 0;
+    padding: 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .teamList ul li::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #61dafb, #21a9d8);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .teamList ul li:hover {
+    transform: translateY(-2px);
+    border-color: #61dafb;
+    box-shadow: 0 8px 25px rgba(97, 218, 251, 0.2);
+    background: linear-gradient(135deg, #252525 0%, #343434 100%);
+  }
+
+  .teamList ul li:hover::before {
+    opacity: 1;
   }
 
   .team-link {
     text-decoration: none;
-    color: inherit;
+    color: white;
     display: flex;
     align-items: center;
     width: 100%;
     height: 100%;
+    padding: 20px 24px;
     cursor: pointer;
+    transition: color 0.3s ease;
+    position: relative;
   }
 
   .team-link:hover {
-    color: inherit;
+    color: #61dafb;
   }
 
   .team-link p {
     margin: 0;
     padding: 0;
+    font-size: 1.1em;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+
+  .team-link::after {
+    content: '→';
+    position: absolute;
+    right: 24px;
+    opacity: 0;
+    transform: translateX(-10px);
+    transition: all 0.3s ease;
+    font-size: 1.2em;
+    color: #61dafb;
+  }
+
+  .team-link:hover::after {
+    opacity: 1;
+    transform: translateX(0);
   }
 
   .matchup-card {
@@ -126,16 +182,179 @@
     box-sizing: border-box;
   }
 
+
+
   /* Responsive design for smaller screens */
   @media (max-width: 768px) {
     .league-content-split {
-      flex-direction: column;
-      gap: 10px;
+      flex-direction: column !important;
+      gap: 30px;
+      padding: 0 10px;
     }
     
     .league-left-section,
     .league-right-section {
-      max-width: 100%;
+      max-width: 100% !important;
+      width: 100% !important;
       flex: none;
+      padding: 0;
+    }
+
+    .league-left-section {
+      order: 1;
+    }
+
+    .league-right-section {
+      order: 2;
+    }
+
+    /* Mobile Section Headers */
+    .league-left-section h2,
+    .league-right-section h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      padding: 15px 0;
+      border-bottom: 2px solid #61dafb;
+      color: #61dafb;
+      font-size: 1.8em;
+    }
+
+    /* Mobile Team List Styling */
+    .teamList ul {
+      grid-template-columns: 1fr;
+      gap: 15px;
+    }
+
+    .teamList ul li {
+      width: 100%;
+      min-width: unset;
+      margin: 0;
+      min-height: 70px;
+    }
+
+    .team-link {
+      padding: 18px 20px;
+    }
+
+    .team-link p {
+      font-size: 1.1em;
+    }
+
+    .team-link::after {
+      right: 20px;
+    }
+
+    /* Mobile Matchup Card Styling */
+    .matchup-card {
+      flex-direction: column;
+      padding: 1.2em;
+      margin: 1em 0;
+      gap: 15px;
+    }
+
+    .matchup-team {
+      width: 100%;
+      margin: 0;
+      text-align: left;
+    }
+
+    .matchup-team h3 {
+      font-size: 1.2em;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    .matchup-vs {
+      order: 2;
+      margin: 10px 0;
+      text-align: center;
+      min-width: unset;
+    }
+
+    .matchup-vs h2 {
+      font-size: 1.5em;
+    }
+
+    /* Mobile Player Columns */
+    .matchup-player-col {
+      min-width: 80px;
+      text-align: center;
+    }
+
+    .matchup-player-position {
+      font-size: 0.8em;
+      font-weight: bold;
+    }
+
+    .matchup-player-name {
+      font-size: 0.75em;
+      line-height: 1.2;
+    }
+
+    .matchup-player-team {
+      font-size: 0.7em;
+    }
+
+    /* Adjust player row for mobile */
+    .player-row {
+      flex-wrap: wrap;
+      gap: 5px;
+      justify-content: center;
+    }
+
+    .player-col {
+      width: 100%;
+      text-align: center;
+    }
+  }
+
+  /* Extra small screens */
+  @media (max-width: 480px) {
+    .league-content-split {
+      padding: 0 5px;
+      gap: 25px;
+    }
+
+    /* Smaller section headers on very small screens */
+    .league-left-section h2,
+    .league-right-section h2 {
+      font-size: 1.5em;
+      padding: 10px 0;
+    }
+
+    .teamList ul li {
+      min-height: 65px;
+    }
+
+    .team-link {
+      padding: 16px 18px;
+    }
+
+    .team-link p {
+      font-size: 1em;
+    }
+
+    .matchup-card {
+      padding: 1em;
+    }
+
+    .matchup-team h3 {
+      font-size: 1.1em;
+    }
+
+    .matchup-vs h2 {
+      font-size: 1.3em;
+    }
+
+    .matchup-player-col {
+      min-width: 70px;
+    }
+
+    .matchup-player-name {
+      font-size: 0.7em;
+    }
+
+    .matchup-player-team {
+      font-size: 0.65em;
     }
   }

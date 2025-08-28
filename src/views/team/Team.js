@@ -7,8 +7,7 @@ import Taxi from './../../components/team/Taxi'
 import TeamHeader from './../../components/team/TeamHeader'
 import CurrentMatchups from './../../components/team/CurrentMatchups'
 import NewsBar from './../../components/team/NewsBar'
-
-
+import config from '../../config';
 
 import '../../styles/Team.css'
 
@@ -29,8 +28,8 @@ const Team = ( ) => {
         const fetchTeam = async () => {
             try{
                 // Pull in Team and Matchup data.
-                const response = await fetch(`${teamId}`);
-                const matchupsResponse = await fetch(`${teamId}/matchups`);
+                const response = await fetch(`${config.API_BASE_URL}/teams/${teamId}`);
+                const matchupsResponse = await fetch(`${config.API_BASE_URL}/teams/${teamId}/matchups`);
                 const matchups = await matchupsResponse.json();
                 console.log(matchups);
                 const selectedTeam = await response.json()

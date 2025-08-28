@@ -42,6 +42,28 @@ CREATE TABLE Players (
     player_number INT unsigned DEFAULT NULL,
     taxi tinyint(4) NOT NULL DEFAULT '0',
     starter tinyint(4) NOT NULL DEFAULT '0',
+    height VARCHAR(10) DEFAULT NULL,
+    weight INT unsigned DEFAULT NULL,
+    high_school VARCHAR(128) DEFAULT NULL,
+    status ENUM('Active', 'Inactive', 'Practice Squad', 'Injured Reserve') DEFAULT NULL,
+    active BOOLEAN DEFAULT NULL,
+    depth_chart_order INT DEFAULT NULL,
+    injury_status VARCHAR(64) DEFAULT NULL,
+    injury_body_part VARCHAR(64) DEFAULT NULL,
+    injury_start_date DATE DEFAULT NULL,
+    practice_participation VARCHAR(32) DEFAULT NULL,
+    espn_id INT DEFAULT NULL,
+    yahoo_id INT DEFAULT NULL,
+    fantasy_data_id INT DEFAULT NULL,
+    rotowire_id INT DEFAULT NULL,
+    rotoworld_id INT DEFAULT NULL,
+    sportradar_id VARCHAR(64) DEFAULT NULL,
+    stats_id INT DEFAULT NULL,
+    gsis_id VARCHAR(32) DEFAULT NULL,
+    oddsjam_id INT DEFAULT NULL,
+    pandascore_id INT DEFAULT NULL,
+    opta_id INT DEFAULT NULL,
+    swish_id INT DEFAULT NULL,
     PRIMARY KEY (player_id)
 )
 
@@ -53,6 +75,7 @@ CREATE TABLE Articles (
     content TEXT NOT NULL,
     thumbnail VARCHAR(128) NOT NULL,
     creation_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    published BOOLEAN DEFAULT FALSE,
     PRIMARY KEY (article_id)
 )
 

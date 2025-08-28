@@ -2,7 +2,7 @@
   "name": "lhsffl-platform",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://0.0.0.0:5000/",
+  "proxy": "http://dynasty-api-prod-v2.eba-3xm8xpvu.us-west-2.elasticbeanstalk.com/",
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
@@ -18,6 +18,8 @@
   "scripts": {
     "start": "react-scripts start",
     "start-api": "cd lhsffl-servers && venv/bin/flask run --no-debugger",
+    "start-local-api": "cd lhsffl-servers && FLASK_ENV=development venv/bin/flask run --host=localhost --port=5000",
+    "start-local-frontend": "REACT_APP_API_URL=http://localhost:5000 react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "test-api": "cd ../LHSFFL-Server && flask test",
