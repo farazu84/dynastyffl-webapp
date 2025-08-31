@@ -16,7 +16,11 @@ def create_app(config=None):
 
     # Enable CORS for all routes and origins
     cors_origins = os.environ.get('CORS_ORIGINS', 'http://localhost:3000').split(',')
-    CORS(app, origins=[origin.strip() for origin in cors_origins])
+    CORS(app, 
+         origins=[origin.strip() for origin in cors_origins],
+         methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+         allow_headers=['Content-Type', 'Authorization'],
+         supports_credentials=True)
 
     from app.endpoints import (
         test,

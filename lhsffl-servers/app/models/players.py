@@ -1,4 +1,5 @@
 from .. import db
+from app.models.schemas.players import PlayersJSONSchema
 
 
 class Players(db.Model):
@@ -32,3 +33,7 @@ class Players(db.Model):
     taxi = db.Column(db.Boolean(), default='0')
 
     starter = db.Column(db.Boolean(), default='0')
+
+
+    def serialize(self):
+        return PlayersJSONSchema().dump(self)
