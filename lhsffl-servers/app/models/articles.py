@@ -251,13 +251,28 @@ class Articles(db.Model):
             }
             team_dict[team.team_name] = team_info
 
+        current_league_state = LeagueState.query.filter_by(current=True).first()
+        article_title = f'{current_league_state.year} Week {current_league_state.week} Power Rankings'
+
         system_prompt = f"""
         You are generating power rankings for a fantasy football league. This is a PPR league.
+        It is week {current_league_state.week} of the {current_league_state.year} season.
         I will pass you a serialized json object of all the teams in the league.
         Use the starters and bench players to generate the power rankings.
         The starters should be given a much higher weight than the bench players.
         The power rankings should be in order of the teams from 1 to 10.
         Give your reasoning for why you ranked the teams the way you did.
+        Here is the scoring rules for the league:
+        - 1 point for each reception
+        - .04 points for each throwing yard
+        - .1 points for each recieving yard
+        - .1 points for each rushing yard
+        - 6 points for each passing touchdown
+        - 6 points for each rushing touchdown
+        - 4 points for a throwing touchdown
+        - -4 point for each interception
+        - -2 point for each fumble lost
+        Do not write the league scoring rules in the article.
         Please return the power rankings using markdown formatting. Only use markdown formatting and be creative.
         But make sure it still looks like an article.
         Break the teams up, please use multiple line and dividers to make the article more readable.
@@ -300,9 +315,6 @@ class Articles(db.Model):
         print(response_json['choices'][0]['message']['content'])
 
         full_content = response_json['choices'][0]['message']['content']
-
-        current_league_state = LeagueState.query.filter_by(current=True).first()
-        article_title = f'{current_league_state.year} Week {current_league_state.week} Power Rankings'
 
         article = Articles(
             article_type='power_ranking',

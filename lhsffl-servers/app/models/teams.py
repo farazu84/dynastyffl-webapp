@@ -99,4 +99,4 @@ class Teams(db.Model):
     def articles(self):
         from app.models.articles import Articles
 
-        return db.session.query(Articles).filter(Articles.article_teams.any(team_id=self.team_id)).order_by(Articles.creation_date.desc()).all()
+        return db.session.query(Articles).filter(Articles.article_teams.any(team_id=self.team_id), Articles.published == True).order_by(Articles.creation_date.desc()).all()
