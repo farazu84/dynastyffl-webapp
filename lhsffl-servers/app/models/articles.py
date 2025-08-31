@@ -144,7 +144,6 @@ class Articles(db.Model):
 
         teams = db.session.query(Teams).filter(Teams.team_id.in_(team_ids)).all()
         team_dict = {}
-        team_dict = {}
         for team in teams:
             team_info = {
                 'starters': json.dumps([player.serialize() for player in team.starters]),
@@ -152,17 +151,6 @@ class Articles(db.Model):
                 'owner_names': [f"{owner.first_name} {owner.last_name}" for owner in team.owners]
             }
             team_dict[team.team_name] = team_info
-        
-        '''
-        for team in teams:
-            team_starters_str = ", ".join([f"{player.position}: {player.first_name} {player.last_name} ({player.nfl_team})" for player in team.starters])
-            team_bench_str = ", ".join([f"{player.position}: {player.first_name} {player.last_name} ({player.nfl_team})" for player in team.players if not player.starter])
-
-            team_dict[team.team_name] = {
-                'starters': team_starters_str,
-                'bench': team_bench_str
-            }
-        '''
 
         system_prompt = f"""
         You are spreading rumors about a fantasy football league. This is a PPR league.
@@ -196,6 +184,7 @@ class Articles(db.Model):
                     "Content-Type": "application/json",
                 },
                 json={
+                    "transforms": ["middle-out"],
                     "model": os.environ["OPENROUTER_MODEL"],
                     "messages": [
                         {
