@@ -17,5 +17,6 @@ def update_league_state():
     '''
     Sets the league state.
     '''
+    print('Updating league state')
     set_league_state()
     return jsonify(success=True, message='League state set')

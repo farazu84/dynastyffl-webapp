@@ -16,7 +16,7 @@ def get_latest_articles():
     return jsonify(success=True, articles=[ article.serialize() for article in articles ])
 
 
-@articles.route('/articles/generate_rumor', methods=['POST', 'OPTIONS'])
+@articles.route('/articles/generate_rumor', methods=['POST'])
 def generate_rumor():
     rumor = request.get_json()['rumor']
     team_ids = request.get_json()['team_ids']
