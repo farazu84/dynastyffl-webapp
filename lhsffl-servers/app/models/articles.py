@@ -8,7 +8,7 @@ from sqlalchemy.sql import func
 from app.models.schemas.articles import ArticlesJSONSchema
 from app.models.article_teams import ArticleTeams
 from app.models.teams import Teams
-
+from app.models.league_state import LeagueState
 from sqlalchemy.orm import relationship
 
 
@@ -235,3 +235,94 @@ class Articles(db.Model):
         db.session.commit()
 
         return article
+
+    @staticmethod
+    def generate_power_rankings():
+        '''
+        Generate power rankings for all teams.
+        '''
+
+        teams = db.session.query(Teams).all()
+        team_dict = {}
+        for team in teams:
+            team_info = {
+                'starters': json.dumps([player.serialize() for player in team.starters]),
+                'owner_names': [f"{owner.first_name} {owner.last_name}" for owner in team.owners]
+            }
+            team_dict[team.team_name] = team_info
+
+        system_prompt = f"""
+        You are generating power rankings for a fantasy football league. This is a PPR league.
+        I will pass you a serialized json object of all the teams in the league.
+        Use the starters and bench players to generate the power rankings.
+        The starters should be given a much higher weight than the bench players.
+        The power rankings should be in order of the teams from 1 to 10.
+        Give your reasoning for why you ranked the teams the way you did.
+        Please return the power rankings using markdown formatting. Only use markdown formatting and be creative.
+        But make sure it still looks like an article.
+        Break the teams up, please use multiple line and dividers to make the article more readable.
+        """
+
+        user_prompt = f"""
+        Here are the teams, please generate me a power rankings article.
+        {json.dumps(team_dict, indent=4)}
+        """
+        print(user_prompt)
+        response = requests.post(
+                url="https://openrouter.ai/api/v1/chat/completions",
+                headers={
+                    "Authorization": f'Bearer {os.environ["OPENROUTER_API_KEY"]}',
+                    "Content-Type": "application/json",
+                },
+                json={
+                    "transforms": ["middle-out"],
+                    "model": os.environ["OPENROUTER_MODEL"],
+                    "messages": [
+                        {
+                            "role": "system",
+                            "content": system_prompt
+                        },
+                        {
+                            "role": "user",
+                            "content": user_prompt
+                        }
+                    ]
+                }
+            )
+
+        if response.ok:
+            response_json = response.json()
+            print(response_json)
+        else:
+            print(response.text)
+            return None
+
+        print(response_json['choices'][0]['message']['content'])
+
+        full_content = response_json['choices'][0]['message']['content']
+
+        current_league_state = LeagueState.query.filter_by(current=True).first()
+        article_title = f'{current_league_state.year} Week {current_league_state.week} Power Rankings'
+
+        article = Articles(
+            article_type='power_ranking',
+            author=os.environ["OPENROUTER_MODEL"],
+            title=article_title,
+            content=full_content,
+            thumbnail='',
+        )
+        db.session.add(article)
+        db.session.flush()
+
+        for team in teams:
+            article_team = ArticleTeams(
+                article_id=article.article_id,
+                team_id=team.team_id,
+            )
+            db.session.add(article_team)
+
+        db.session.commit()
+
+        return article
+
+

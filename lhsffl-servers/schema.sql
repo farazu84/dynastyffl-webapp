@@ -95,3 +95,11 @@ CREATE TABLE Matchups (
     opponent_sleeper_roster_id INT NOT NULL,
     PRIMARY KEY (matchup_id)
 )
+
+CREATE TABLE LeagueState (
+    league_state_id INT unsigned NOT NULL AUTO_INCREMENT,
+    year INT NOT NULL,
+    week INT NOT NULL,
+    current BOOLEAN DEFAULT FALSE,
+    PRIMARY KEY (league_state_id)
+)

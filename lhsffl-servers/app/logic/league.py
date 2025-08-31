@@ -2,7 +2,44 @@ import requests
 import os
 from app.models.teams import Teams
 from app.models.players import Players
+from app.models.league_state import LeagueState
 from app import db
+
+
+def set_league_state():
+    '''
+    Sets the league state.
+    '''
+
+    try:
+        get_league_state = requests.get('https://api.sleeper.app/v1/state/nfl')
+        get_league_state.raise_for_status()
+        league_state = get_league_state.json()
+
+        current_week = league_state['week']
+        current_year = int(league_state['season'])
+
+        # Sets previous league state to not current.
+        LeagueState.query.filter_by(current=True).update(
+            {LeagueState.current: False},
+            synchronize_session=False
+        )
+
+        # Adds new league state.
+        new_league_state = LeagueState(
+            year=current_year,
+            week=current_week,
+            current=True
+        )
+        db.session.add(new_league_state)
+        db.session.commit()
+    except requests.RequestException as e:
+        db.session.rollback()
+        raise
+    except Exception as e:
+        db.session.rollback()
+        raise
+        
 
 def synchronize_teams():
     '''
