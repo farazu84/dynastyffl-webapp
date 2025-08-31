@@ -78,21 +78,77 @@
     letter-spacing: 0.5px;
   }
 
-  .team-link::after {
-    content: '→';
-    position: absolute;
-    right: 24px;
-    opacity: 0;
-    transform: translateX(-10px);
-    transition: all 0.3s ease;
-    font-size: 1.2em;
-    color: #61dafb;
+  /* Team Info Layout */
+  .team-info {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
   }
 
-  .team-link:hover::after {
-    opacity: 1;
-    transform: translateX(0);
+  .team-name {
+    margin: 0;
+    padding: 0;
+    font-size: 1.1em;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    flex: 1;
   }
+
+  .team-stats {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+    min-width: 120px;
+  }
+
+  .record {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 1.1rem;
+    font-weight: 700;
+  }
+
+  .record .wins {
+    color: #4ade80;
+  }
+
+  .record .separator {
+    color: #9ca3af;
+    font-weight: 400;
+  }
+
+  .record .losses {
+    color: #f87171;
+  }
+
+  .points {
+    display: flex;
+    gap: 12px;
+    font-size: 0.8rem;
+  }
+
+  .points-for,
+  .points-against {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+  }
+
+  .points .label {
+    color: #9ca3af;
+    font-weight: 500;
+  }
+
+  .points .value {
+    color: #ffffff;
+    font-weight: 600;
+  }
+
+
 
   .matchup-card {
     display: flex;
@@ -240,9 +296,25 @@
       font-size: 1.1em;
     }
 
-    .team-link::after {
-      right: 20px;
+    .team-info {
+      gap: 10px;
     }
+
+    .team-stats {
+      min-width: 100px;
+      gap: 4px;
+    }
+
+    .record {
+      font-size: 1rem;
+    }
+
+    .points {
+      font-size: 0.75rem;
+      gap: 8px;
+    }
+
+
 
     /* Mobile Matchup Card Styling */
     .matchup-card {
@@ -332,6 +404,24 @@
 
     .team-link p {
       font-size: 1em;
+    }
+
+    .team-info {
+      gap: 8px;
+    }
+
+    .team-stats {
+      min-width: 90px;
+      gap: 3px;
+    }
+
+    .record {
+      font-size: 0.9rem;
+    }
+
+    .points {
+      font-size: 0.7rem;
+      gap: 6px;
     }
 
     .matchup-card {

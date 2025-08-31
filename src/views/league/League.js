@@ -16,7 +16,7 @@ const League = () => {
         const fetchTeams = async () => {
             try{
                 const response = await fetch(`${config.API_BASE_URL}/teams`);
-                const matchupsResponse = await fetch(`${config.API_BASE_URL}/matchups/1`);
+                const matchupsResponse = await fetch(`${config.API_BASE_URL}/matchups/current_matchups`);
                 const matchups = await matchupsResponse.json();
                 console.log(matchups);
                 const leagueTeams = await response.json()
@@ -39,7 +39,7 @@ const League = () => {
             <ArticleHeader />
             <div className="league-content-split" style={{ display: 'flex', flexDirection: 'row', gap: '20px', width: '100%' }}>
                 <div className="league-left-section" style={{ flex: 1, width: '50%', maxWidth: '50%' }}>
-                    <h2>League Teams</h2>
+                    <h2>Team Standings</h2>
                     <ul className="teamList">
                         {teams.map((team) => (
                             <TeamItem key={team.team_id} team={team} />
@@ -47,7 +47,7 @@ const League = () => {
                     </ul>
                 </div>
                 <div className="league-right-section" style={{ flex: 1, width: '50%', maxWidth: '50%' }}>
-                    <h2>Week 1 Matchups</h2>
+                    <h2>Current Matchups</h2>
                     {matchups.map((matchup) => (
                         <MatchupItem key={matchup.matchup_id} matchup={matchup} />
                     ))}

@@ -3,6 +3,7 @@ from app.models.schemas.team_owners import TeamOwnersJSONSchema
 from app.models.schemas.players import PlayersJSONSchema
 from app.models.schemas.users import UsersJSONSchema
 from app.models.schemas.articles import ArticlesJSONSchema
+from app.models.schemas.team_records import TeamRecordsJSONSchema
 #from app.models.schemas.matchups import MatchupsJSONSchema
 
 
@@ -18,4 +19,5 @@ class TeamsJSONSchema(Schema):
     average_starter_age = fields.Float()
     owners = fields.Nested(UsersJSONSchema, many=True)
     articles = fields.Nested(ArticlesJSONSchema, many=True)
+    current_team_record = fields.Nested(TeamRecordsJSONSchema, many=False)
     #matchups = fields.Nested(MatchupsJSONSchema, many=True)

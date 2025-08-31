@@ -103,3 +103,14 @@ CREATE TABLE LeagueState (
     current BOOLEAN DEFAULT FALSE,
     PRIMARY KEY (league_state_id)
 )
+
+CREATE TABLE TeamRecords (
+    team_record_id INT unsigned NOT NULL AUTO_INCREMENT,
+    team_id INT unsigned NOT NULL,
+    year INT NOT NULL,
+    wins INT NOT NULL,
+    losses INT NOT NULL,
+    points_for FLOAT NOT NULL,
+    points_against FLOAT NOT NULL,
+    PRIMARY KEY (team_record_id)
+)

@@ -1,6 +1,8 @@
 from .. import db
 from app.models.players import Players
 from app.models.team_owners import TeamOwners
+from app.models.team_records import TeamRecords
+from app.models.league_state import LeagueState
 from app.models.schemas.teams import TeamsJSONSchema
 
 from sqlalchemy.orm import relationship
@@ -24,6 +26,8 @@ class Teams(db.Model):
     article_teams = relationship('ArticleTeams', back_populates='team')
 
     players = relationship('Players', back_populates='team', order_by='Players.position')
+
+    team_records = relationship('TeamRecords', back_populates='team')
 
     @property
     def starters(self):
@@ -70,6 +74,11 @@ class Teams(db.Model):
         except Exception as e:
             print(f"Error calculating roster_size for team {getattr(self, 'team_name', 'Unknown')}: {e}")
             return 0
+
+    @property
+    def current_team_record(self):
+        league_state = db.session.query(LeagueState).filter_by(current=True).first()
+        return db.session.query(TeamRecords).filter_by(year=league_state.year, team_id=self.team_id).first()
 
     @property
     def average_starter_age(self):

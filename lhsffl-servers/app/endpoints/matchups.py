@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify
 from app.models.matchups import Matchups
 from app.models.articles import Articles
+from app.models.league_state import LeagueState
 
 matchups = Blueprint('matchups', __name__)
 
@@ -14,6 +15,20 @@ def get_matchups(week_number):
     unique_matchups = list(unique_matchups_dict.values())
     
     return jsonify(success=True, matchups=[ matchup.serialize() for matchup in unique_matchups ])
+
+
+@matchups.route('/matchups/current_matchups', methods=['GET', 'OPTIONS'])
+def get_current_matchup():
+    '''
+    Get the current matchups for the league.
+    '''
+
+    current_league_state = LeagueState.query.filter_by(current=True).first()
+    current_matchup = Matchups.query.filter_by(week=current_league_state.week, year=current_league_state.year).all()
+
+    unique_matchups_dict = {matchup.sleeper_matchup_id: matchup for matchup in current_matchup}
+    unique_current_matchups = list(unique_matchups_dict.values())
+    return jsonify(success=True, matchups=[ matchup.serialize() for matchup in unique_current_matchups ])
 
 
 @matchups.route('/matchups/<int:matchup_id>/week/<int:week_number>/generate_pregame_report', methods=['GET', 'OPTIONS'])
