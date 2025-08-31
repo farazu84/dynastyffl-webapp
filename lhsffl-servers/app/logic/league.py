@@ -3,6 +3,7 @@ import os
 from app.models.teams import Teams
 from app.models.players import Players
 from app.models.league_state import LeagueState
+from app.models.team_records import TeamRecords
 from app import db
 
 
@@ -44,7 +45,8 @@ def set_league_state():
 def synchronize_teams():
     '''
     Synchronizes the teams with the sleeper API.
-    This will update the players on each team in the database, along with the starter, bench, and taxi postions.
+    This will update the players on each team in the database, along with the starter, bench, and taxi positions.
+    Also syncs team records (wins, losses, points for/against) from the roster settings.
     Uses a single transaction with rollback capability for data integrity.
     '''
     print(f'Fetching rosters from: https://api.sleeper.app/v1/league/{os.getenv("LEAGUE_ID")}/rosters')
@@ -58,6 +60,12 @@ def synchronize_teams():
         if not rosters:
             raise ValueError("No roster data received from Sleeper API")
         
+        # Get current league state to determine the year
+        current_league_state = LeagueState.query.filter_by(current=True).first()
+        if not current_league_state:
+            raise ValueError("No current league state found. Please set league state first.")
+        
+        current_year = current_league_state.year
         
         # First, reset all players to not be on any team and clear positions
         reset_count = Players.query.update({
@@ -95,7 +103,43 @@ def synchronize_teams():
                     {Players.taxi: True}, 
                     synchronize_session=False
                 )
-        
+            
+            # Sync team records from roster settings
+            settings = roster.get('settings', {})
+            if settings:
+                wins = settings.get('wins', 0)
+                losses = settings.get('losses', 0)
+                
+                fpts = settings.get('fpts', 0)
+                fpts_decimal = settings.get('fpts_decimal', 0)
+                points_for = float(fpts) + (float(fpts_decimal) / 100.0)
+                
+                fpts_against = settings.get('fpts_against', 0)
+                fpts_against_decimal = settings.get('fpts_against_decimal', 0)
+                points_against = float(fpts_against) + (float(fpts_against_decimal) / 100.0)
+                
+                # Check if team record already exists for this year
+                existing_record = TeamRecords.query.filter_by(
+                    team_id=team.team_id,
+                    year=current_year
+                ).first()
+                
+                if existing_record:
+                    existing_record.wins = wins
+                    existing_record.losses = losses
+                    existing_record.points_for = points_for
+                    existing_record.points_against = points_against
+                    print(f"Updated team record for {team.team_name}: {wins}-{losses}, PF: {points_for:.2f}, PA: {points_against:.2f}")
+                else:
+                    new_record = TeamRecords(
+                        team_id=team.team_id,
+                        year=current_year,
+                        wins=wins,
+                        losses=losses,
+                        points_for=points_for,
+                        points_against=points_against
+                    )
+                    db.session.add(new_record)        
         # Commit all changes in one transaction
         db.session.commit()
         

@@ -39,7 +39,7 @@ const League = () => {
             <ArticleHeader />
             <div className="league-content-split" style={{ display: 'flex', flexDirection: 'row', gap: '20px', width: '100%' }}>
                 <div className="league-left-section" style={{ flex: 1, width: '50%', maxWidth: '50%' }}>
-                    <h2>League Teams</h2>
+                    <h2>Team Standings</h2>
                     <ul className="teamList">
                         {teams.map((team) => (
                             <TeamItem key={team.team_id} team={team} />
