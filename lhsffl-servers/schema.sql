@@ -120,7 +120,7 @@ CREATE TABLE TeamRecords (
 
 CREATE TABLE SyncStatus (
     sync_status_id INT unsigned NOT NULL AUTO_INCREMENT,
-    sync_item ENUM('teams', 'league_state', 'players') NOT NULL,
+    sync_item ENUM('teams', 'league_state', 'players', 'matchups') NOT NULL,
     timestamp DATETIME NOT NULL,
     success BOOLEAN NOT NULL,
     error TEXT DEFAULT NULL,
