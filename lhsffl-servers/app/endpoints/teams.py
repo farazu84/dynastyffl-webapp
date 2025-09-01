@@ -6,7 +6,12 @@ teams = Blueprint('teams', __name__)
 
 @teams.route('/teams', methods=['GET', 'OPTIONS'])
 def get_teams():
-    teams = Teams.query.all()
+    teams = Teams.query \
+        .join(Teams.team_records) \
+        .order_by(
+            Teams.team_records.property.mapper.class_.wins.desc(),
+            Teams.team_records.property.mapper.class_.points_for.desc()
+        ).all()
 
     return jsonify(success=True, teams=[ team.serialize() for team in teams ])
 
