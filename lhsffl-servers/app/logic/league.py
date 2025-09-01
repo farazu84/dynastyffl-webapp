@@ -4,7 +4,101 @@ from app.models.teams import Teams
 from app.models.players import Players
 from app.models.league_state import LeagueState
 from app.models.team_records import TeamRecords
+from app.models.matchups import Matchups
 from app import db
+
+
+def synchronize_matchups():
+    '''
+    Synchronizes matchups with the Sleeper API for the current week.
+    Updates points_for, points_against, and completion status.
+    '''
+    
+    league_state = LeagueState.query.filter_by(current=True).first()
+    if not league_state:
+        raise ValueError("No current league state found. Please set league state first.")
+    
+    print(f'Fetching matchups for week {league_state.week}, year {league_state.year}')
+    
+    try:
+        # Fetch matchup data from Sleeper API
+        response = requests.get(f'https://api.sleeper.app/v1/league/{os.getenv("LEAGUE_ID")}/matchups/{league_state.week}')
+        response.raise_for_status()
+        sleeper_matchups = response.json()
+        
+        if not sleeper_matchups:
+            print("No matchup data received from Sleeper API")
+            return {'success': True, 'message': 'No matchups to sync'}
+        
+        # Group matchups by matchup_id to find opponents
+        matchup_groups = {}
+        for matchup in sleeper_matchups:
+            matchup_id = matchup['matchup_id']
+            if matchup_id not in matchup_groups:
+                matchup_groups[matchup_id] = []
+            matchup_groups[matchup_id].append(matchup)
+        
+        updated_count = 0
+        
+        # Process each matchup pair
+        for matchup_id, teams in matchup_groups.items():
+            if len(teams) != 2:
+                print(f"Warning: Matchup {matchup_id} has {len(teams)} teams instead of 2")
+                continue
+            
+            team1, team2 = teams
+            
+            # Update team1's matchup record
+            team1_matchup = Matchups.query.filter_by(
+                sleeper_roster_id=team1['roster_id'],
+                week=league_state.week,
+                year=league_state.year
+            ).first()
+            
+            if team1_matchup:
+                team1_matchup.points_for = float(team1.get('points', 0))
+                team1_matchup.points_against = float(team2.get('points', 0))
+                updated_count += 1
+                print(f"Updated matchup for roster {team1['roster_id']}: {team1_matchup.points_for} vs {team1_matchup.points_against}")
+            else:
+                print(f"Warning: No matchup record found for roster {team1['roster_id']} in week {league_state.week}")
+            
+            # Update team2's matchup record
+            team2_matchup = Matchups.query.filter_by(
+                sleeper_roster_id=team2['roster_id'],
+                week=league_state.week,
+                year=league_state.year
+            ).first()
+            
+            if team2_matchup:
+                team2_matchup.points_for = float(team2.get('points', 0))
+                team2_matchup.points_against = float(team1.get('points', 0))
+                updated_count += 1
+                print(f"Updated matchup for roster {team2['roster_id']}: {team2_matchup.points_for} vs {team2_matchup.points_against}")
+            else:
+                print(f"Warning: No matchup record found for roster {team2['roster_id']} in week {league_state.week}")
+        
+        # Commit all changes
+        db.session.commit()
+        
+        print(f"Successfully updated {updated_count} matchup records for week {league_state.week}")
+        
+        return {
+            'success': True,
+            'updated_count': updated_count,
+            'week': league_state.week,
+            'year': league_state.year
+        }
+        
+    except requests.RequestException as e:
+        print(f"ERROR: Failed to fetch matchup data from Sleeper API: {e}")
+        db.session.rollback()
+        raise
+        
+    except Exception as e:
+        print(f"ERROR: Matchup synchronization failed: {e}")
+        db.session.rollback()
+        raise
 
 
 def set_league_state():

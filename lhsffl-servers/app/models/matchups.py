@@ -24,5 +24,11 @@ class Matchups(db.Model):
                               foreign_keys=[opponent_sleeper_roster_id],
                               primaryjoin='Matchups.opponent_sleeper_roster_id == Teams.sleeper_roster_id')
 
+    points_for = db.Column(db.Float(), nullable=False, default=0)
+
+    points_against = db.Column(db.Float(), nullable=False, default=0)
+
+    completed = db.Column(db.Boolean(), nullable=False, default=False)
+
     def serialize(self):
         return MatchupsJSONSchema().dump(self)

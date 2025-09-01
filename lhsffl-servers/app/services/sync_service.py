@@ -2,7 +2,7 @@ import logging
 from datetime import datetime
 from app import db
 from app.models.sync_status import SyncStatus
-from app.logic.league import synchronize_teams, set_league_state
+from app.logic.league import synchronize_teams, set_league_state, synchronize_matchups
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -17,6 +17,7 @@ class SyncService:
     SYNC_ITEMS = {
         'LEAGUE_STATE': 'league_state',
         'TEAMS': 'teams',
+        'MATCHUPS': 'matchups',
     }
     
     @staticmethod
@@ -66,6 +67,18 @@ class SyncService:
             SyncService.record_sync_status(SyncService.SYNC_ITEMS['TEAMS'], success=False, error=str(e))
             return {'success': False, 'message': f'Teams sync failed: {str(e)}'}
 
+    @staticmethod
+    def sync_matchups():
+        """
+        Synchronize matchups with Sleeper API for the current week.
+        """
+        try:
+            result = synchronize_matchups()
+            SyncService.record_sync_status(SyncService.SYNC_ITEMS['MATCHUPS'], success=True)
+            return {'success': True, 'message': 'Matchups synchronized', 'result': result}
+        except Exception as e:
+            SyncService.record_sync_status(SyncService.SYNC_ITEMS['MATCHUPS'], success=False, error=str(e))
+            return {'success': False, 'message': f'Matchups sync failed: {str(e)}'}
 
     @staticmethod
     def full_sync():
@@ -77,6 +90,7 @@ class SyncService:
         sync_results = {
             'league_state': None,
             'teams': None,
+            'matchups': None,
             'overall_success': True,
             'timestamp': datetime.utcnow()
         }
@@ -92,6 +106,12 @@ class SyncService:
             sync_results['teams'] = teams_result
             
             if not teams_result['success']:
+                sync_results['overall_success'] = False
+            
+            matchups_result = SyncService.sync_matchups()
+            sync_results['matchups'] = matchups_result
+            
+            if not matchups_result['success']:
                 sync_results['overall_success'] = False
             
             return sync_results

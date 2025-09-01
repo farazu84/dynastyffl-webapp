@@ -93,6 +93,9 @@ CREATE TABLE Matchups (
     sleeper_matchup_id INT NOT NULL,
     sleeper_roster_id INT NOT NULL,
     opponent_sleeper_roster_id INT NOT NULL,
+    points_for FLOAT NOT NULL DEFAULT 0,
+    points_against FLOAT NOT NULL DEFAULT 0,
+    completed BOOLEAN DEFAULT FALSE,
     PRIMARY KEY (matchup_id)
 )
 
