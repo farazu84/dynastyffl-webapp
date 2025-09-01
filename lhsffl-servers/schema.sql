@@ -114,3 +114,12 @@ CREATE TABLE TeamRecords (
     points_against FLOAT NOT NULL,
     PRIMARY KEY (team_record_id)
 )
+
+CREATE TABLE SyncStatus (
+    sync_status_id INT unsigned NOT NULL AUTO_INCREMENT,
+    sync_item ENUM('teams', 'league_state', 'players') NOT NULL,
+    timestamp DATETIME NOT NULL,
+    success BOOLEAN NOT NULL,
+    error TEXT DEFAULT NULL,
+    PRIMARY KEY (sync_status_id)
+)
