@@ -20,9 +20,49 @@ const MatchupItem = ( {matchup} ) => {
         const startingWR = getStartingPlayer(team, 'WR');
         const startingTE = getStartingPlayer(team, 'TE');
 
+        // Get the score for this team based on whether it's the main team or opponent
+        const teamScore = isLeft ? matchup.points_for : matchup.points_against;
+        const opponentScore = isLeft ? matchup.points_against : matchup.points_for;
+        
+        // Determine if this team is winning/losing (only when both scores exist)
+        const isWinning = teamScore !== undefined && opponentScore !== undefined && 
+                         teamScore !== null && opponentScore !== null && 
+                         teamScore > opponentScore;
+        const isLosing = teamScore !== undefined && opponentScore !== undefined && 
+                        teamScore !== null && opponentScore !== null && 
+                        teamScore < opponentScore;
+        
+        // Color based on winning/losing status
+        let scoreColor = '#4CAF50'; // Default green
+        if (matchup.completed) {
+            if (isWinning) scoreColor = '#4CAF50'; // Green for winner
+            else if (isLosing) scoreColor = '#f44336'; // Red for loser
+            else scoreColor = '#FF9800'; // Orange for tie
+        }
+
         return (
             <div className="matchup-team">
                 <h3>{team.team_name}</h3>
+                <div className="team-score">
+                    <h2 style={{ 
+                        color: scoreColor, 
+                        margin: '5px 0', 
+                        fontSize: '1.5em',
+                        fontWeight: 'bold'
+                    }}>
+                        {teamScore !== undefined && teamScore !== null ? teamScore.toFixed(1) : '--'}
+                    </h2>
+                    {matchup.completed && isWinning && (
+                        <p style={{ margin: '0', fontSize: 'small', color: scoreColor, fontWeight: 'bold' }}>
+                            W
+                        </p>
+                    )}
+                    {matchup.completed && isLosing && (
+                        <p style={{ margin: '0', fontSize: 'small', color: scoreColor, fontWeight: 'bold' }}>
+                            L
+                        </p>
+                    )}
+                </div>
                 <div className="player-row">
                     <div className="player-col">
                         <p><strong>Owner:</strong> {owner}</p>
@@ -75,6 +115,11 @@ const MatchupItem = ( {matchup} ) => {
             <div className="matchup-vs">
                 <h2 style={{ color: 'white', margin: '0' }}>VS</h2>
                 <p style={{ margin: '5px 0', fontSize: 'small' }}>Week {matchup.week}</p>
+                {matchup.completed ? (
+                    <p style={{ margin: '5px 0', fontSize: 'small', color: '#4CAF50' }}>Final</p>
+                ) : (
+                    <p style={{ margin: '5px 0', fontSize: 'small', color: '#FFC107' }}>In Progress</p>
+                )}
             </div>
             
             {renderTeamInfo(matchup.opponent_team, false)}
