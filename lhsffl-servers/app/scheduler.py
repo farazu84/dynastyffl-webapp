@@ -19,7 +19,7 @@ class SyncScheduler:
         self.is_running = False
         self.app = None
         
-        # Default sync time will be 2AM PST. After league waivers have been processed.
+        # Default sync time is 2AM PST. After league waivers have been processed.
         self.sync_hour = int(os.getenv('SYNC_HOUR', '9'))
         self.sync_minute = int(os.getenv('SYNC_MINUTE', '0'))
         self.timezone = os.getenv('SYNC_TIMEZONE', 'UTC')
@@ -41,7 +41,6 @@ class SyncScheduler:
             'default': ThreadPoolExecutor(max_workers=2)
         }
         
-        # Job defaults
         job_defaults = {
             'coalesce': True,
             'max_instances': 1,
@@ -66,14 +65,12 @@ class SyncScheduler:
             
         scheduler = self.create_scheduler()
         
-        # Create cron trigger for daily execution
         trigger = CronTrigger(
             hour=self.sync_hour,
             minute=self.sync_minute,
             timezone=self.timezone
         )
         
-        # Add the job
         scheduler.add_job(
             func=self._execute_daily_sync,
             trigger=trigger,
@@ -168,15 +165,17 @@ class SyncScheduler:
             return {'status': 'error', 'error': str(e)}
     
     def trigger_manual_sync(self):
-        """Trigger a manual sync outside of the scheduled time"""
+        """
+        Trigger a manual sync outside of the scheduled time.
+        """
         
         if not self.app:
             return {'success': False, 'error': 'No app context available'}
         
         try:
             with self.app.app_context():
-                result = SyncService.full_sync()
-                return result
+                SyncService.full_sync()
+                return {'success': True, 'message': 'Manual sync completed'}
         except Exception as e:
             logger.error(f"Manual sync failed: {e}")
             return {'success': False, 'error': str(e)}
