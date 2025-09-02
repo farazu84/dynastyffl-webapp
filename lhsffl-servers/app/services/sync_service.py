@@ -118,12 +118,11 @@ class SyncService:
             if not league_result['success']:
                 sync_results['overall_success'] = False
             
-            # Step 2: Sync players first (needed for team assignments)
-            #players_result = SyncService.sync_players()
-            #sync_results['players'] = players_result
+            players_result = SyncService.sync_players()
+            sync_results['players'] = players_result
             
-            #if not players_result['success']:
-            #    sync_results['overall_success'] = False
+            if not players_result['success']:
+                sync_results['overall_success'] = False
             
             # Step 3: Sync teams and rosters
             teams_result = SyncService.sync_teams()
