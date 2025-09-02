@@ -22,10 +22,14 @@ def trigger_manual_sync():
             result = SyncService.sync_teams()
         elif sync_type == 'league_state':
             result = SyncService.sync_league_state()
+        elif sync_type == 'matchups':
+            result = SyncService.sync_matchups()
+        elif sync_type == 'players':
+            result = SyncService.sync_players()
         else:
             return jsonify({
                 'success': False,
-                'error': 'Invalid sync type. Use: full, teams, or league_state'
+                'error': 'Invalid sync type. Use: full, teams, league_state, matchups, or players'
             }), 400
         
         return jsonify({

@@ -93,6 +93,9 @@ CREATE TABLE Matchups (
     sleeper_matchup_id INT NOT NULL,
     sleeper_roster_id INT NOT NULL,
     opponent_sleeper_roster_id INT NOT NULL,
+    points_for FLOAT NOT NULL DEFAULT 0,
+    points_against FLOAT NOT NULL DEFAULT 0,
+    completed BOOLEAN DEFAULT FALSE,
     PRIMARY KEY (matchup_id)
 )
 
@@ -117,7 +120,7 @@ CREATE TABLE TeamRecords (
 
 CREATE TABLE SyncStatus (
     sync_status_id INT unsigned NOT NULL AUTO_INCREMENT,
-    sync_item ENUM('teams', 'league_state', 'players') NOT NULL,
+    sync_item ENUM('teams', 'league_state', 'players', 'matchups') NOT NULL,
     timestamp DATETIME NOT NULL,
     success BOOLEAN NOT NULL,
     error TEXT DEFAULT NULL,

@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request
-from app.logic.league import synchronize_teams, set_league_state
+from app.logic.league import synchronize_teams, set_league_state, synchronize_matchups, synchronize_players
 
 league = Blueprint('league', __name__)
 
@@ -20,3 +20,28 @@ def update_league_state():
     print('Updating league state')
     set_league_state()
     return jsonify(success=True, message='League state set')
+
+@league.route('/league/synchronize_matchups', methods=['PUT', 'OPTIONS'])
+def synchronize_matchups_endpoint():
+    '''
+    Synchronizes the matchups with the sleeper API for the current week.
+    Updates points_for, points_against, and completion status.
+    '''
+    try:
+        result = synchronize_matchups()
+        return jsonify(success=True, message='Matchups synchronized', result=result)
+    except Exception as e:
+        return jsonify(success=False, message=f'Matchups sync failed: {str(e)}'), 500
+
+@league.route('/league/synchronize_players', methods=['PUT', 'OPTIONS'])
+def synchronize_players_endpoint():
+    '''
+    Synchronizes players with the Sleeper API.
+    Updates existing players and adds new ones based on sleeper_id.
+    Syncs all fields from height onwards.
+    '''
+    try:
+        result = synchronize_players()
+        return jsonify(success=True, message='Players synchronized', result=result)
+    except Exception as e:
+        return jsonify(success=False, message=f'Players sync failed: {str(e)}'), 500

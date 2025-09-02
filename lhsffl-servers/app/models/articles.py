@@ -55,7 +55,7 @@ class Articles(db.Model):
         You are generating a matchup preview article for a fantasy football league. This is a PPR league.
         It is week {matchup.week} of the {matchup.year} season.
         I will pass you a serialized json object of the two teams playing each other.
-        Use the starters to generate the matchup preview.
+        Use the starters to generate the matchup preview. You may also consider any injuries to the player.
         Consider the positional advantages.
         Here is the scoring rules for the league:
         - 1 point for each reception

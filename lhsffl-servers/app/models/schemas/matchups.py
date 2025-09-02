@@ -11,3 +11,6 @@ class MatchupsJSONSchema(Schema):
     team = fields.Nested(TeamsJSONSchema)
     opponent_sleeper_roster_id = fields.Int()
     opponent_team = fields.Nested(TeamsJSONSchema)
+    points_for = fields.Float()
+    points_against = fields.Float()
+    completed = fields.Boolean()

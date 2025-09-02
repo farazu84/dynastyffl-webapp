@@ -15,3 +15,8 @@ class PlayersJSONSchema(Schema):
     #player_number = fields.Int()
     taxi = fields.Bool()
     starter = fields.Bool()
+    depth_chart_order = fields.Int()
+    injury_status = fields.Str()
+    injury_body_part = fields.Str()
+    injury_start_date = fields.Str()
+    practice_participation = fields.Str()
