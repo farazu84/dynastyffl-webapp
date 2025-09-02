@@ -2,6 +2,7 @@ import { useParams } from 'react-router-dom'
 import { useState, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 import '../../styles/Article.css';
 import fallbackImage from '../../studio-gib-1.png';
 import config from '../../config';
@@ -85,7 +86,12 @@ const Article = ( ) => {
                 <p className="article-meta">Published: {new Date(article.creation_date).toLocaleDateString()}</p>
             </div>
             <div className='article-content'>
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>{article.content}</ReactMarkdown>
+                <ReactMarkdown 
+                    remarkPlugins={[remarkGfm]}
+                    rehypePlugins={[rehypeRaw]}
+                >
+                    {article.content}
+                </ReactMarkdown>
             </div>
         </div>
     )
