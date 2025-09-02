@@ -359,18 +359,21 @@ def set_league_state():
         current_week = league_state['week']
         current_year = int(league_state['season'])
 
-        # Sets previous league state to not current.
-        LeagueState.query.filter_by(current=True).update(
-            {LeagueState.current: False},
-            synchronize_session=False
-        )
+        league_state = LeagueState.query.filter_by(current=True).first()
 
-        # Adds new league state.
-        new_league_state = LeagueState(
-            year=current_year,
-            week=current_week,
-            current=True
-        )
+        if not (league_state.week == current_week and league_state.year == current_year):
+            # Sets previous league state to not current.
+            LeagueState.query.filter_by(current=True).update(
+                {LeagueState.current: False},
+                synchronize_session=False
+            )
+
+            # Adds new league state.
+            new_league_state = LeagueState(
+                year=current_year,
+                week=current_week,
+                current=True
+            )
         db.session.add(new_league_state)
         db.session.commit()
     except requests.RequestException as e:
