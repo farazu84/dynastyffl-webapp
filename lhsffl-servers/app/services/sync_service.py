@@ -2,7 +2,7 @@ import logging
 from datetime import datetime
 from app import db
 from app.models.sync_status import SyncStatus
-from app.logic.league import synchronize_teams, set_league_state, synchronize_matchups
+from app.logic.league import synchronize_teams, set_league_state, synchronize_matchups, synchronize_players
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -18,6 +18,7 @@ class SyncService:
         'LEAGUE_STATE': 'league_state',
         'TEAMS': 'teams',
         'MATCHUPS': 'matchups',
+        'PLAYERS': 'players',
     }
     
     @staticmethod
@@ -81,6 +82,20 @@ class SyncService:
             return {'success': False, 'message': f'Matchups sync failed: {str(e)}'}
 
     @staticmethod
+    def sync_players():
+        """
+        Synchronize players with Sleeper API.
+        Updates existing players and adds new ones based on sleeper_id.
+        """
+        try:
+            result = synchronize_players()
+            SyncService.record_sync_status(SyncService.SYNC_ITEMS['PLAYERS'], success=True)
+            return {'success': True, 'message': 'Players synchronized', 'result': result}
+        except Exception as e:
+            SyncService.record_sync_status(SyncService.SYNC_ITEMS['PLAYERS'], success=False, error=str(e))
+            return {'success': False, 'message': f'Players sync failed: {str(e)}'}
+
+    @staticmethod
     def full_sync():
         """
         Perform a complete synchronization of Team and League State data.
@@ -89,6 +104,7 @@ class SyncService:
         
         sync_results = {
             'league_state': None,
+            'players': None,
             'teams': None,
             'matchups': None,
             'overall_success': True,
@@ -102,6 +118,14 @@ class SyncService:
             if not league_result['success']:
                 sync_results['overall_success'] = False
             
+            # Step 2: Sync players first (needed for team assignments)
+            #players_result = SyncService.sync_players()
+            #sync_results['players'] = players_result
+            
+            #if not players_result['success']:
+            #    sync_results['overall_success'] = False
+            
+            # Step 3: Sync teams and rosters
             teams_result = SyncService.sync_teams()
             sync_results['teams'] = teams_result
             
