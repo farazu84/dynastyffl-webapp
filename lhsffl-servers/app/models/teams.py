@@ -41,6 +41,11 @@ class Teams(db.Model):
 
     def serialize(self):
         return TeamsJSONSchema().dump(self)
+    
+    def serialize_list(self):
+        """Lightweight serialization for team listings"""
+        from app.models.schemas.teams import TeamsListJSONSchema
+        return TeamsListJSONSchema().dump(self)
 
 
     @property
