@@ -374,8 +374,8 @@ def set_league_state():
                 week=current_week,
                 current=True
             )
-        db.session.add(new_league_state)
-        db.session.commit()
+            db.session.add(new_league_state)
+            db.session.commit()
     except requests.RequestException as e:
         db.session.rollback()
         raise

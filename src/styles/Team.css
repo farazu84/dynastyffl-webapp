@@ -7,14 +7,14 @@ ul li {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     height: auto;
-    min-height: 80px;
+    min-height: 0px;
     width: 100%;
     max-width: 400px;
     display: flex;
     align-items: center;
-    margin: 15px auto;
+    margin: 13px auto;
     cursor: pointer;
-    padding: 20px 24px;
+    padding: 15px 24px;
     color: white;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }

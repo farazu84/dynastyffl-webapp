@@ -189,7 +189,6 @@ const ArticleHeader = () => {
                 )}
             </div>
             <div className="trending-players-wrapper">
-                <div className="trending-players-title-spacer"></div>
                 <TrendingPlayers />
             </div>
         </div>
