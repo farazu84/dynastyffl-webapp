@@ -248,12 +248,17 @@ class Articles(db.Model):
             }
             team_dict[team.team_name] = team_info
 
-        current_league_state = LeagueState.query.filter_by(current=True).first()
-        article_title = f'{current_league_state.year} Week {current_league_state.week} Power Rankings'
+        from app.league_state_manager import get_current_year, get_current_week
+        
+        # Get current state from global manager (no DB query!)
+        current_year = get_current_year()
+        current_week = get_current_week()
+        
+        article_title = f'{current_year} Week {current_week} Power Rankings'
 
         system_prompt = f"""
         You are generating power rankings for a fantasy football league. This is a PPR league.
-        It is week {current_league_state.week} of the {current_league_state.year} season.
+        It is week {current_week} of the {current_year} season.
         I will pass you a serialized json object of all the teams in the league.
         Use the starters and bench players to generate the power rankings.
         The starters should be given a much higher weight than the bench players.

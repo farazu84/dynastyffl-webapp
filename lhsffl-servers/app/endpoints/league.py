@@ -19,7 +19,48 @@ def update_league_state():
     '''
     print('Updating league state')
     set_league_state()
-    return jsonify(success=True, message='League state set')
+    
+    # Refresh the global league state manager after updating
+    from app.league_state_manager import refresh_league_state
+    refresh_league_state()
+    
+    return jsonify(success=True, message='League state set and global cache refreshed')
+
+@league.route('/league/refresh_state', methods=['POST', 'OPTIONS'])
+def refresh_league_state_endpoint():
+    '''
+    Manually refresh the global league state cache.
+    '''
+    try:
+        from app.league_state_manager import refresh_league_state, get_current_year, get_current_week
+        refresh_league_state()
+        
+        return jsonify(
+            success=True, 
+            message='League state cache refreshed',
+            current_year=get_current_year(),
+            current_week=get_current_week()
+        )
+    except Exception as e:
+        return jsonify(success=False, message=f'Failed to refresh league state: {str(e)}'), 500
+
+@league.route('/league/state', methods=['GET', 'OPTIONS'])
+def get_league_state_status():
+    '''
+    Get current league state information from the global cache.
+    '''
+    try:
+        from app.league_state_manager import get_current_year, get_current_week, league_state_manager
+        
+        return jsonify(
+            success=True,
+            current_year=get_current_year(),
+            current_week=get_current_week(),
+            last_updated=league_state_manager._last_updated.isoformat() if league_state_manager._last_updated else None,
+            cache_duration_minutes=league_state_manager._cache_duration.total_seconds() / 60
+        )
+    except Exception as e:
+        return jsonify(success=False, message=f'Failed to get league state: {str(e)}'), 500
 
 @league.route('/league/synchronize_matchups', methods=['PUT', 'OPTIONS'])
 def synchronize_matchups_endpoint():

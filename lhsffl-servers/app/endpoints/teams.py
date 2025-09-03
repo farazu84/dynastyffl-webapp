@@ -1,20 +1,16 @@
 from flask import Blueprint, jsonify
 from app.models.teams import Teams
 from app.models.matchups import Matchups
+from app.models.team_records import TeamRecords
 from app import db
+from app.league_state_manager import get_current_year, get_current_week
 
 teams = Blueprint('teams', __name__)
 
 @teams.route('/teams', methods=['GET', 'OPTIONS'])
 def get_teams():
-    from app.models.team_records import TeamRecords
-    from app.models.league_state import LeagueState
+    current_year = get_current_year()
     
-    # Get current year efficiently
-    current_league = LeagueState.query.filter_by(current=True).first()
-    current_year = current_league.year if current_league else 2024
-    
-    # Direct join with current year filter and explicit ordering
     teams = Teams.query \
         .join(TeamRecords, Teams.team_id == TeamRecords.team_id) \
         .filter(TeamRecords.year == current_year) \
@@ -23,7 +19,7 @@ def get_teams():
             TeamRecords.points_for.desc()
         ).all()
 
-    return jsonify(success=True, teams=[ team.serialize() for team in teams ])
+    return jsonify(success=True, teams=[ team.serialize_list() for team in teams ])
 
 @teams.route('/teams/<int:team_id>', methods=['GET', 'OPTIONS'])
 def get_team(team_id):
@@ -32,19 +28,13 @@ def get_team(team_id):
 
 @teams.route('/teams/<int:team_id>/matchups', methods=['GET', 'OPTIONS'])
 def get_team_matchups(team_id):
-    from app.models.team_records import TeamRecords
-    from app.models.league_state import LeagueState
-    
     # Get team efficiently with error handling
     team = Teams.query.get(team_id)
     if not team:
         return jsonify(success=False, error="Team not found"), 404
     
-    # Get current year for filtering (optional optimization)
-    current_league = LeagueState.query.filter_by(current=True).first()
-    current_year = current_league.year if current_league else 2024
+    current_year = get_current_year()
     
-    # Optimized query with proper indexing and current year filter
     matchups = Matchups.query \
         .filter_by(sleeper_roster_id=team.sleeper_roster_id, year=current_year) \
         .order_by(Matchups.week) \
@@ -55,6 +45,8 @@ def get_team_matchups(team_id):
 @teams.route('/teams/<int:team_id>/matchups/fast', methods=['GET', 'OPTIONS'])
 def get_team_matchups_fast(team_id):
     """Ultra-fast team matchups using raw SQL for maximum performance"""
+    
+    current_year = get_current_year()
     
     sql = """
     SELECT 
@@ -71,12 +63,11 @@ def get_team_matchups_fast(team_id):
     FROM Matchups m
     INNER JOIN Teams t1 ON m.sleeper_roster_id = t1.sleeper_roster_id
     LEFT JOIN Teams t2 ON m.opponent_sleeper_roster_id = t2.sleeper_roster_id
-    INNER JOIN LeagueState ls ON m.year = ls.year AND ls.current = 1
-    WHERE t1.team_id = :team_id
+    WHERE t1.team_id = :team_id AND m.year = :current_year
     ORDER BY m.week
     """
     
-    result = db.session.execute(sql, {'team_id': team_id})
+    result = db.session.execute(sql, {'team_id': team_id, 'current_year': current_year})
     matchups_data = []
     
     for row in result:

@@ -3,6 +3,7 @@ from app.models.matchups import Matchups
 from app.models.articles import Articles
 from app.models.league_state import LeagueState
 from app import db
+from app.league_state_manager import get_current_year, get_current_week
 
 matchups = Blueprint('matchups', __name__)
 
@@ -23,16 +24,12 @@ def get_current_matchup():
     '''
     Get the current matchups for the league - optimized version.
     '''
-    
-    # Optimized query: get current league state and matchups in one efficient query
-    current_league_state = LeagueState.query.filter_by(current=True).first()
-    
-    if not current_league_state:
-        return jsonify(success=False, error="No current league state found"), 404
+    current_year = get_current_year()
+    current_week = get_current_week()
     
     # Single optimized query with proper indexing
     current_matchups = Matchups.query \
-        .filter_by(week=current_league_state.week, year=current_league_state.year) \
+        .filter_by(week=current_week, year=current_year) \
         .order_by(Matchups.sleeper_matchup_id) \
         .all()
 
@@ -47,6 +44,9 @@ def get_current_matchups_fast():
     '''
     Ultra-fast current matchups using raw SQL for maximum performance.
     '''
+    # Get current year and week from global state manager (no DB query!)
+    current_year = get_current_year()
+    current_week = get_current_week()
     
     sql = """
     SELECT DISTINCT
@@ -62,13 +62,13 @@ def get_current_matchups_fast():
         t1.team_name as team_name,
         t2.team_name as opponent_team_name
     FROM Matchups m
-    INNER JOIN LeagueState ls ON m.year = ls.year AND m.week = ls.week AND ls.current = 1
     LEFT JOIN Teams t1 ON m.sleeper_roster_id = t1.sleeper_roster_id
     LEFT JOIN Teams t2 ON m.opponent_sleeper_roster_id = t2.sleeper_roster_id
+    WHERE m.year = :current_year AND m.week = :current_week
     ORDER BY m.sleeper_matchup_id
     """
     
-    result = db.session.execute(sql)
+    result = db.session.execute(sql, {'current_year': current_year, 'current_week': current_week})
     matchups_data = []
     seen_matchup_ids = set()
     

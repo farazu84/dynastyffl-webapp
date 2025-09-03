@@ -7,6 +7,7 @@ from app.models.schemas.teams import TeamsJSONSchema
 
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.associationproxy import association_proxy
+from functools import cached_property
 
 class Teams(db.Model):
     __tablename__ = 'Teams'
@@ -19,15 +20,15 @@ class Teams(db.Model):
 
     sleeper_roster_id = db.Column(db.Integer(), nullable=False)
 
-    team_owners = relationship('TeamOwners', back_populates='team')
+    team_owners = relationship('TeamOwners', back_populates='team', lazy='select')
 
     owners = association_proxy('team_owners', 'user')
 
-    article_teams = relationship('ArticleTeams', back_populates='team')
+    article_teams = relationship('ArticleTeams', back_populates='team', lazy='select')
 
-    players = relationship('Players', back_populates='team', order_by='Players.position')
+    players = relationship('Players', back_populates='team', order_by='Players.position', lazy='select')
 
-    team_records = relationship('TeamRecords', back_populates='team')
+    team_records = relationship('TeamRecords', back_populates='team', lazy='select')
 
     @property
     def starters(self):
@@ -48,7 +49,7 @@ class Teams(db.Model):
         return TeamsListJSONSchema().dump(self)
 
 
-    @property
+    @cached_property
     def average_age(self):
         try:
             if not hasattr(self, 'players') or not self.players:
@@ -70,7 +71,7 @@ class Teams(db.Model):
             print(f"Error calculating average_age for team {getattr(self, 'team_name', 'Unknown')}: {e}")
             return 0.0
 
-    @property
+    @cached_property
     def roster_size(self):
         try:
             if not hasattr(self, 'players') or not self.players:
@@ -80,12 +81,13 @@ class Teams(db.Model):
             print(f"Error calculating roster_size for team {getattr(self, 'team_name', 'Unknown')}: {e}")
             return 0
 
-    @property
+    @cached_property
     def current_team_record(self):
-        league_state = db.session.query(LeagueState).filter_by(current=True).first()
-        return db.session.query(TeamRecords).filter_by(year=league_state.year, team_id=self.team_id).first()
+        from app.league_state_manager import get_current_year
+        current_year = get_current_year()
+        return db.session.query(TeamRecords).filter_by(year=current_year, team_id=self.team_id).first()
 
-    @property
+    @cached_property
     def average_starter_age(self):
         try:
             if not hasattr(self, 'players') or not self.players:
@@ -109,7 +111,7 @@ class Teams(db.Model):
             print(f"Error calculating average_starter_age for team {getattr(self, 'team_name', 'Unknown')}: {e}")
             return 0.0
 
-    @property
+    @cached_property
     def articles(self):
         from app.models.articles import Articles
 
