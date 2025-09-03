@@ -280,23 +280,37 @@ body:has(.article-page) .footer {
     font-family: inherit;
 }
 
+/* Table wrapper to prevent overflow */
 .article-content table {
     display: table;
-    border-collapse: collapse;
     width: 100%;
+    max-width: 100%;
     margin: 16px 0;
+    border-collapse: collapse;
     color: white;
     font-family: inherit;
+    table-layout: fixed;
+    border: 1px solid #333;
+    border-radius: 6px;
+    overflow: hidden;
 }
 
+/* Style table cells with proper sizing */
 .article-content th,
 .article-content td {
     display: table-cell;
-    border: 1px solid #333;
-    padding: 8px 12px;
+    border: 1px solid #444;
+    padding: 6px 8px;
     text-align: left;
     color: white;
     font-family: inherit;
+    vertical-align: top;
+    font-size: 0.8em;
+    line-height: 1.3;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+    max-width: 0;
 }
 
 .article-content th {
