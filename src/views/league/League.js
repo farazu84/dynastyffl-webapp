@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import TeamItem from './../../components/league/TeamItem';
 import ArticleHeader from './../../components/league/ArticleHeader';
+import TrendingPlayers from './../../components/league/TrendingPlayers';
 import '../../styles/League.css';
 import MatchupItem from './../../components/league/MatchupItem';
 import config from '../../config';
@@ -36,21 +37,28 @@ const League = () => {
 
     return (
         <main>
-            <ArticleHeader />
-            <div className="league-content-split" style={{ display: 'flex', flexDirection: 'row', gap: '20px', width: '100%' }}>
-                <div className="league-left-section" style={{ flex: 1, width: '50%', maxWidth: '50%' }}>
-                    <h2>Team Standings</h2>
+            <div className="league-main-container">
+                <div className="league-left-content">
+                    <ArticleHeader />
+                    <div className="current-matchups-section">
+                        <h2>Current Matchups</h2>
+                        {matchups.map((matchup) => (
+                            <MatchupItem key={matchup.matchup_id} matchup={matchup} />
+                        ))}
+                    </div>
+                </div>
+                <div className="league-standings-sidebar">
+                    <div className="standings-header">
+                        <h2>Team Standings</h2>
+                    </div>
                     <ul className="teamList">
                         {teams.map((team) => (
                             <TeamItem key={team.team_id} team={team} />
                         ))}
                     </ul>
-                </div>
-                <div className="league-right-section" style={{ flex: 1, width: '50%', maxWidth: '50%' }}>
-                    <h2>Current Matchups</h2>
-                    {matchups.map((matchup) => (
-                        <MatchupItem key={matchup.matchup_id} matchup={matchup} />
-                    ))}
+                    <div className="sidebar-trending-players">
+                        <TrendingPlayers />
+                    </div>
                 </div>
             </div>
         </main>

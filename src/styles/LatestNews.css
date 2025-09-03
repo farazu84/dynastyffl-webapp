@@ -10,11 +10,27 @@
     min-height: 800px;
 }
 
+/* Override for League page layout */
+.league-left-content .news-and-trending-container {
+    margin: 0;
+    padding: 0;
+    gap: 0;
+    flex-direction: column;
+    min-height: auto;
+}
+
 /* Latest News Component Styling */
 .latest-news-container {
     flex: 2;
     width: 65%;
     max-width: 65%;
+}
+
+/* Override for League page when in main content area */
+.league-left-content .latest-news-container {
+    width: 100%;
+    max-width: 100%;
+    flex: 1;
 }
 
 .news-feed {
@@ -501,6 +517,11 @@
     margin-right: 20px;
     display: flex;
     flex-direction: column;
+}
+
+/* Override for League page - hide trending players in article header */
+.league-left-content .trending-players-wrapper {
+    display: none;
 }
 
 /* Title spacer to align with Latest News title */
