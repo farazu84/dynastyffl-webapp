@@ -280,26 +280,46 @@ body:has(.article-page) .footer {
     font-family: inherit;
 }
 
+/* Table wrapper to prevent overflow */
 .article-content table {
     display: table;
-    border-collapse: collapse;
     width: 100%;
-    margin: 16px 0;
+    max-width: 100%;
+    margin: 24px 0;
+    border-collapse: collapse;
     color: white;
     font-family: inherit;
+    table-layout: fixed;
+    border: 2px solid #61dafb;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #262626;
 }
 
+/* Style table cells with proper sizing */
 .article-content th,
 .article-content td {
     display: table-cell;
-    border: 1px solid #333;
-    padding: 8px 12px;
+    border: 1px solid #444;
+    padding: 10px 12px;
     text-align: left;
     color: white;
     font-family: inherit;
+    vertical-align: top;
+    font-size: 0.85em;
+    line-height: 1.4;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+    max-width: 0;
+    background-color: #2a2a2a;
 }
 
 .article-content th {
-    background-color: #2d2d2d;
+    background-color: #61dafb;
+    color: #000;
     font-weight: bold;
+    font-size: 0.9em;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }

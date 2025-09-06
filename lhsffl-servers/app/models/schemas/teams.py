@@ -21,3 +21,11 @@ class TeamsJSONSchema(Schema):
     articles = fields.Nested(ArticlesJSONSchema, many=True)
     current_team_record = fields.Nested(TeamRecordsJSONSchema, many=False)
     #matchups = fields.Nested(MatchupsJSONSchema, many=True)
+
+class TeamsListJSONSchema(Schema):
+    """Lightweight schema for teams listing - only essential fields"""
+    team_id = fields.Int()
+    team_name = fields.Str()
+    championships = fields.Int()
+    sleeper_roster_id = fields.Int()
+    current_team_record = fields.Nested(TeamRecordsJSONSchema, many=False)

@@ -42,6 +42,9 @@ def create_app(config=None):
 
     # Initialize and start the sync scheduler
     setup_scheduler(app)
+    
+    # Initialize global league state manager
+    setup_league_state_manager(app)
 
     return app
 
@@ -81,3 +84,16 @@ def setup_scheduler(app):
     except Exception as e:
         print(f"Error setting up scheduler: {e}")
         # Don't fail app startup if scheduler fails
+
+
+def setup_league_state_manager(app):
+    """Initialize the global league state manager"""
+    try:
+        from app.league_state_manager import league_state_manager
+        
+        # Initialize with app context
+        with app.app_context():
+            league_state_manager.initialize(app.app_context())
+            
+    except Exception as e:
+        print(f"Error setting up league state manager: {e}")

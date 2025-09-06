@@ -1,37 +1,39 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import '../../styles/Rumor.css';
 import config from '../../config';
+import { cachedFetch } from '../../utils/apiCache';
 
-const Rumor = () => {
+const Rumor = React.memo(() => {
     const [rumorText, setRumorText] = useState('');
     const [teams, setTeams] = useState([]);
     const [selectedTeams, setSelectedTeams] = useState([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitMessage, setSubmitMessage] = useState('');
 
-    // Fetch teams for the dropdown
+    // Fetch teams for the dropdown with caching
     useEffect(() => {
         const fetchTeams = async () => {
             try {
-                const response = await fetch(`${config.API_BASE_URL}/teams`);
+                const response = await cachedFetch(`${config.API_BASE_URL}/teams`);
                 const data = await response.json();
                 setTeams(data.teams || []);
             } catch (error) {
                 console.error('Error fetching teams:', error);
+                setTeams([]);
             }
         };
         fetchTeams();
     }, []);
 
-    const handleTeamToggle = (teamId) => {
+    const handleTeamToggle = useCallback((teamId) => {
         setSelectedTeams(prev => 
             prev.includes(teamId) 
                 ? prev.filter(id => id !== teamId)
                 : [...prev, teamId]
         );
-    };
+    }, []);
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = useCallback(async (e) => {
         e.preventDefault();
         
         if (!rumorText.trim()) {
@@ -67,7 +69,50 @@ const Rumor = () => {
         } finally {
             setIsSubmitting(false);
         }
-    };
+    }, [rumorText, selectedTeams]);
+
+    // Memoize character count to prevent recalculation
+    const characterCount = useMemo(() => rumorText.length, [rumorText]);
+
+    // Memoize team checkboxes to prevent re-rendering all teams on selection change
+    const teamCheckboxes = useMemo(() => {
+        return teams.map(team => (
+            <label key={team.team_id} className="team-checkbox">
+                <input
+                    type="checkbox"
+                    checked={selectedTeams.includes(team.team_id)}
+                    onChange={() => handleTeamToggle(team.team_id)}
+                    className="checkbox-input"
+                />
+                <span className="checkbox-custom"></span>
+                <span className="team-name">{team.team_name}</span>
+            </label>
+        ));
+    }, [teams, selectedTeams, handleTeamToggle]);
+
+    // Memoize selected team tags to prevent recalculation
+    const selectedTeamTags = useMemo(() => {
+        return selectedTeams.map(teamId => {
+            const team = teams.find(t => t.team_id === teamId);
+            return team ? (
+                <span key={teamId} className="selected-team-tag">
+                    {team.team_name}
+                    <button 
+                        type="button"
+                        onClick={() => handleTeamToggle(teamId)}
+                        className="remove-tag"
+                    >
+                        ×
+                    </button>
+                </span>
+            ) : null;
+        });
+    }, [selectedTeams, teams, handleTeamToggle]);
+
+    // Memoize submit button state
+    const isSubmitDisabled = useMemo(() => {
+        return isSubmitting || !rumorText.trim();
+    }, [isSubmitting, rumorText]);
 
     return (
         <div className="rumor-page">
@@ -89,7 +134,7 @@ const Rumor = () => {
                             maxLength={500}
                         />
                         <div className="character-count">
-                            {rumorText.length}/500 characters
+                            {characterCount}/500 characters
                         </div>
                     </div>
 
@@ -101,45 +146,20 @@ const Rumor = () => {
                             Select all teams involved in rumor.
                         </p>
                         <div className="teams-dropdown">
-                            {teams.map(team => (
-                                <label key={team.team_id} className="team-checkbox">
-                                    <input
-                                        type="checkbox"
-                                        checked={selectedTeams.includes(team.team_id)}
-                                        onChange={() => handleTeamToggle(team.team_id)}
-                                        className="checkbox-input"
-                                    />
-                                    <span className="checkbox-custom"></span>
-                                    <span className="team-name">{team.team_name}</span>
-                                </label>
-                            ))}
+                            {teamCheckboxes}
                         </div>
                         
                         {selectedTeams.length > 0 && (
                             <div className="selected-teams">
                                 <span className="selected-label">Selected: </span>
-                                {selectedTeams.map(teamId => {
-                                    const team = teams.find(t => t.team_id === teamId);
-                                    return team ? (
-                                        <span key={teamId} className="selected-team-tag">
-                                            {team.team_name}
-                                            <button 
-                                                type="button"
-                                                onClick={() => handleTeamToggle(teamId)}
-                                                className="remove-tag"
-                                            >
-                                                ×
-                                            </button>
-                                        </span>
-                                    ) : null;
-                                })}
+                                {selectedTeamTags}
                             </div>
                         )}
                     </div>
 
                     <button 
                         type="submit" 
-                        disabled={isSubmitting || !rumorText.trim()}
+                        disabled={isSubmitDisabled}
                         className="submit-btn"
                     >
                         {isSubmitting ? 'Submitting...' : 'Spread Rumor'}
@@ -153,7 +173,9 @@ const Rumor = () => {
                 )}
             </div>
         </div>
-    )
-}
+    );
+});
+
+Rumor.displayName = 'Rumor';
 
 export default Rumor;

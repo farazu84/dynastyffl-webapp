@@ -1,25 +1,28 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import fallbackImage from '../../studio-gib-1.png';
 import TrendingPlayers from './TrendingPlayers';
 import '../../styles/LatestNews.css';
 import config from '../../config';
+import { cachedFetch } from '../../utils/apiCache';
 
 
-const ArticleHeader = () => {
+const ArticleHeader = React.memo(() => {
     const [articles, setArticles] = useState([]);
     const [fetchError, setFetchError] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         const fetchArticles = async () => {
-            try{
-                const response = await fetch(`${config.API_BASE_URL}/articles/get_latest_articles`);
+            try {
+                setIsLoading(true);
+                setFetchError(null);
+                
+                const response = await cachedFetch(`${config.API_BASE_URL}/articles/get_latest_articles`);
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-                const articlesJSON = await response.json()
-                console.log(articlesJSON)
+                const articlesJSON = await response.json();
                 
                 // Handle both single article and articles array responses
                 let articlesList = [];
@@ -65,24 +68,36 @@ const ArticleHeader = () => {
         fetchArticles()
     }, [])
 
-    const handleImageError = (e) => {
+    const handleImageError = useCallback((e) => {
         e.target.src = fallbackImage;
-    };
+    }, []);
 
-    const getImageSrc = (article) => {
+    const getImageSrc = useCallback((article) => {
         return article?.thumbnail && article?.thumbnail.trim() !== '' ? article.thumbnail : fallbackImage;
-    };
+    }, []);
     
-    const formatDate = (dateString) => {
+    const formatDate = useCallback((dateString) => {
         if (!dateString) return 'Recently';
         return new Date(dateString).toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'long',
             day: 'numeric'
         });
-    };
+    }, []);
 
-    const renderFeaturedArticle = (article) => (
+    // Memoize processed articles to prevent unnecessary re-processing
+    const processedArticles = useMemo(() => {
+        return articles.map(article => ({
+            ...article,
+            formattedDate: formatDate(article.creation_date),
+            imageSrc: getImageSrc(article),
+            excerpt: article?.content ? 
+                article.content.substring(0, 150) + (article.content.length > 150 ? '...' : '') 
+                : 'Click to read the full article'
+        }));
+    }, [articles, formatDate, getImageSrc]);
+
+    const renderFeaturedArticle = useCallback((article) => (
         <Link 
             to={article?.article_id ? `/articles/${article.article_id}` : '#'} 
             state={{ article: article }}
@@ -91,7 +106,7 @@ const ArticleHeader = () => {
             <div className="news-card featured">
                 <div className="news-image-container">
                     <img 
-                        src={getImageSrc(article)} 
+                        src={article.imageSrc} 
                         alt={'League News'}
                         className="news-image"
                         onError={handleImageError}
@@ -100,21 +115,16 @@ const ArticleHeader = () => {
                 <div className="news-content">
                     <div className="news-meta">
                         <span className="news-author">{article?.author || 'League News'}</span>
-                        <span className="news-date">{formatDate(article?.creation_date)}</span>
+                        <span className="news-date">{article.formattedDate}</span>
                     </div>
                     <h3 className="news-title">{article?.title || 'Latest League News'}</h3>
-                    <p className="news-excerpt">
-                        {article?.content ? 
-                            article.content.substring(0, 150) + (article.content.length > 150 ? '...' : '') 
-                            : 'Click to read the full article'
-                        }
-                    </p>
+                    <p className="news-excerpt">{article.excerpt}</p>
                 </div>
             </div>
         </Link>
-    );
+    ), [handleImageError]);
 
-    const renderCompactArticle = (article, index) => (
+    const renderCompactArticle = useCallback((article, index) => (
         <Link 
             key={article.article_id || index}
             to={article?.article_id ? `/articles/${article.article_id}` : '#'} 
@@ -124,7 +134,7 @@ const ArticleHeader = () => {
             <div className="compact-article">
                 <div className="compact-image-container">
                     <img 
-                        src={getImageSrc(article)} 
+                        src={article.imageSrc} 
                         alt={'League News'}
                         className="compact-image"
                         onError={handleImageError}
@@ -133,13 +143,13 @@ const ArticleHeader = () => {
                 <div className="compact-content">
                     <div className="compact-meta">
                         <span className="compact-author">{article?.author || 'League News'}</span>
-                        <span className="compact-date">{formatDate(article?.creation_date)}</span>
+                        <span className="compact-date">{article.formattedDate}</span>
                     </div>
                     <h4 className="compact-title">{article?.title || 'League News'}</h4>
                 </div>
             </div>
         </Link>
-    );
+    ), [handleImageError]);
 
     if (isLoading) {
         return (
@@ -157,16 +167,16 @@ const ArticleHeader = () => {
             <div className="latest-news-container">
                 <h2 className="latest-news-title">Latest News</h2>
                 <div className="news-feed">
-                    {articles.length > 0 ? (
+                    {processedArticles.length > 0 ? (
                         <>
                             {/* Featured Article - Latest/First Article */}
-                            {renderFeaturedArticle(articles[0])}
+                            {renderFeaturedArticle(processedArticles[0])}
                             
                             {/* Compact Articles - Remaining Articles (Max 4) */}
-                            {articles.length > 1 && (
+                            {processedArticles.length > 1 && (
                                 <div className="compact-articles-section">
                                     <div className="compact-articles-grid">
-                                        {articles.slice(1, 5).map((article, index) => 
+                                        {processedArticles.slice(1, 5).map((article, index) => 
                                             renderCompactArticle(article, index + 1)
                                         )}
                                     </div>
@@ -192,7 +202,9 @@ const ArticleHeader = () => {
                 <TrendingPlayers />
             </div>
         </div>
-    )
-}
+    );
+});
 
-export default ArticleHeader
+ArticleHeader.displayName = 'ArticleHeader';
+
+export default ArticleHeader;
