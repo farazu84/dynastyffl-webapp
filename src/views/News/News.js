@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import '../../styles/News.css';
 import fallbackImage from '../../studio-gib-1.png';
 import config from '../../config';
+import { cachedFetch } from '../../utils/apiCache';
 
-const News = () => {
+const News = React.memo(() => {
     const [articles, setArticles] = useState([]);
     const [fetchError, setFetchError] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -12,9 +13,11 @@ const News = () => {
     useEffect(() => {
         const fetchNews = async () => {
             try {
-                const response = await fetch(`${config.API_BASE_URL}/articles/get_news`);
+                setIsLoading(true);
+                setFetchError(null);
+                
+                const response = await cachedFetch(`${config.API_BASE_URL}/articles/get_news`);
                 const data = await response.json();
-                console.log(data);
                 
                 if (data.success && data.articles) {
                     // Process articles with fallback values
@@ -44,15 +47,15 @@ const News = () => {
         fetchNews();
     }, []);
 
-    const handleImageError = (e) => {
+    const handleImageError = useCallback((e) => {
         e.target.src = fallbackImage;
-    };
+    }, []);
 
-    const getImageSrc = (thumbnail) => {
+    const getImageSrc = useCallback((thumbnail) => {
         return thumbnail && thumbnail.trim() !== '' ? thumbnail : fallbackImage;
-    };
+    }, []);
 
-    const formatDate = (dateString) => {
+    const formatDate = useCallback((dateString) => {
         const date = new Date(dateString);
         return date.toLocaleDateString('en-US', {
             year: 'numeric',
@@ -61,9 +64,9 @@ const News = () => {
             hour: '2-digit',
             minute: '2-digit'
         });
-    };
+    }, []);
 
-    const getArticleTypeLabel = (type) => {
+    const getArticleTypeLabel = useCallback((type) => {
         const typeLabels = {
             'power_ranking': 'Power Rankings',
             'team_analysis': 'Team Analysis',
@@ -74,15 +77,36 @@ const News = () => {
             'matchup_breakdown': 'Matchup Breakdown'
         };
         return typeLabels[type] || 'News';
-    };
+    }, []);
 
-    const truncateContent = (content, maxLength = 150) => {
+    const truncateContent = useCallback((content, maxLength = 150) => {
         if (!content) return '';
         const plainText = content.replace(/[#*`]/g, '').replace(/\n/g, ' ');
         return plainText.length > maxLength 
             ? plainText.substring(0, maxLength) + '...'
             : plainText;
-    };
+    }, []);
+
+    // Memoize processed articles with all computed values
+    const processedArticles = useMemo(() => {
+        return articles.map(article => ({
+            ...article,
+            formattedDate: formatDate(article.creation_date),
+            imageSrc: getImageSrc(article.thumbnail),
+            typeLabel: getArticleTypeLabel(article.article_type),
+            excerpt: truncateContent(article.content),
+            featuredExcerpt: truncateContent(article.content, 200)
+        }));
+    }, [articles, formatDate, getImageSrc, getArticleTypeLabel, truncateContent]);
+
+    // Memoize article splits to prevent recalculation
+    const { featuredArticle, regularArticles } = useMemo(() => {
+        if (processedArticles.length === 0) return { featuredArticle: null, regularArticles: [] };
+        return {
+            featuredArticle: processedArticles[0],
+            regularArticles: processedArticles.slice(1)
+        };
+    }, [processedArticles]);
 
     if (isLoading) {
         return (
@@ -104,7 +128,7 @@ const News = () => {
         );
     }
 
-    if (articles.length === 0) {
+    if (processedArticles.length === 0 && !isLoading) {
         return (
             <div className="news-page">
                 <div className="news-container">
@@ -114,43 +138,41 @@ const News = () => {
         );
     }
 
-    // Split articles into featured (first) and regular articles
-    const featuredArticle = articles[0];
-    const regularArticles = articles.slice(1);
-
     return (
         <div className="news-page">
             <div className="news-container">
                 
                 <div className="news-grid">
                     {/* Featured Article */}
-                    <div className="featured-section">
-                        <Link to={`/articles/${featuredArticle.article_id}`} className="featured-article-link">
-                            <article className="featured-article">
-                                <div className="featured-image-container">
-                                    <img 
-                                        src={getImageSrc(featuredArticle.thumbnail)} 
-                                        alt={featuredArticle.title}
-                                        className="featured-image"
-                                        onError={handleImageError}
-                                    />
-                                    <div className="article-type-badge featured-badge">
-                                        {getArticleTypeLabel(featuredArticle.article_type)}
+                    {featuredArticle && (
+                        <div className="featured-section">
+                            <Link to={`/articles/${featuredArticle.article_id}`} className="featured-article-link">
+                                <article className="featured-article">
+                                    <div className="featured-image-container">
+                                        <img 
+                                            src={featuredArticle.imageSrc} 
+                                            alt={featuredArticle.title}
+                                            className="featured-image"
+                                            onError={handleImageError}
+                                        />
+                                        <div className="article-type-badge featured-badge">
+                                            {featuredArticle.typeLabel}
+                                        </div>
                                     </div>
-                                </div>
-                                <div className="featured-content">
-                                    <h2 className="featured-title">{featuredArticle.title}</h2>
-                                    <div className="featured-meta">
-                                        <span className="featured-author">By {featuredArticle.author}</span>
-                                        <span className="featured-date">{formatDate(featuredArticle.creation_date)}</span>
+                                    <div className="featured-content">
+                                        <h2 className="featured-title">{featuredArticle.title}</h2>
+                                        <div className="featured-meta">
+                                            <span className="featured-author">By {featuredArticle.author}</span>
+                                            <span className="featured-date">{featuredArticle.formattedDate}</span>
+                                        </div>
+                                        <p className="featured-excerpt">
+                                            {featuredArticle.featuredExcerpt}
+                                        </p>
                                     </div>
-                                    <p className="featured-excerpt">
-                                        {truncateContent(featuredArticle.content, 200)}
-                                    </p>
-                                </div>
-                            </article>
-                        </Link>
-                    </div>
+                                </article>
+                            </Link>
+                        </div>
+                    )}
 
                     {/* Regular Articles Grid */}
                     <div className="articles-grid">
@@ -163,23 +185,23 @@ const News = () => {
                                 <article className="news-article">
                                     <div className="article-image-container">
                                         <img 
-                                            src={getImageSrc(article.thumbnail)} 
+                                            src={article.imageSrc} 
                                             alt={article.title}
                                             className="article-image"
                                             onError={handleImageError}
                                         />
                                         <div className="article-type-badge">
-                                            {getArticleTypeLabel(article.article_type)}
+                                            {article.typeLabel}
                                         </div>
                                     </div>
                                     <div className="article-content">
                                         <h3 className="article-title">{article.title}</h3>
                                         <div className="article-meta">
                                             <span className="article-author">By {article.author}</span>
-                                            <span className="article-date">{formatDate(article.creation_date)}</span>
+                                            <span className="article-date">{article.formattedDate}</span>
                                         </div>
                                         <p className="article-excerpt">
-                                            {truncateContent(article.content)}
+                                            {article.excerpt}
                                         </p>
                                     </div>
                                 </article>
@@ -190,6 +212,8 @@ const News = () => {
             </div>
         </div>
     );
-};
+});
+
+News.displayName = 'News';
 
 export default News;

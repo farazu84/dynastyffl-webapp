@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams } from "react-router-dom";
 import PlayerItem from './../../components/team/PlayerItem'
 import Starters from './../../components/team/Starters'
@@ -8,11 +8,12 @@ import TeamHeader from './../../components/team/TeamHeader'
 import CurrentMatchups from './../../components/team/CurrentMatchups'
 import NewsBar from './../../components/team/NewsBar'
 import config from '../../config';
+import { cachedFetch } from '../../utils/apiCache';
 
 import '../../styles/Team.css'
 
 
-const Team = ( ) => {
+const Team = React.memo(() => {
     const { teamId } = useParams()
     const [pickedTeam, setTeam] = useState({});
     const [starters, setStarters] = useState([])
@@ -26,45 +27,93 @@ const Team = ( ) => {
     
     useEffect(() => {
         const fetchTeam = async () => {
-            try{
-                // Pull in Team and Matchup data.
-                const response = await fetch(`${config.API_BASE_URL}/teams/${teamId}`);
-                const matchupsResponse = await fetch(`${config.API_BASE_URL}/teams/${teamId}/matchups`);
-                const matchups = await matchupsResponse.json();
-                console.log(matchups);
-                const selectedTeam = await response.json()
-                const teamStarters = selectedTeam.team.players.filter(player  => player.starter === true)
-                const teamBench = selectedTeam.team.players.filter(player  => player.taxi === false && player.starter === false)
-                const teamTaxi = selectedTeam.team.players.filter(player  => player.taxi === true)
-                setMatchups(matchups.matchups);
-                setTeam(selectedTeam.team);
+            try {
+                setIsLoading(true);
+                setFetchError(null);
+                
+                // Parallel API calls for better performance
+                const [teamResponse, matchupsResponse] = await Promise.all([
+                    cachedFetch(`${config.API_BASE_URL}/teams/${teamId}`),
+                    cachedFetch(`${config.API_BASE_URL}/teams/${teamId}/matchups`)
+                ]);
+                
+                if (!teamResponse.ok) throw new Error(`Team API error: ${teamResponse.status}`);
+                if (!matchupsResponse.ok) throw new Error(`Matchups API error: ${matchupsResponse.status}`);
+                
+                const [teamData, matchupsData] = await Promise.all([
+                    teamResponse.json(),
+                    matchupsResponse.json()
+                ]);
+                
+                const team = teamData.team;
+                const players = team.players || [];
+                
+                // Filter players efficiently
+                const teamStarters = players.filter(player => player.starter === true);
+                const teamBench = players.filter(player => player.taxi === false && player.starter === false);
+                const teamTaxi = players.filter(player => player.taxi === true);
+                
+                // Set all state at once
+                setTeam(team);
                 setStarters(teamStarters);
                 setBench(teamBench);
                 setTaxi(teamTaxi);
-                setArticles(selectedTeam.team.articles);
-                console.log(bench)
-                setFetchError(null);
+                setMatchups(matchupsData.matchups || []);
+                setArticles(team.articles || []);
+                
             } catch (error) {
-                setFetchError(error.message)
+                console.error('Team fetch error:', error);
+                setFetchError(error.message);
+                // Set empty fallbacks
+                setTeam({});
+                setStarters([]);
+                setBench([]);
+                setTaxi([]);
+                setMatchups([]);
+                setArticles([]);
             } finally {
                 setIsLoading(false);
             }
-        }
+        };
     
-        fetchTeam()
-    }, [])
+        if (teamId) {
+            fetchTeam();
+        }
+    }, [teamId])
 
-    //const starters = pickedTeam?.players?.filter(player  => player.starter === true)
-    /*
-    const taxi = pickedTeam?.players?.filter(player  => player.taxi === true)
-    const bench = pickedTeam?.players?.filter(player  => player.taxi === false && player.starter === false)
-    console.log(starters)
-                <ul>
-                {pickedTeam?.players?.map((player) => (
-                    <PlayerItem key={player.player_id} player={player} />
-                ))}
-            </ul>
-    */
+    // Memoize error display
+    const errorDisplay = useMemo(() => {
+        if (!fetchError) return null;
+        return (
+            <div style={{ 
+                color: '#f44336', 
+                background: '#2a2a2a', 
+                padding: '20px', 
+                borderRadius: '8px', 
+                margin: '20px',
+                textAlign: 'center' 
+            }}>
+                Error loading team data: {fetchError}
+            </div>
+        );
+    }, [fetchError]);
+
+    // Loading state
+    if (isLoading) {
+        return (
+            <main style={{ textAlign: 'center', padding: '40px' }}>
+                <div style={{ color: '#61dafb', fontSize: '1.2em' }}>
+                    Loading team data...
+                </div>
+            </main>
+        );
+    }
+
+    // Error state
+    if (fetchError) {
+        return <main>{errorDisplay}</main>;
+    }
+
     return (
         <main>
             <TeamHeader team={pickedTeam} />
@@ -80,7 +129,9 @@ const Team = ( ) => {
                 </div>
             </div>
         </main>
-    )
-}
+    );
+});
 
-export default Team
+Team.displayName = 'Team';
+
+export default Team;

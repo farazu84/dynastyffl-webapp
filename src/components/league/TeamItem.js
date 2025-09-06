@@ -1,7 +1,7 @@
+import React from 'react';
 import { Link } from 'react-router-dom';
 
-
-const TeamItem = ( { team }) => {
+const TeamItem = React.memo(({ team }) => {
     // Get current team record if available
     const currentRecord = team.current_team_record;
     
@@ -32,7 +32,9 @@ const TeamItem = ( { team }) => {
                 </div>
             </Link>
         </li>
-    )
-}
+    );
+});
 
-export default TeamItem
+TeamItem.displayName = 'TeamItem';
+
+export default TeamItem;

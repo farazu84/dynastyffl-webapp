@@ -1,24 +1,55 @@
-const MatchupItem = ( {matchup} ) => {
-    const getStartingPlayer = (team, position) => {
-        if (!team.players) return null;
-        return team.players.find(player => 
-            player.position === position && player.starter === true
-        );
-    };
+import React, { useMemo } from 'react';
 
-    const getTeamOwner = (team) => {
-        if (!team.team_owners || team.team_owners.length === 0) return 'Unknown Owner';
-        return team.team_owners[0].user.user_name;
-    };
+const MatchupItem = React.memo(({ matchup }) => {
+
+    const getStartingPlayer = useMemo(() => {
+        return (team, position) => {
+            if (!team?.players) return null;
+            return team.players.find(player => 
+                player.position === position && player.starter === true
+            );
+        };
+    }, []);
+
+    const getTeamOwner = useMemo(() => {
+        return (team) => {
+            if (!team?.team_owners || team.team_owners.length === 0) return 'Unknown Owner';
+            return team.team_owners[0]?.user?.user_name || 'Unknown Owner';
+        };
+    }, []);
+
+    const teamData = useMemo(() => {
+        if (!matchup.team) return null;
+        
+        return {
+            owner: getTeamOwner(matchup.team),
+            startingQB: getStartingPlayer(matchup.team, 'QB'),
+            startingRB: getStartingPlayer(matchup.team, 'RB'),
+            startingWR: getStartingPlayer(matchup.team, 'WR'),
+            startingTE: getStartingPlayer(matchup.team, 'TE')
+        };
+    }, [matchup.team, getStartingPlayer, getTeamOwner]);
+
+    const opponentData = useMemo(() => {
+        if (!matchup.opponent_team) return null;
+        
+        return {
+            owner: getTeamOwner(matchup.opponent_team),
+            startingQB: getStartingPlayer(matchup.opponent_team, 'QB'),
+            startingRB: getStartingPlayer(matchup.opponent_team, 'RB'),
+            startingWR: getStartingPlayer(matchup.opponent_team, 'WR'),
+            startingTE: getStartingPlayer(matchup.opponent_team, 'TE')
+        };
+    }, [matchup.opponent_team, getStartingPlayer, getTeamOwner]);
 
     const renderTeamInfo = (team, isLeft = true) => {
         if (!team) return <div>Team data not available</div>;
 
-        const owner = getTeamOwner(team);
-        const startingQB = getStartingPlayer(team, 'QB');
-        const startingRB = getStartingPlayer(team, 'RB');
-        const startingWR = getStartingPlayer(team, 'WR');
-        const startingTE = getStartingPlayer(team, 'TE');
+        // 🚀 PERFORMANCE: Use pre-computed data instead of calculating on each render
+        const data = isLeft ? teamData : opponentData;
+        if (!data) return <div>Team data not available</div>;
+        
+        const { owner, startingQB, startingRB, startingWR, startingTE } = data;
 
         // Get the score for this team based on whether it's the main team or opponent
         const teamScore = isLeft ? matchup.points_for : matchup.points_against;
@@ -124,7 +155,9 @@ const MatchupItem = ( {matchup} ) => {
             
             {renderTeamInfo(matchup.opponent_team, false)}
         </div>
-    )
-}
+    );
+});
+
+MatchupItem.displayName = 'MatchupItem';
 
 export default MatchupItem;

@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import TeamItem from './../../components/league/TeamItem';
 import ArticleHeader from './../../components/league/ArticleHeader';
 import TrendingPlayers from './../../components/league/TrendingPlayers';
 import '../../styles/League.css';
 import MatchupItem from './../../components/league/MatchupItem';
 import config from '../../config';
+import { cachedFetch } from '../../utils/apiCache';
 
 const League = () => {
 
@@ -14,26 +15,78 @@ const League = () => {
     const [matchups, setMatchups] = useState([]);
     
     useEffect(() => {
-        const fetchTeams = async () => {
-            try{
-                const response = await fetch(`${config.API_BASE_URL}/teams`);
-                const matchupsResponse = await fetch(`${config.API_BASE_URL}/matchups/current_matchups`);
-                const matchups = await matchupsResponse.json();
-                console.log(matchups);
-                const leagueTeams = await response.json()
-                setTeams(leagueTeams.teams);
-                setMatchups(matchups.matchups);
+        const fetchData = async () => {
+            try {
+                setIsLoading(true);
                 setFetchError(null);
-                console.log(leagueTeams)
+                
+                const [teamsResponse, matchupsResponse] = await Promise.all([
+                    cachedFetch(`${config.API_BASE_URL}/teams`),
+                    cachedFetch(`${config.API_BASE_URL}/matchups/current_matchups`)
+                ]);
+                
+                if (!teamsResponse.ok) throw new Error(`Teams API error: ${teamsResponse.status}`);
+                if (!matchupsResponse.ok) throw new Error(`Matchups API error: ${matchupsResponse.status}`);
+                
+                // Parse responses in parallel
+                const [teamsData, matchupsData] = await Promise.all([
+                    teamsResponse.json(),
+                    matchupsResponse.json()
+                ]);
+                
+                setTeams(teamsData.teams || []);
+                setMatchups(matchupsData.matchups || []);
+                
             } catch (error) {
-                setFetchError(error.message)
+                setFetchError(error.message);
+                setTeams([]);
+                setMatchups([]);
             } finally {
                 setIsLoading(false);
             }
-        }
+        };
     
-        fetchTeams()
+        fetchData();
     }, [])
+
+    const memoizedTeams = useMemo(() => {
+        return teams.map((team) => (
+            <TeamItem key={team.team_id} team={team} />
+        ));
+    }, [teams]);
+
+    const memoizedMatchups = useMemo(() => {
+        return matchups.map((matchup) => (
+            <MatchupItem key={matchup.matchup_id} matchup={matchup} />
+        ));
+    }, [matchups]);
+
+    const errorDisplay = useMemo(() => {
+        if (!fetchError) return null;
+        return (
+            <div className="league-error" style={{ 
+                color: '#f44336', 
+                background: '#2a2a2a', 
+                padding: '10px', 
+                borderRadius: '4px', 
+                margin: '10px 0' 
+            }}>
+                Error loading data: {fetchError}
+            </div>
+        );
+    }, [fetchError]);
+
+    if (isLoading) {
+        return (
+            <main>
+                <div className="league-main-container" style={{ textAlign: 'center', padding: '40px' }}>
+                    <div style={{ color: '#61dafb', fontSize: '1.2em' }}>
+                        Loading league data...
+                    </div>
+                </div>
+            </main>
+        );
+    }
 
     return (
         <main>
@@ -42,9 +95,8 @@ const League = () => {
                     <ArticleHeader />
                     <div className="current-matchups-section">
                         <h2>Current Matchups</h2>
-                        {matchups.map((matchup) => (
-                            <MatchupItem key={matchup.matchup_id} matchup={matchup} />
-                        ))}
+                        {memoizedMatchups}
+                        {errorDisplay}
                     </div>
                 </div>
                 <div className="league-standings-sidebar">
@@ -52,9 +104,7 @@ const League = () => {
                         <h2>Team Standings</h2>
                     </div>
                     <ul className="teamList">
-                        {teams.map((team) => (
-                            <TeamItem key={team.team_id} team={team} />
-                        ))}
+                        {memoizedTeams}
                     </ul>
                     <div className="sidebar-trending-players">
                         <TrendingPlayers />
