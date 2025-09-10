@@ -167,7 +167,6 @@ class Articles(db.Model):
 
         return article
 
-
     @staticmethod
     def generate_pregame_report(matchup):
         '''
@@ -200,7 +199,6 @@ class Articles(db.Model):
         - -4 point for each interception
         - -2 point for each fumble lost
         Do not write the league scoring rules in the article.
-        Feel free to query the web to find relevant news and stats about the players but only for {matchup.year}.
         Please return the matchup preview using markdown formatting. Only use markdown formatting and be creative.
         But make sure it still looks like an article.
         """
@@ -209,7 +207,7 @@ class Articles(db.Model):
         Here are the teams involved in this weeks matchup
         {json.dumps(team_dict, indent=4)}
         """
-        '''
+
         response = requests.post(
                 url="https://openrouter.ai/api/v1/chat/completions",
                 headers={
@@ -264,7 +262,7 @@ class Articles(db.Model):
         db.session.commit()
 
         return article
-        '''
+
 
     @staticmethod
     def generate_rumor(rumor, team_ids):
