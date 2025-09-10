@@ -10,6 +10,7 @@ from app.models.article_teams import ArticleTeams
 from app.models.teams import Teams
 from app.models.league_state import LeagueState
 from sqlalchemy.orm import relationship
+from app.services.nfl_stats_service import get_enhanced_player_data, NFLStatsService
 
 
 class Articles(db.Model):
@@ -35,6 +36,137 @@ class Articles(db.Model):
 
     def serialize(self):
         return ArticlesJSONSchema().dump(self)
+
+    @staticmethod
+    def generate_game_stats(players):
+        '''
+        Generate the game stats for a player.
+        '''
+        stats = get_enhanced_player_data(players)
+        return stats
+
+    @staticmethod
+    def generate_post_game_report(matchup):
+        '''
+        Generate a post-game report article for a matchup with actual NFL stats.
+        '''
+        teams = [matchup.team, matchup.opponent_team]
+        team_dict = {}
+        all_starters = []
+
+        for team in teams:
+            all_starters.extend(team.starters)
+            # Use enhanced players with NFL stats directly
+            enhanced_starters = NFLStatsService.enhance_players_with_stats(team.starters, year=matchup.year, week=matchup.week)
+            team_info = {
+                'starters': enhanced_starters,  # Already enhanced with stats
+                'owner_names': [f"{owner.first_name} {owner.last_name}" for owner in team.owners]
+            }
+            team_dict[team.team_name] = team_info
+
+        print(json.dumps(team_dict, indent=4))
+
+        system_prompt = f"""
+        You are generating a post-game report article for a fantasy football league. This is a PPR league.
+        It is week {matchup.week} of the {matchup.year} season.
+        I will pass you a serialized json object of the two teams playing each other.
+        Use the starters to generate the post-game report.
+        Consider the positional advantages.
+        Here is the scoring rules for the league:
+        - 1 point for each reception
+        - .04 points for each throwing yard
+        - .1 points for each recieving yard
+        - .1 points for each rushing yard
+        - 4 points for each passing touchdown
+        - 6 points for a receiving touchdown
+        - 6 points for each rushing touchdown
+        - 1 point for 100+ receiving yards
+        - 1 point for 100+ rushing yards
+        - 3 points for fg 0-39 yards
+        - 4 points for fg 40-49 yards
+        - 5 points for fg 50-59 yards
+        - 6 points for fg 60+ yards
+        - 1 point for each extra point
+        - -1 point for each missed extra point
+        - -1 point for each missed field goal
+        - -2 point for each interception
+        - -2 point for each fumble lost
+        Do not write the league scoring rules in the article.
+        A player with 0 years_exp is a rookie. A player with 1 year_exp is a second year player.
+        Use the statistics to understand how much each player contributed to the win or loss.
+        Feel to use the statistics to talk about the matcups wins and losses on each team.
+        Rather than regurgitating the stats, talk about the player performance and how it contributed to the win or loss.
+        Feel free to critize players who didn't perform up to expectations.
+        Discuss which team won and which team lost and the specific players that contributed to the win or loss.
+        Please return the matchup preview using markdown formatting. Only use markdown formatting and be creative.
+        But make sure it still looks like an article.
+        """
+
+        user_prompt = f"""
+        Here are the teams involved in this weeks matchup
+        {json.dumps(team_dict, indent=4)}
+        """
+
+        response = requests.post(
+                url="https://openrouter.ai/api/v1/chat/completions",
+                headers={
+                    "Authorization": f'Bearer {os.environ["OPENROUTER_API_KEY"]}',
+                    "Content-Type": "application/json",
+                },
+                json={
+                    "transforms": ["middle-out"],
+                    "temperature": 1.2,
+                    "model": os.environ["OPENROUTER_MODEL"],
+                    "messages": [
+                        {
+                            "role": "system",
+                            "content": system_prompt
+                        },
+                        {
+                            "role": "user",
+                            "content": user_prompt
+                        }
+                    ]
+                }
+            )
+        if response.ok:
+            response_json = response.json()
+            print(response_json)
+        else:
+            print(response.text)
+            return None
+
+        print(response_json['choices'][0]['message']['content'])
+
+        article_title = Articles.generate_article_title(response_json['choices'][0]['message']['content'])
+
+        article = Articles(
+            article_type='matchup_breakdown',
+            author=os.environ["OPENROUTER_MODEL"],
+            title=article_title,
+            content=response_json['choices'][0]['message']['content'],
+            thumbnail='',
+        )
+
+        db.session.add(article)
+        db.session.flush()
+
+        article_team1 = ArticleTeams(
+            article_id=article.article_id,
+            team_id=matchup.team.team_id,
+        )
+
+        article_team2 = ArticleTeams(
+            article_id=article.article_id,
+            team_id=matchup.opponent_team.team_id,
+        )
+
+        db.session.add(article_team1)
+        db.session.add(article_team2)
+        db.session.commit()
+
+        return article
+
 
     @staticmethod
     def generate_pregame_report(matchup):
@@ -68,6 +200,7 @@ class Articles(db.Model):
         - -4 point for each interception
         - -2 point for each fumble lost
         Do not write the league scoring rules in the article.
+        Feel free to query the web to find relevant news and stats about the players but only for {matchup.year}.
         Please return the matchup preview using markdown formatting. Only use markdown formatting and be creative.
         But make sure it still looks like an article.
         """
@@ -76,11 +209,7 @@ class Articles(db.Model):
         Here are the teams involved in this weeks matchup
         {json.dumps(team_dict, indent=4)}
         """
-
-        print(system_prompt)
-        print('--------------------------------')
-        print(user_prompt)
-
+        '''
         response = requests.post(
                 url="https://openrouter.ai/api/v1/chat/completions",
                 headers={
@@ -135,6 +264,7 @@ class Articles(db.Model):
         db.session.commit()
 
         return article
+        '''
 
     @staticmethod
     def generate_rumor(rumor, team_ids):
