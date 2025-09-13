@@ -109,3 +109,17 @@ def get_matchup_articles(matchup_id, week_number):
         return jsonify(success=False, error="Failed to generate pregame report. Check server logs for details."), 500
 
     return jsonify(success=True, article=article.serialize())
+
+
+@matchups.route('/matchups/<int:matchup_id>/week/<int:week_number>/generate_post_game_report', methods=['GET', 'OPTIONS'])
+def get_matchup_post_game_report(matchup_id, week_number):
+    '''
+    Generate a post game report.
+    '''
+    matchup = Matchups.query.filter_by(week=week_number, sleeper_matchup_id=matchup_id).first()
+    article = Articles.generate_post_game_report(matchup)
+
+    if not article:
+        return jsonify(success=False, error="Failed to generate post game report. Check server logs for details."), 500
+
+    return jsonify(success=True, article=article.serialize())
