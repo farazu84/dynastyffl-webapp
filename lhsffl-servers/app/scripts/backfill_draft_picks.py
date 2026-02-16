@@ -74,7 +74,17 @@ def backfill_draft_picks():
                     logger.info(f'  Draft {draft_id} already backfilled, skipping')
                     continue
 
-                # Step 2: Get all picks for this draft
+                # Step 2: Get draft details for slot_to_roster_id mapping
+                detail_resp = requests.get(f'https://api.sleeper.app/v1/draft/{draft_id}')
+                detail_resp.raise_for_status()
+                slot_to_roster = detail_resp.json().get('slot_to_roster_id', {})
+                slot_to_original = {}
+                for slot, rid in slot_to_roster.items():
+                    if slot and rid:
+                        slot_to_original[int(slot)] = int(rid)
+                time.sleep(0.3)
+
+                # Step 3: Get all picks for this draft
                 picks_resp = requests.get(f'https://api.sleeper.app/v1/draft/{draft_id}/picks')
                 picks_resp.raise_for_status()
                 picks = picks_resp.json() or []
@@ -88,12 +98,14 @@ def backfill_draft_picks():
                     if not player_id:
                         continue
 
+                    draft_slot = pick_data.get('draft_slot')
                     dp = DraftPicks(
                         season=year,
                         round=pick_data.get('round'),
                         pick_no=pick_data.get('pick_no'),
-                        draft_slot=pick_data.get('draft_slot'),
-                        roster_id=pick_data.get('roster_id'),
+                        draft_slot=draft_slot,
+                        drafting_roster_id=pick_data.get('roster_id'),
+                        original_roster_id=slot_to_original.get(draft_slot),
                         player_sleeper_id=int(player_id),
                         sleeper_draft_id=int(draft_id),
                         type=draft_type,

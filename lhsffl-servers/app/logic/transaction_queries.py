@@ -6,6 +6,7 @@ from app.models.transaction_rosters import TransactionRosters
 from app.models.transaction_draft_picks import TransactionDraftPicks
 from app.models.teams import Teams
 from app.models.players import Players
+from app.models.draft_picks import DraftPicks
 
 
 def get_trade_tree(player_sleeper_id):
@@ -128,6 +129,27 @@ def get_full_trade_tree(transaction_id):
             'round': pick.round,
             'original_owner_id': pick.roster_id,
         }
+
+        # Look up if this pick has been used in a draft
+        draft_pick = DraftPicks.query.filter_by(
+            season=pick.season,
+            round=pick.round,
+            original_roster_id=pick.roster_id
+        ).first()
+        if draft_pick:
+            drafted_player = Players.query.filter_by(
+                sleeper_id=draft_pick.player_sleeper_id
+            ).first()
+            pick_info['pick_no'] = draft_pick.pick_no
+            pick_info['drafted_player'] = {
+                'sleeper_id': draft_pick.player_sleeper_id,
+                'first_name': drafted_player.first_name if drafted_player else 'Unknown',
+                'last_name': drafted_player.last_name if drafted_player else f'(ID: {draft_pick.player_sleeper_id})',
+                'position': drafted_player.position if drafted_player else None,
+            } if draft_pick.player_sleeper_id else None
+        else:
+            pick_info['drafted_player'] = None
+
         if pick.owner_id in teams_data:
             teams_data[pick.owner_id]['acquired_picks'].append(pick_info)
 

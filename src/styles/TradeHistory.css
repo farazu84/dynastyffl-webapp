@@ -1,0 +1,179 @@
+/* Trade History Section */
+.trade-history-section {
+    width: 100%;
+    margin-top: 30px;
+}
+
+.trade-history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.trade-history-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.trade-history-title h2 {
+    font-size: 1.8em;
+    font-weight: 700;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: white;
+}
+
+.trade-history-icon {
+    font-size: 1.4em;
+    color: #61dafb;
+}
+
+.trade-history-view-all {
+    background: none;
+    border: none;
+    color: #61dafb;
+    font-size: 0.9em;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+}
+
+.trade-history-view-all:hover {
+    opacity: 0.8;
+}
+
+.trade-history-loading,
+.trade-history-error {
+    text-align: center;
+    padding: 2rem;
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.trade-history-error {
+    color: #f44336;
+}
+
+/* Trade Cards Grid */
+.trade-history-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+}
+
+.trade-card-link {
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+}
+
+/* Individual Trade Card */
+.trade-card {
+    background: linear-gradient(135deg, #1e1e1e 0%, #2d2d2d 100%);
+    border: 1px solid #333;
+    border-radius: 10px;
+    padding: 16px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.trade-card:hover {
+    transform: translateY(-2px);
+    border-color: #61dafb;
+    box-shadow: 0 8px 25px rgba(97, 218, 251, 0.15);
+}
+
+/* Card Header */
+.trade-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.trade-card-date {
+    font-size: 0.75em;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.trade-card-icon {
+    font-size: 0.9em;
+    color: rgba(255, 255, 255, 0.3);
+}
+
+/* Card Body */
+.trade-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    text-align: left;
+}
+
+.trade-card-team {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: 10px 0;
+}
+
+.trade-card-team + .trade-card-team {
+    border-top: 1px solid #444;
+}
+
+.trade-card-team-name {
+    font-size: 0.75em;
+    font-weight: 700;
+    color: #61dafb;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.trade-card-assets {
+    font-size: 0.85em;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.9);
+    line-height: 1.3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .trade-history-cards {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 10px;
+    }
+
+    .trade-history-title h2 {
+        font-size: 1.4em;
+    }
+
+    .trade-card {
+        padding: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .trade-history-cards {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+
+    .trade-card {
+        padding: 12px;
+    }
+
+    .trade-card-assets {
+        font-size: 0.8em;
+    }
+}

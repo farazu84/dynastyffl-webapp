@@ -293,7 +293,7 @@ def get_draft_superlatives():
         team = Teams.query.get(player.team_id)
         if not team:
             continue
-        if team.sleeper_roster_id == pick.roster_id:
+        if team.sleeper_roster_id == pick.drafting_roster_id:
             loyalists.append({
                 'player_sleeper_id': pick.player_sleeper_id,
                 'first_name': player.first_name,
@@ -342,7 +342,7 @@ def get_draft_superlatives():
         team = Teams.query.get(player.team_id)
         if not team:
             continue
-        if team.sleeper_roster_id == pick.roster_id:
+        if team.sleeper_roster_id == pick.drafting_roster_id:
             rookie_steals.append({
                 'player_sleeper_id': pick.player_sleeper_id,
                 'first_name': player.first_name,

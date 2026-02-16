@@ -15,7 +15,9 @@ class DraftPicks(db.Model):
 
     draft_slot = db.Column(db.Integer(), nullable=False)
 
-    roster_id = db.Column(db.Integer(), nullable=False)
+    drafting_roster_id = db.Column(db.Integer(), nullable=False)
+
+    original_roster_id = db.Column(db.Integer(), nullable=True)
 
     player_sleeper_id = db.Column(db.Integer(), nullable=False)
 
