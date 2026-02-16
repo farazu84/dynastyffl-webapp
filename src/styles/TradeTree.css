@@ -1,7 +1,6 @@
-/* Trade Tree Page */
 .trade-tree-page {
     padding: 20px 20px 100px 20px;
-    max-width: 1400px;
+    max-width: 95%;
     margin: 0 auto;
 }
 
@@ -70,7 +69,7 @@
     gap: 8px;
 }
 
-.origin-card-team + .origin-card-team {
+.origin-card-team+.origin-card-team {
     border-left: 1px solid #444;
     padding-left: 30px;
 }
@@ -132,12 +131,35 @@
     text-transform: uppercase;
 }
 
-.player-chip-pos-qb { background: rgba(255, 107, 107, 0.3); color: #ff6b6b; }
-.player-chip-pos-rb { background: rgba(78, 205, 196, 0.3); color: #4ecdc4; }
-.player-chip-pos-wr { background: rgba(97, 218, 251, 0.3); color: #61dafb; }
-.player-chip-pos-te { background: rgba(255, 217, 61, 0.3); color: #ffd93d; }
-.player-chip-pos-k { background: rgba(149, 165, 166, 0.3); color: #95a5a6; }
-.player-chip-pos-def { background: rgba(149, 165, 166, 0.3); color: #95a5a6; }
+.player-chip-pos-qb {
+    background: rgba(255, 107, 107, 0.3);
+    color: #ff6b6b;
+}
+
+.player-chip-pos-rb {
+    background: rgba(78, 205, 196, 0.3);
+    color: #4ecdc4;
+}
+
+.player-chip-pos-wr {
+    background: rgba(97, 218, 251, 0.3);
+    color: #61dafb;
+}
+
+.player-chip-pos-te {
+    background: rgba(255, 217, 61, 0.3);
+    color: #ffd93d;
+}
+
+.player-chip-pos-k {
+    background: rgba(149, 165, 166, 0.3);
+    color: #95a5a6;
+}
+
+.player-chip-pos-def {
+    background: rgba(149, 165, 166, 0.3);
+    color: #95a5a6;
+}
 
 /* Branch Layout */
 .trade-tree-branches {
@@ -231,6 +253,31 @@
     font-style: italic;
 }
 
+/* Player Columns */
+.team-branch-player-columns {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    padding-bottom: 12px;
+    /* Space for scrollbar */
+}
+
+.player-branch {
+    flex: 1;
+    min-width: 300px;
+    display: flex;
+    flex-direction: column;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    padding: 12px;
+}
+
+.player-branch-header {
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
 /* Timeline */
 .team-branch-timeline {
     position: relative;
@@ -314,6 +361,46 @@
     margin-top: 8px;
 }
 
+/* Exchange Details */
+.branch-card-exchange {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.branch-card-exchange-section {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.branch-card-exchange-label {
+    font-size: 0.7em;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.4);
+    text-transform: uppercase;
+}
+
+.branch-card-exchange-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.branch-card-pick {
+    display: inline-block;
+    font-size: 0.7em;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    padding: 2px 6px;
+}
+
 /* Terminal Badge */
 .terminal-badge {
     margin-top: 16px;
@@ -341,13 +428,46 @@
 }
 
 .terminal-badge-held .terminal-badge-label {
-    color: #61dafb;
+    color: #4ecdc4;
+    /* Green-ish */
 }
 
-.terminal-badge-ended .terminal-badge-label {
-    color: rgba(255, 255, 255, 0.4);
+/* Specific Badge Colors */
+.terminal-badge-held {
+    background: rgba(78, 205, 196, 0.1);
+    border: 1px solid rgba(78, 205, 196, 0.3);
 }
 
+.terminal-badge-traded {
+    background: rgba(255, 217, 61, 0.08);
+    /* Yellow-ish */
+    border: 1px solid rgba(255, 217, 61, 0.3);
+}
+
+.terminal-badge-traded .terminal-badge-label {
+    color: #ffd93d;
+}
+
+.terminal-badge-released {
+    background: rgba(255, 107, 107, 0.08);
+    /* Red-ish */
+    border: 1px solid rgba(255, 107, 107, 0.3);
+}
+
+.terminal-badge-released .terminal-badge-label {
+    color: #ff6b6b;
+}
+
+.terminal-badge-drafted {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.terminal-badge-drafted .terminal-badge-label {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* Subtitles */
 .terminal-badge-subtitle {
     display: block;
     font-size: 0.7em;
@@ -389,7 +509,7 @@
         gap: 16px;
     }
 
-    .origin-card-team + .origin-card-team {
+    .origin-card-team+.origin-card-team {
         border-left: none;
         padding-left: 0;
         border-top: 1px solid #444;

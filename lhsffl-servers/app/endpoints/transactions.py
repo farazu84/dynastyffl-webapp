@@ -75,11 +75,12 @@ def get_trade_tree_endpoint(player_sleeper_id):
 @transactions.route('/transactions/<int:transaction_id>/full_trade_tree', methods=['GET', 'OPTIONS'])
 def get_full_trade_tree_endpoint(transaction_id):
     """Get the full trade tree showing the ripple effect for each team involved."""
-    origin, teams_data = get_full_trade_tree(transaction_id)
+    origin, teams_data, pick_metadata = get_full_trade_tree(transaction_id)
     if origin is None:
         return jsonify(success=False, error='Transaction not found'), 404
     return jsonify(
         success=True,
         origin=origin.serialize(),
-        teams=teams_data
+        teams=teams_data,
+        pick_metadata=pick_metadata
     )

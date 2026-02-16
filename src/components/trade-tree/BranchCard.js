@@ -15,170 +15,95 @@ const formatPick = (dp) => {
     return `${dp.season} ${dp.round}${roundSuffix}`;
 };
 
-const describeTransaction = (txn, branchRosterId, trackedPlayerId) => {
-    const type = txn.type;
-    const playerMoves = txn.player_moves || [];
-    const draftPickMoves = txn.draft_pick_moves || [];
+const getAcquisitions = (txn) => {
+    const acquisitions = [];
+    const teamMap = new Map();
 
-    // Find the tracked player's move in this transaction
-    const trackedMove = playerMoves.find(m => m.player_sleeper_id === trackedPlayerId);
-    const trackedPlayerName = trackedMove?.player
-        ? `${trackedMove.player.first_name} ${trackedMove.player.last_name}`
-        : '';
+    // 1. Identify all teams involved from roster_moves
+    (txn.roster_moves || []).forEach(rm => {
+        teamMap.set(rm.sleeper_roster_id, {
+            id: rm.sleeper_roster_id,
+            name: rm.team?.team_name || `Roster ${rm.sleeper_roster_id}`,
+            players: [],
+            picks: []
+        });
+    });
 
-    if (type === 'trade') {
-        const otherTeams = (txn.roster_moves || [])
-            .filter(rm => rm.sleeper_roster_id !== branchRosterId)
-            .map(rm => rm.team?.team_name || `Roster ${rm.sleeper_roster_id}`);
-        const otherTeamName = otherTeams.join(' & ') || 'another team';
-
-        // What this team gave up
-        const teamDrops = playerMoves.filter(
-            m => m.action === 'drop' && m.sleeper_roster_id === branchRosterId
-        );
-        // What this team received
-        const teamAdds = playerMoves.filter(
-            m => m.action === 'add' && m.sleeper_roster_id === branchRosterId
-        );
-        // Picks this team received
-        const picksReceived = draftPickMoves.filter(dp => dp.owner_id === branchRosterId);
-        // Picks this team gave up
-        const picksGiven = draftPickMoves.filter(dp => dp.previous_owner_id === branchRosterId);
-
-        const wasTrackedDropped = trackedMove?.action === 'drop' && trackedMove?.sleeper_roster_id === branchRosterId;
-
-        if (wasTrackedDropped) {
-            return {
-                label: `Traded ${trackedPlayerName} to ${otherTeamName}`,
-                received: teamAdds,
-                receivedPicks: picksReceived,
-                given: [],
-                givenPicks: [],
-                icon: '↗',
-            };
+    // 2. Assign players to the team that added them
+    (txn.player_moves || []).forEach(pm => {
+        if (pm.action === 'add') {
+            const team = teamMap.get(pm.sleeper_roster_id);
+            if (team && pm.player) {
+                team.players.push(pm.player);
+            }
         }
+    });
 
-        return {
-            label: `Trade with ${otherTeamName}`,
-            received: teamAdds,
-            receivedPicks: picksReceived,
-            given: teamDrops,
-            givenPicks: picksGiven,
-            icon: '⇄',
-        };
-    }
-
-    if (type === 'free_agent') {
-        const drops = playerMoves.filter(m => m.action === 'drop');
-        const adds = playerMoves.filter(m => m.action === 'add');
-
-        if (trackedMove?.action === 'drop') {
-            const teamName = trackedMove.team?.team_name || '';
-            return {
-                label: `Dropped ${trackedPlayerName}`,
-                subtitle: teamName ? `Released by ${teamName}` : null,
-                icon: '↓',
-                received: [],
-                receivedPicks: [],
-                given: [],
-                givenPicks: [],
-            };
+    // 3. Assign picks to the new owner
+    (txn.draft_pick_moves || []).forEach(dp => {
+        const team = teamMap.get(dp.owner_id);
+        if (team) {
+            team.picks.push(dp);
         }
-        if (trackedMove?.action === 'add') {
-            const teamName = trackedMove.team?.team_name || '';
-            return {
-                label: `Picked up by ${teamName}`,
-                subtitle: 'Free Agent Claim',
-                icon: '↑',
-                received: [],
-                receivedPicks: [],
-                given: [],
-                givenPicks: [],
-            };
-        }
-        // Fallback
-        return {
-            label: 'Roster move',
-            subtitle: 'Free Agent',
-            icon: '↕',
-            received: adds,
-            receivedPicks: [],
-            given: drops,
-            givenPicks: [],
-        };
-    }
+    });
 
-    if (type === 'waiver') {
-        const teamName = trackedMove?.team?.team_name || '';
-        return {
-            label: `Picked up by ${teamName}`,
-            subtitle: 'Waiver Claim',
-            icon: '✋',
-            received: [],
-            receivedPicks: [],
-            given: [],
-            givenPicks: [],
-        };
-    }
-
-    return { label: txn.type, icon: '•', received: [], receivedPicks: [], given: [], givenPicks: [] };
+    // 4. Convert to array and filter out teams with no acquisitions
+    return Array.from(teamMap.values()).filter(t => t.players.length > 0 || t.picks.length > 0);
 };
 
 const BranchCard = ({ transaction, branchRosterId, trackedPlayerId }) => {
-    const description = useMemo(
-        () => describeTransaction(transaction, branchRosterId, trackedPlayerId),
-        [transaction, branchRosterId, trackedPlayerId]
-    );
+    const acquisitions = useMemo(() => {
+        const list = getAcquisitions(transaction);
+        // Sort so the branch owner (current team) is last
+        return list.sort((a, b) => {
+            if (a.id === branchRosterId) return 1;
+            if (b.id === branchRosterId) return -1;
+            return 0;
+        });
+    }, [transaction, branchRosterId]);
+    const dateStr = formatDate(transaction.created_at);
 
-    const hasExchangeDetails = (description.received?.length > 0 || description.receivedPicks?.length > 0);
+    // Context for the main label (e.g., "Trade", "Waiver Claim")
+    const label = useMemo(() => {
+        if (transaction.type === 'trade') return 'Trade';
+        if (transaction.type === 'waiver') return 'Waiver Claim';
+        if (transaction.type === 'free_agent') return 'Free Agent Move';
+        return 'Transaction';
+    }, [transaction.type]);
 
     return (
         <div className="branch-card">
             <div className="branch-card-dot" />
             <div className="branch-card-content">
                 <div className="branch-card-top-row">
-                    <span className="branch-card-date">
-                        {formatDate(transaction.created_at)}
+                    <span className="branch-card-date">{dateStr}</span>
+                    <span className="branch-card-label" style={{ marginLeft: '8px', fontSize: '0.9em' }}>
+                        {label}
                     </span>
-                    <span className="branch-card-icon">{description.icon}</span>
-                </div>
-                <div className="branch-card-description">
-                    <span className="branch-card-label">{description.label}</span>
-                    {description.subtitle && (
-                        <span className="branch-card-subtitle">{description.subtitle}</span>
-                    )}
                 </div>
 
-                {hasExchangeDetails && (
-                    <div className="branch-card-exchange">
-                        {description.received.length > 0 && (
-                            <div className="branch-card-exchange-section">
-                                <span className="branch-card-exchange-label">Received:</span>
-                                <div className="branch-card-exchange-items">
-                                    {description.received.map((move, i) =>
-                                        move.player ? (
-                                            <PlayerChip key={i} player={move.player} />
-                                        ) : null
-                                    )}
-                                </div>
+                <div className="branch-card-exchange">
+                    {acquisitions.map((team) => (
+                        <div className="branch-card-exchange-section" key={team.id}>
+                            <span className="branch-card-exchange-label" style={{
+                                color: team.id === branchRosterId ? '#61dafb' : 'rgba(255, 255, 255, 0.4)',
+                                fontSize: '0.75em'
+                            }}>
+                                {team.name} Acquired:
+                            </span>
+                            <div className="branch-card-exchange-items">
+                                {team.players.map((player, i) => (
+                                    <PlayerChip key={`p-${i}`} player={player} />
+                                ))}
+                                {team.picks.map((pick, i) => (
+                                    <span className="branch-card-pick" key={`pik-${i}`}>
+                                        {formatPick(pick)}
+                                    </span>
+                                ))}
                             </div>
-                        )}
-                        {description.receivedPicks.length > 0 && (
-                            <div className="branch-card-exchange-section">
-                                {description.received.length === 0 && (
-                                    <span className="branch-card-exchange-label">Received:</span>
-                                )}
-                                <div className="branch-card-exchange-items">
-                                    {description.receivedPicks.map((dp, i) => (
-                                        <span className="branch-card-pick" key={i}>
-                                            {formatPick(dp)}
-                                        </span>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                )}
+                        </div>
+                    ))}
+                </div>
             </div>
         </div>
     );

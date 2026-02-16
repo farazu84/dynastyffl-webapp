@@ -178,7 +178,7 @@ def synchronize_transactions():
 
 def backfill_all_transactions():
     """
-    Walk all 8 seasons, weeks 1-18, and pull every transaction.
+    Walk all 8 seasons, weeks 0-18, and pull every transaction.
     Designed to be run once from the backfill script.
     Skips any transaction that already exists (idempotent via sleeper_transaction_id).
     Commits per-week and continues on error.
@@ -188,7 +188,7 @@ def backfill_all_transactions():
     for year, league_id in sorted(LEAGUE_HISTORY.items()):
         logger.info(f'Backfilling transactions for {year} (league {league_id})')
 
-        for week in range(1, 19):
+        for week in range(0, 19):
             try:
                 response = requests.get(
                     f'https://api.sleeper.app/v1/league/{league_id}/transactions/{week}'
@@ -221,4 +221,49 @@ def backfill_all_transactions():
                 continue
 
     logger.info(f'Backfill complete: {total_added} total transactions added')
+    return {'success': True, 'total_added': total_added}
+
+
+def backfill_week_zero():
+    """
+    Backfill only week 0 transactions for all seasons.
+    Skips duplicates via sleeper_transaction_id check in _process_transaction.
+    """
+    total_added = 0
+
+    for year, league_id in sorted(LEAGUE_HISTORY.items()):
+        try:
+            logger.info(f'Backfilling week 0 for {year} (league {league_id})')
+            response = requests.get(
+                f'https://api.sleeper.app/v1/league/{league_id}/transactions/0'
+            )
+            response.raise_for_status()
+            txn_list = response.json() or []
+
+            week_added = 0
+            for txn_data in txn_list:
+                result = _process_transaction(txn_data, year, 0, league_id)
+                if result:
+                    week_added += 1
+
+            db.session.commit()
+            total_added += week_added
+
+            if week_added > 0:
+                logger.info(f'  Year {year} Week 0: {week_added} transactions added')
+            else:
+                logger.info(f'  Year {year} Week 0: no new transactions')
+
+            time.sleep(0.3)
+
+        except requests.RequestException as e:
+            logger.error(f'  Year {year} Week 0: API error - {e}')
+            db.session.rollback()
+            continue
+        except Exception as e:
+            logger.error(f'  Year {year} Week 0: Error - {e}')
+            db.session.rollback()
+            continue
+
+    logger.info(f'Week 0 backfill complete: {total_added} total transactions added')
     return {'success': True, 'total_added': total_added}

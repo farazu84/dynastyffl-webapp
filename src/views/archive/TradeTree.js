@@ -38,7 +38,12 @@ const TradeTree = React.memo(() => {
     const teamBranches = useMemo(() => {
         if (!treeData?.teams) return [];
         return Object.entries(treeData.teams).map(([rosterId, teamData]) => (
-            <TeamBranch key={rosterId} team={teamData} />
+            <TeamBranch
+                key={rosterId}
+                team={teamData}
+                pickMetadata={treeData.pick_metadata || {}}
+                originDate={treeData.origin.created_at}
+            />
         ));
     }, [treeData]);
 

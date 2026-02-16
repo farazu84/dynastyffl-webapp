@@ -12,7 +12,9 @@ class TransactionPlayerInfoSchema(Schema):
     first_name = fields.Str()
     last_name = fields.Str()
     position = fields.Str()
+    position = fields.Str()
     nfl_team = fields.Str()
+    sleeper_id = fields.Int()
 
 
 class TransactionPlayersJSONSchema(Schema):
