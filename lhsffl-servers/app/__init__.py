@@ -29,7 +29,9 @@ def create_app(config=None):
         articles,
         matchups,
         league,
-        sync
+        sync,
+        transactions as transactions_bp,
+        superlatives as superlatives_bp,
     )
 
     app.register_blueprint(test.test, url_prefix='/v1')
@@ -39,6 +41,8 @@ def create_app(config=None):
     app.register_blueprint(matchups.matchups, url_prefix='/v1')
     app.register_blueprint(league.league, url_prefix='/v1')
     app.register_blueprint(sync.sync, url_prefix='/v1')
+    app.register_blueprint(transactions_bp.transactions, url_prefix='/v1')
+    app.register_blueprint(superlatives_bp.superlatives, url_prefix='/v1')
 
     # Initialize and start the sync scheduler
     setup_scheduler(app)

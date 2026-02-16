@@ -126,3 +126,71 @@ CREATE TABLE SyncStatus (
     error TEXT DEFAULT NULL,
     PRIMARY KEY (sync_status_id)
 )
+
+CREATE TABLE Transactions (
+    transaction_id INT unsigned NOT NULL AUTO_INCREMENT,
+    sleeper_transaction_id BIGINT unsigned NOT NULL UNIQUE,
+    year INT NOT NULL,
+    week INT NOT NULL,
+    type ENUM('trade', 'waiver', 'free_agent') NOT NULL,
+    status VARCHAR(32) NOT NULL,
+    creator_sleeper_user_id BIGINT unsigned DEFAULT NULL,
+    sleeper_league_id BIGINT unsigned NOT NULL,
+    waiver_priority INT DEFAULT NULL,
+    created_at DATETIME DEFAULT NULL,
+    status_updated_at DATETIME DEFAULT NULL,
+    PRIMARY KEY (transaction_id)
+)
+
+CREATE TABLE TransactionPlayers (
+    transaction_player_id INT unsigned NOT NULL AUTO_INCREMENT,
+    transaction_id INT unsigned NOT NULL,
+    player_sleeper_id INT NOT NULL,
+    sleeper_roster_id INT NOT NULL,
+    action ENUM('add', 'drop') NOT NULL,
+    PRIMARY KEY (transaction_player_id),
+    FOREIGN KEY (transaction_id) REFERENCES Transactions(transaction_id)
+)
+
+CREATE TABLE TransactionRosters (
+    transaction_roster_id INT unsigned NOT NULL AUTO_INCREMENT,
+    transaction_id INT unsigned NOT NULL,
+    sleeper_roster_id INT NOT NULL,
+    is_consenter BOOLEAN NOT NULL DEFAULT FALSE,
+    PRIMARY KEY (transaction_roster_id),
+    FOREIGN KEY (transaction_id) REFERENCES Transactions(transaction_id)
+)
+
+CREATE TABLE TransactionDraftPicks (
+    transaction_draft_pick_id INT unsigned NOT NULL AUTO_INCREMENT,
+    transaction_id INT unsigned NOT NULL,
+    season INT NOT NULL,
+    round INT NOT NULL,
+    roster_id INT NOT NULL,
+    owner_id INT DEFAULT NULL,
+    previous_owner_id INT DEFAULT NULL,
+    PRIMARY KEY (transaction_draft_pick_id),
+    FOREIGN KEY (transaction_id) REFERENCES Transactions(transaction_id)
+)
+
+CREATE TABLE TransactionWaiverBudget (
+    transaction_waiver_budget_id INT unsigned NOT NULL AUTO_INCREMENT,
+    transaction_id INT unsigned NOT NULL,
+    sleeper_roster_id INT NOT NULL,
+    amount INT NOT NULL,
+    PRIMARY KEY (transaction_waiver_budget_id),
+    FOREIGN KEY (transaction_id) REFERENCES Transactions(transaction_id)
+)
+
+CREATE TABLE DraftPicks (
+    draft_pick_id INT unsigned NOT NULL AUTO_INCREMENT,
+    season INT NOT NULL,
+    round INT NOT NULL,
+    pick_no INT NOT NULL,
+    draft_slot INT NOT NULL,
+    roster_id INT NOT NULL,
+    player_sleeper_id INT NOT NULL,
+    sleeper_draft_id BIGINT unsigned NOT NULL,
+    type ENUM('startup', 'rookie', 'expansion') NOT NULL,
+    PRIMARY KEY (draft_pick_id)
+)
