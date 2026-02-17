@@ -144,6 +144,8 @@ def synchronize_transactions():
         raise ValueError("No current league state found.")
 
     league_id = os.getenv('LEAGUE_ID')
+    if not league_id:
+        raise RuntimeError("LEAGUE_ID environment variable is not set")
     week = league_state.week
     year = league_state.year
 

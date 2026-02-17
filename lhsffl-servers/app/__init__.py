@@ -44,6 +44,10 @@ def create_app(config=None):
     app.register_blueprint(transactions_bp.transactions, url_prefix='/v1')
     app.register_blueprint(superlatives_bp.superlatives, url_prefix='/v1')
 
+    # Validate required env vars
+    if not os.environ.get('LEAGUE_ID'):
+        raise RuntimeError("LEAGUE_ID environment variable is required but not set")
+
     # Initialize and start the sync scheduler
     setup_scheduler(app)
     

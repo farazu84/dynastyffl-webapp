@@ -263,11 +263,15 @@ def synchronize_matchups():
     if not league_state:
         raise ValueError("No current league state found. Please set league state first.")
     
+    league_id = os.getenv('LEAGUE_ID')
+    if not league_id:
+        raise RuntimeError("LEAGUE_ID environment variable is not set")
+
     print(f'Fetching matchups for week {league_state.week}, year {league_state.year}')
-    
+
     try:
         # Fetch matchup data from Sleeper API
-        response = requests.get(f'https://api.sleeper.app/v1/league/{os.getenv("LEAGUE_ID")}/matchups/{league_state.week}')
+        response = requests.get(f'https://api.sleeper.app/v1/league/{league_id}/matchups/{league_state.week}')
         response.raise_for_status()
         sleeper_matchups = response.json()
         
@@ -391,11 +395,15 @@ def synchronize_teams():
     Also syncs team records (wins, losses, points for/against) from the roster settings.
     Uses a single transaction with rollback capability for data integrity.
     '''
-    print(f'Fetching rosters from: https://api.sleeper.app/v1/league/{os.getenv("LEAGUE_ID")}/rosters')
-    
+    league_id = os.getenv('LEAGUE_ID')
+    if not league_id:
+        raise RuntimeError("LEAGUE_ID environment variable is not set")
+
+    print(f'Fetching rosters from: https://api.sleeper.app/v1/league/{league_id}/rosters')
+
     try:
         # Fetch roster data from Sleeper API
-        request = requests.get(f'https://api.sleeper.app/v1/league/{os.getenv("LEAGUE_ID")}/rosters')
+        request = requests.get(f'https://api.sleeper.app/v1/league/{league_id}/rosters')
         request.raise_for_status()  # Raise exception for bad HTTP status
         rosters = request.json()
         
