@@ -32,13 +32,12 @@
 }
 
 .trade-history-view-all {
-    background: none;
-    border: none;
     color: #61dafb;
     font-size: 0.9em;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    text-decoration: none;
     cursor: pointer;
     transition: opacity 0.2s ease;
 }

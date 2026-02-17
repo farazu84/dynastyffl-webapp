@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import config from '../../config';
 import { cachedFetch } from '../../utils/apiCache';
+import { formatDate } from '../../utils/formatters';
 import OriginCard from '../../components/trade-tree/OriginCard';
 import TeamBranch from '../../components/trade-tree/TeamBranch';
 import '../../styles/TradeTree.css';
 
-const TradeTree = React.memo(() => {
+const TradeTree = () => {
     const { transactionId } = useParams();
     const [treeData, setTreeData] = useState(null);
     const [fetchError, setFetchError] = useState(null);
@@ -47,6 +48,14 @@ const TradeTree = React.memo(() => {
         ));
     }, [treeData]);
 
+    const teamNames = useMemo(() => {
+        if (!treeData?.origin?.roster_moves) return '';
+        const names = [...new Set(
+            treeData.origin.roster_moves.map(rm => rm.team?.team_name).filter(Boolean)
+        )];
+        return names.join(' & ');
+    }, [treeData]);
+
     if (isLoading) {
         return (
             <main className="trade-tree-page">
@@ -65,17 +74,16 @@ const TradeTree = React.memo(() => {
 
     return (
         <main className="trade-tree-page">
-            <Link to="/archive" className="trade-tree-back">
-                ← Back to Archive
-            </Link>
+            <div className="trade-tree-header">
+                <h1 className="trade-tree-title">Trade Tree</h1>
+                <p className="trade-tree-subtitle">{teamNames} — {formatDate(treeData.origin.created_at)}</p>
+            </div>
             <OriginCard origin={treeData.origin} />
             <div className="trade-tree-branches">
                 {teamBranches}
             </div>
         </main>
     );
-});
-
-TradeTree.displayName = 'TradeTree';
+};
 
 export default TradeTree;

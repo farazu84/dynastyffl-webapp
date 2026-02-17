@@ -1,15 +1,7 @@
 import React, { useMemo } from 'react';
 import BranchCard from './BranchCard';
 import PlayerChip from './PlayerChip';
-
-const formatPick = (pick) => {
-    const roundSuffix = pick.round === 1 ? 'st' : pick.round === 2 ? 'nd' : pick.round === 3 ? 'rd' : 'th';
-    let label = `${pick.season} ${pick.round}${roundSuffix} Round Pick`;
-    if (pick.pick_no) {
-        label += ` (#${pick.pick_no})`;
-    }
-    return label;
-};
+import { formatPickLong } from '../../utils/formatters';
 
 const getPlayerTerminalState = (player, transactions, rosterId, teamName) => {
     const playerTxns = transactions.filter(txn =>
@@ -203,7 +195,7 @@ const TeamBranch = ({ team, pickMetadata = {}, originDate }) => {
                         return (
                             <div className="player-branch" key={`pick-${i}`}>
                                 <div className="player-branch-header">
-                                    <span className="team-branch-pick-label" style={{ display: 'block', marginBottom: '4px' }}>{formatPick(pick)}</span>
+                                    <span className="team-branch-pick-label" style={{ display: 'block', marginBottom: '4px' }}>{formatPickLong(pick)}</span>
                                     {draftedPlayer && <PlayerChip player={draftedPlayer} />}
                                 </div>
 
@@ -214,7 +206,6 @@ const TeamBranch = ({ team, pickMetadata = {}, originDate }) => {
                                                 key={txn.transaction_id}
                                                 transaction={txn}
                                                 branchRosterId={team.sleeper_roster_id}
-                                                trackedPlayerId={null}
                                             />
                                         ))}
                                     </div>
@@ -264,7 +255,6 @@ const TeamBranch = ({ team, pickMetadata = {}, originDate }) => {
                                                 key={txn.transaction_id}
                                                 transaction={txn}
                                                 branchRosterId={team.sleeper_roster_id}
-                                                trackedPlayerId={player.sleeper_id}
                                             />
                                         ))}
                                     </div>

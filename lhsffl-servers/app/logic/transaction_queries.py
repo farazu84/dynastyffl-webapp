@@ -26,11 +26,12 @@ def get_trade_tree(player_sleeper_id):
 
     transaction_ids = list(set(pm.transaction_id for pm in player_moves))
 
-    txns = Transactions.query \
-        .filter(Transactions.transaction_id.in_(transaction_ids)) \
-        .filter(Transactions.status == 'complete') \
-        .order_by(Transactions.created_at.asc()) \
-        .all()
+    txns = Transactions._with_eager_loads(
+        Transactions.query
+        .filter(Transactions.transaction_id.in_(transaction_ids))
+        .filter(Transactions.status == 'complete')
+        .order_by(Transactions.created_at.asc())
+    ).all()
 
     player = Players.query.filter_by(sleeper_id=int(player_sleeper_id)).first()
     player_info = None
@@ -49,7 +50,7 @@ def get_trade_tree(player_sleeper_id):
 def get_full_trade_tree(transaction_id):
     """
     Given a transaction, build a trade tree showing the ripple effect for each
-    team involved. Returns (origin, teams_data) or (None, None) if not found.
+    team involved. Returns (origin, teams_data, pick_metadata) or (None, None, None) if not found.
 
     Response structure for teams_data:
     {
@@ -66,7 +67,7 @@ def get_full_trade_tree(transaction_id):
     """
     origin = Transactions.query.get(transaction_id)
     if not origin:
-        return None, None
+        return None, None, None
 
     # 1. Get origin transaction details
     origin_player_moves = TransactionPlayers.query.filter_by(transaction_id=transaction_id).all()
@@ -74,7 +75,7 @@ def get_full_trade_tree(transaction_id):
     origin_rosters = TransactionRosters.query.filter_by(transaction_id=transaction_id).all()
     
     if not origin_player_moves and not origin_pick_moves:
-        return origin, {}
+        return origin, {}, {}
 
     # 2. Initialize Branch Data
     teams_data = {}
@@ -162,7 +163,7 @@ def get_full_trade_tree(transaction_id):
 
     # 4. Fetch ALL future transactions for these rosters
     if not branch_roster_ids:
-        return origin, teams_data
+        return origin, teams_data, {}
 
     # We fetch potentially relevant transactions: those created after origin, involving our rosters
     future_txns = Transactions.query \

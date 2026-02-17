@@ -86,7 +86,7 @@ def synchronize_players():
                     if val is None:
                         return None
                     try:
-                        return str(int(val))
+                        return int(val)
                     except (ValueError, TypeError):
                         return None
                 

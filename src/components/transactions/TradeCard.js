@@ -1,58 +1,49 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { formatDate, formatPickShort } from '../../utils/formatters';
 
 const TradeCard = ({ transaction }) => {
-    const formatDate = (dateStr) => {
-        if (!dateStr) return '';
-        const date = new Date(dateStr);
-        const month = date.toLocaleString('en-US', { month: 'short' }).toUpperCase();
-        const day = date.getDate();
-        const year = date.getFullYear();
-        return `${month} ${day}, ${year}`;
-    };
 
     // Group assets acquired by each team (roster)
     const getTeamAcquisitions = () => {
-        const teamMap = {};
+        const teamMap = new Map();
+
+        const ensureTeam = (rosterId, teamName) => {
+            if (!teamMap.has(rosterId)) {
+                teamMap.set(rosterId, {
+                    rosterId,
+                    teamName: teamName || `Roster ${rosterId}`,
+                    assets: [],
+                });
+            }
+            return teamMap.get(rosterId);
+        };
 
         // Initialize teams from roster_moves
         (transaction.roster_moves || []).forEach((rm) => {
-            const rosterId = rm.sleeper_roster_id;
-            if (!teamMap[rosterId]) {
-                teamMap[rosterId] = {
-                    teamName: rm.team?.team_name || `Roster ${rosterId}`,
-                    assets: [],
-                };
-            }
+            ensureTeam(rm.sleeper_roster_id, rm.team?.team_name);
         });
 
         // Add players (action === 'add' means this team acquired the player)
         (transaction.player_moves || []).forEach((pm) => {
             if (pm.action === 'add') {
-                const rosterId = pm.sleeper_roster_id;
-                if (!teamMap[rosterId]) {
-                    teamMap[rosterId] = {
-                        teamName: pm.team?.team_name || `Roster ${rosterId}`,
-                        assets: [],
-                    };
-                }
+                const team = ensureTeam(pm.sleeper_roster_id, pm.team?.team_name);
                 const name = pm.player
                     ? `${pm.player.first_name} ${pm.player.last_name}`
                     : `Player ${pm.player_sleeper_id}`;
-                teamMap[rosterId].assets.push(name);
+                team.assets.push(name);
             }
         });
 
         // Add draft picks (owner_id = team that receives the pick)
         (transaction.draft_pick_moves || []).forEach((dp) => {
-            const rosterId = dp.owner_id;
-            if (rosterId && teamMap[rosterId]) {
-                const roundSuffix = dp.round === 1 ? 'st' : dp.round === 2 ? 'nd' : dp.round === 3 ? 'rd' : 'th';
-                teamMap[rosterId].assets.push(`${dp.season} ${dp.round}${roundSuffix}`);
+            if (dp.owner_id) {
+                const team = ensureTeam(dp.owner_id, dp.team?.team_name);
+                team.assets.push(formatPickShort(dp));
             }
         });
 
-        return Object.values(teamMap).filter((t) => t.assets.length > 0);
+        return Array.from(teamMap.values()).filter((t) => t.assets.length > 0);
     };
 
     const teams = getTeamAcquisitions();
@@ -65,8 +56,8 @@ const TradeCard = ({ transaction }) => {
                     <span className="trade-card-icon">&#8644;</span>
                 </div>
                 <div className="trade-card-body">
-                    {teams.map((team, idx) => (
-                        <div className="trade-card-team" key={idx}>
+                    {teams.map((team) => (
+                        <div className="trade-card-team" key={team.rosterId}>
                             <span className="trade-card-team-name">{team.teamName}</span>
                             <span className="trade-card-assets">
                                 {team.assets.join(', ')}

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import TradeCard from './TradeCard';
 import config from '../../config';
 import { cachedFetch } from '../../utils/apiCache';
@@ -72,9 +73,9 @@ const TradeHistory = () => {
                     <span className="trade-history-icon">&#8644;</span>
                     <h2>Trade History</h2>
                 </div>
-                <button className="trade-history-view-all" onClick={() => window.location.href = '/archive'}>
+                <Link to="/archive" className="trade-history-view-all">
                     View All
-                </button>
+                </Link>
             </div>
             <div className="trade-history-cards">
                 {memoizedCards}

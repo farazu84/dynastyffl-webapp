@@ -12,25 +12,24 @@ import TradeTree from './views/archive/TradeTree';
 import Footer from './Footer';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
-{/*import { Route, Routes, useHistory } from 'react-router-dom';*/}
 
 function App() {
   return (
-    <div className="App">
-      <Header />
-        <Router>
-          <Routes>
-            <Route exact path="/" element={<League />} />
-            <Route path="/teams/:teamId" element={<Team />} />
-            <Route path="/articles/:articleId" element={<Article />} />
-            <Route path="/news" element={<News />} />
-            <Route path="/rumors" element={<Rumor />} />
-            <Route path="/archive/trades/:transactionId" element={<TradeTree />} />
-            <Route path="/archive" element={<Archive />} />
-          </Routes>
-        </Router>
-      <Footer />
-    </div>
+    <Router>
+      <div className="App">
+        <Header />
+        <Routes>
+          <Route exact path="/" element={<League />} />
+          <Route path="/teams/:teamId" element={<Team />} />
+          <Route path="/articles/:articleId" element={<Article />} />
+          <Route path="/news" element={<News />} />
+          <Route path="/rumors" element={<Rumor />} />
+          <Route path="/archive/trades/:transactionId" element={<TradeTree />} />
+          <Route path="/archive" element={<Archive />} />
+        </Routes>
+        <Footer />
+      </div>
+    </Router>
   );
 }
 

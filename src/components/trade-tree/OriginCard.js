@@ -1,48 +1,32 @@
 import React, { useMemo } from 'react';
 import PlayerChip from './PlayerChip';
-
-const formatDate = (dateStr) => {
-    if (!dateStr) return '';
-    const date = new Date(dateStr);
-    const month = date.toLocaleString('en-US', { month: 'short' }).toUpperCase();
-    const day = date.getDate();
-    const year = date.getFullYear();
-    return `${month} ${day}, ${year}`;
-};
-
-const formatPick = (dp) => {
-    const roundSuffix = dp.round === 1 ? 'st' : dp.round === 2 ? 'nd' : dp.round === 3 ? 'rd' : 'th';
-    return `${dp.season} ${dp.round}${roundSuffix} Round Pick`;
-};
+import { formatDate, formatPickLong } from '../../utils/formatters';
 
 const OriginCard = ({ origin }) => {
     const teamAcquisitions = useMemo(() => {
-        const teamMap = {};
+        const teamMap = new Map();
+
+        const ensureTeam = (rosterId, teamName) => {
+            if (!teamMap.has(rosterId)) {
+                teamMap.set(rosterId, {
+                    teamName: teamName || `Roster ${rosterId}`,
+                    players: [],
+                    picks: [],
+                });
+            }
+            return teamMap.get(rosterId);
+        };
 
         // Initialize from roster_moves
         (origin.roster_moves || []).forEach(rm => {
-            const rosterId = rm.sleeper_roster_id;
-            if (!teamMap[rosterId]) {
-                teamMap[rosterId] = {
-                    teamName: rm.team?.team_name || `Roster ${rosterId}`,
-                    players: [],
-                    picks: [],
-                };
-            }
+            ensureTeam(rm.sleeper_roster_id, rm.team?.team_name);
         });
 
         // Players acquired (action === 'add')
         (origin.player_moves || []).forEach(pm => {
             if (pm.action === 'add') {
-                const rosterId = pm.sleeper_roster_id;
-                if (!teamMap[rosterId]) {
-                    teamMap[rosterId] = {
-                        teamName: pm.team?.team_name || `Roster ${rosterId}`,
-                        players: [],
-                        picks: [],
-                    };
-                }
-                teamMap[rosterId].players.push(
+                const team = ensureTeam(pm.sleeper_roster_id, pm.team?.team_name);
+                team.players.push(
                     pm.player || { first_name: 'Player', last_name: pm.player_sleeper_id, position: null }
                 );
             }
@@ -50,13 +34,13 @@ const OriginCard = ({ origin }) => {
 
         // Picks acquired (owner_id = receiving team)
         (origin.draft_pick_moves || []).forEach(dp => {
-            const rosterId = dp.owner_id;
-            if (rosterId && teamMap[rosterId]) {
-                teamMap[rosterId].picks.push(dp);
+            if (dp.owner_id) {
+                const team = ensureTeam(dp.owner_id, dp.team?.team_name);
+                team.picks.push(dp);
             }
         });
 
-        return Object.values(teamMap).filter(
+        return Array.from(teamMap.values()).filter(
             t => t.players.length > 0 || t.picks.length > 0
         );
     }, [origin]);
@@ -78,7 +62,7 @@ const OriginCard = ({ origin }) => {
                             ))}
                             {team.picks.map((dp, i) => (
                                 <span className="origin-card-pick" key={`pick-${i}`}>
-                                    {formatPick(dp)}
+                                    {formatPickLong(dp)}
                                 </span>
                             ))}
                         </div>

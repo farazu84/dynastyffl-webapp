@@ -1,19 +1,6 @@
 import React, { useMemo } from 'react';
 import PlayerChip from './PlayerChip';
-
-const formatDate = (dateStr) => {
-    if (!dateStr) return '';
-    const date = new Date(dateStr);
-    const month = date.toLocaleString('en-US', { month: 'short' }).toUpperCase();
-    const day = date.getDate();
-    const year = date.getFullYear();
-    return `${month} ${day}, ${year}`;
-};
-
-const formatPick = (dp) => {
-    const roundSuffix = dp.round === 1 ? 'st' : dp.round === 2 ? 'nd' : dp.round === 3 ? 'rd' : 'th';
-    return `${dp.season} ${dp.round}${roundSuffix}`;
-};
+import { formatDate, formatPickShort } from '../../utils/formatters';
 
 const getAcquisitions = (txn) => {
     const acquisitions = [];
@@ -25,16 +12,19 @@ const getAcquisitions = (txn) => {
             id: rm.sleeper_roster_id,
             name: rm.team?.team_name || `Roster ${rm.sleeper_roster_id}`,
             players: [],
+            droppedPlayers: [],
             picks: []
         });
     });
 
-    // 2. Assign players to the team that added them
+    // 2. Assign players to the team that added/dropped them
     (txn.player_moves || []).forEach(pm => {
-        if (pm.action === 'add') {
-            const team = teamMap.get(pm.sleeper_roster_id);
-            if (team && pm.player) {
+        const team = teamMap.get(pm.sleeper_roster_id);
+        if (team && pm.player) {
+            if (pm.action === 'add') {
                 team.players.push(pm.player);
+            } else if (pm.action === 'drop') {
+                team.droppedPlayers.push(pm.player);
             }
         }
     });
@@ -47,11 +37,11 @@ const getAcquisitions = (txn) => {
         }
     });
 
-    // 4. Convert to array and filter out teams with no acquisitions
-    return Array.from(teamMap.values()).filter(t => t.players.length > 0 || t.picks.length > 0);
+    // 4. Convert to array and filter out teams with no activity
+    return Array.from(teamMap.values()).filter(t => t.players.length > 0 || t.picks.length > 0 || t.droppedPlayers.length > 0);
 };
 
-const BranchCard = ({ transaction, branchRosterId, trackedPlayerId }) => {
+const BranchCard = ({ transaction, branchRosterId }) => {
     const acquisitions = useMemo(() => {
         const list = getAcquisitions(transaction);
         // Sort so the branch owner (current team) is last
@@ -85,22 +75,41 @@ const BranchCard = ({ transaction, branchRosterId, trackedPlayerId }) => {
                 <div className="branch-card-exchange">
                     {acquisitions.map((team) => (
                         <div className="branch-card-exchange-section" key={team.id}>
-                            <span className="branch-card-exchange-label" style={{
-                                color: team.id === branchRosterId ? '#61dafb' : 'rgba(255, 255, 255, 0.4)',
-                                fontSize: '0.75em'
-                            }}>
-                                {team.name} Acquired:
-                            </span>
-                            <div className="branch-card-exchange-items">
-                                {team.players.map((player, i) => (
-                                    <PlayerChip key={`p-${i}`} player={player} />
-                                ))}
-                                {team.picks.map((pick, i) => (
-                                    <span className="branch-card-pick" key={`pik-${i}`}>
-                                        {formatPick(pick)}
+                            {(team.players.length > 0 || team.picks.length > 0) && (
+                                <>
+                                    <span className="branch-card-exchange-label" style={{
+                                        color: team.id === branchRosterId ? '#61dafb' : 'rgba(255, 255, 255, 0.4)',
+                                        fontSize: '0.75em'
+                                    }}>
+                                        {team.name} Acquired:
                                     </span>
-                                ))}
-                            </div>
+                                    <div className="branch-card-exchange-items">
+                                        {team.players.map((player, i) => (
+                                            <PlayerChip key={`p-${i}`} player={player} />
+                                        ))}
+                                        {team.picks.map((pick, i) => (
+                                            <span className="branch-card-pick" key={`pik-${i}`}>
+                                                {formatPickShort(pick)}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </>
+                            )}
+                            {transaction.type !== 'trade' && team.droppedPlayers.length > 0 && (
+                                <>
+                                    <span className="branch-card-exchange-label" style={{
+                                        color: '#ff6b6b',
+                                        fontSize: '0.75em'
+                                    }}>
+                                        Released:
+                                    </span>
+                                    <div className="branch-card-exchange-items">
+                                        {team.droppedPlayers.map((player, i) => (
+                                            <PlayerChip key={`d-${i}`} player={player} />
+                                        ))}
+                                    </div>
+                                </>
+                            )}
                         </div>
                     ))}
                 </div>

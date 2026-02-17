@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import SuperlativeCard from './SuperlativeCard';
 import config from '../../config';
 import { cachedFetch } from '../../utils/apiCache';
@@ -12,30 +13,31 @@ const LeagueSuperlatives = () => {
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
+        const fetchOne = async (url) => {
+            try {
+                const res = await cachedFetch(url);
+                if (!res.ok) return {};
+                const json = await res.json();
+                return json.superlatives || {};
+            } catch {
+                return {};
+            }
+        };
+
         const fetchSuperlatives = async () => {
             try {
                 setIsLoading(true);
                 setFetchError(null);
 
-                const [playerRes, teamRes, draftRes] = await Promise.all([
-                    cachedFetch(`${config.API_BASE_URL}/superlatives/players`),
-                    cachedFetch(`${config.API_BASE_URL}/superlatives/teams`),
-                    cachedFetch(`${config.API_BASE_URL}/superlatives/draft`),
+                const [player, team, draft] = await Promise.all([
+                    fetchOne(`${config.API_BASE_URL}/superlatives/players`),
+                    fetchOne(`${config.API_BASE_URL}/superlatives/teams`),
+                    fetchOne(`${config.API_BASE_URL}/superlatives/draft`),
                 ]);
 
-                if (!playerRes.ok) throw new Error(`Player superlatives error: ${playerRes.status}`);
-                if (!teamRes.ok) throw new Error(`Team superlatives error: ${teamRes.status}`);
-                if (!draftRes.ok) throw new Error(`Draft superlatives error: ${draftRes.status}`);
-
-                const [playerJson, teamJson, draftJson] = await Promise.all([
-                    playerRes.json(),
-                    teamRes.json(),
-                    draftRes.json(),
-                ]);
-
-                setPlayerData(playerJson.superlatives || {});
-                setTeamData(teamJson.superlatives || {});
-                setDraftData(draftJson.superlatives || {});
+                setPlayerData(player);
+                setTeamData(team);
+                setDraftData(draft);
             } catch (error) {
                 setFetchError(error.message);
             } finally {
@@ -48,8 +50,6 @@ const LeagueSuperlatives = () => {
 
     const cards = useMemo(() => {
         if (!playerData || !teamData || !draftData) return [];
-
-        const currentYear = new Date().getFullYear();
 
         return [
             {
@@ -96,7 +96,7 @@ const LeagueSuperlatives = () => {
                 entries: (draftData.startup_loyalists || []).slice(0, 5).map((p) => ({
                     name: `${p.first_name} ${p.last_name}`,
                     subtitle: p.team_name,
-                    stat: '2019-Current',
+                    stat: `2019-${new Date().getFullYear()}`,
                 })),
             },
         ];
@@ -133,14 +133,14 @@ const LeagueSuperlatives = () => {
                     <span className="league-superlatives-icon">&#9734;</span>
                     <h2>League Superlatives</h2>
                 </div>
-                <button className="league-superlatives-view-all" onClick={() => window.location.href = '/archive'}>
+                <Link to="/archive" className="league-superlatives-view-all">
                     View All
-                </button>
+                </Link>
             </div>
             <div className="league-superlatives-cards">
-                {cards.map((card, idx) => (
+                {cards.map((card) => (
                     <SuperlativeCard
-                        key={idx}
+                        key={card.title}
                         icon={card.icon}
                         title={card.title}
                         tooltip={card.tooltip}

@@ -120,7 +120,7 @@ CREATE TABLE TeamRecords (
 
 CREATE TABLE SyncStatus (
     sync_status_id INT unsigned NOT NULL AUTO_INCREMENT,
-    sync_item ENUM('teams', 'league_state', 'players', 'matchups') NOT NULL,
+    sync_item ENUM('teams', 'league_state', 'players', 'matchups', 'transactions') NOT NULL,
     timestamp DATETIME NOT NULL,
     success BOOLEAN NOT NULL,
     error TEXT DEFAULT NULL,
@@ -149,7 +149,9 @@ CREATE TABLE TransactionPlayers (
     sleeper_roster_id INT NOT NULL,
     action ENUM('add', 'drop') NOT NULL,
     PRIMARY KEY (transaction_player_id),
-    FOREIGN KEY (transaction_id) REFERENCES Transactions(transaction_id)
+    FOREIGN KEY (transaction_id) REFERENCES Transactions(transaction_id),
+    INDEX ix_txn_players_txn_id (transaction_id),
+    INDEX ix_txn_players_player_id (player_sleeper_id)
 )
 
 CREATE TABLE TransactionRosters (
@@ -158,7 +160,9 @@ CREATE TABLE TransactionRosters (
     sleeper_roster_id INT NOT NULL,
     is_consenter BOOLEAN NOT NULL DEFAULT FALSE,
     PRIMARY KEY (transaction_roster_id),
-    FOREIGN KEY (transaction_id) REFERENCES Transactions(transaction_id)
+    FOREIGN KEY (transaction_id) REFERENCES Transactions(transaction_id),
+    INDEX ix_txn_rosters_txn_id (transaction_id),
+    INDEX ix_txn_rosters_roster_id (sleeper_roster_id)
 )
 
 CREATE TABLE TransactionDraftPicks (
@@ -170,7 +174,8 @@ CREATE TABLE TransactionDraftPicks (
     owner_id INT DEFAULT NULL,
     previous_owner_id INT DEFAULT NULL,
     PRIMARY KEY (transaction_draft_pick_id),
-    FOREIGN KEY (transaction_id) REFERENCES Transactions(transaction_id)
+    FOREIGN KEY (transaction_id) REFERENCES Transactions(transaction_id),
+    INDEX ix_txn_draft_picks_txn_id (transaction_id)
 )
 
 CREATE TABLE TransactionWaiverBudget (
@@ -188,9 +193,11 @@ CREATE TABLE DraftPicks (
     round INT NOT NULL,
     pick_no INT NOT NULL,
     draft_slot INT NOT NULL,
-    roster_id INT NOT NULL,
+    drafting_roster_id INT NOT NULL,
+    original_roster_id INT DEFAULT NULL,
     player_sleeper_id INT NOT NULL,
     sleeper_draft_id BIGINT unsigned NOT NULL,
     type ENUM('startup', 'rookie', 'expansion') NOT NULL,
-    PRIMARY KEY (draft_pick_id)
+    PRIMARY KEY (draft_pick_id),
+    INDEX ix_draft_picks_lookup (season, round, original_roster_id, type)
 )

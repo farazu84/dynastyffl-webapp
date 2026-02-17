@@ -4,6 +4,10 @@ from app.models.schemas.transaction_rosters import TransactionRostersJSONSchema
 
 class TransactionRosters(db.Model):
     __tablename__ = 'TransactionRosters'
+    __table_args__ = (
+        db.Index('ix_txn_rosters_txn_id', 'transaction_id'),
+        db.Index('ix_txn_rosters_roster_id', 'sleeper_roster_id'),
+    )
 
     transaction_roster_id = db.Column(db.Integer(), primary_key=True, autoincrement=True)
 

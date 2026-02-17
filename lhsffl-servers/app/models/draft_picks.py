@@ -4,6 +4,9 @@ from app.models.schemas.draft_picks import DraftPicksJSONSchema
 
 class DraftPicks(db.Model):
     __tablename__ = 'DraftPicks'
+    __table_args__ = (
+        db.Index('ix_draft_picks_lookup', 'season', 'round', 'original_roster_id', 'type'),
+    )
 
     draft_pick_id = db.Column(db.Integer(), primary_key=True, autoincrement=True)
 

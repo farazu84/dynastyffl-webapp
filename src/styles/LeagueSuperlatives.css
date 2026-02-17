@@ -30,13 +30,12 @@
 }
 
 .league-superlatives-view-all {
-    background: none;
-    border: none;
     color: #61dafb;
     font-size: 0.9em;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    text-decoration: none;
     cursor: pointer;
     transition: opacity 0.2s ease;
 }
@@ -152,8 +151,14 @@
     z-index: 10;
 }
 
-.superlative-card-tooltip:hover::after {
+.superlative-card-tooltip:hover::after,
+.superlative-card-tooltip:focus::after {
     opacity: 1;
+}
+
+.superlative-card-tooltip:focus {
+    outline: 1px solid rgba(97, 218, 251, 0.5);
+    outline-offset: 2px;
 }
 
 .superlative-entry-name-col {

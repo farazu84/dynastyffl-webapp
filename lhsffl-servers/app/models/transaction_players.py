@@ -4,6 +4,10 @@ from app.models.schemas.transaction_players import TransactionPlayersJSONSchema
 
 class TransactionPlayers(db.Model):
     __tablename__ = 'TransactionPlayers'
+    __table_args__ = (
+        db.Index('ix_txn_players_txn_id', 'transaction_id'),
+        db.Index('ix_txn_players_player_id', 'player_sleeper_id'),
+    )
 
     transaction_player_id = db.Column(db.Integer(), primary_key=True, autoincrement=True)
 

@@ -1,3 +1,5 @@
+import time
+from functools import wraps
 from sqlalchemy.sql.expression import func
 from app import db
 from app.models.transactions import Transactions
@@ -7,6 +9,23 @@ from app.models.transaction_draft_picks import TransactionDraftPicks
 from app.models.draft_picks import DraftPicks
 from app.models.teams import Teams
 from app.models.players import Players
+
+
+def timed_cache(seconds=3600):
+    """Simple time-based cache decorator. No external dependencies."""
+    def decorator(func):
+        cache = {}
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            now = time.time()
+            if 'result' in cache and now - cache['time'] < seconds:
+                return cache['result']
+            result = func(*args, **kwargs)
+            cache['result'] = result
+            cache['time'] = now
+            return result
+        return wrapper
+    return decorator
 
 
 def _build_player_lookup(sleeper_ids):
@@ -25,6 +44,14 @@ def _build_team_lookup(roster_ids):
     return {t.sleeper_roster_id: t for t in teams}
 
 
+def _build_team_lookup_by_id(team_ids):
+    """Batch-load teams by team_id and return a lookup dict."""
+    if not team_ids:
+        return {}
+    teams = Teams.query.filter(Teams.team_id.in_(team_ids)).all()
+    return {t.team_id: t for t in teams}
+
+
 def _player_info(player, sleeper_id):
     """Build a standard player info dict from a Player object (or None)."""
     return {
@@ -35,6 +62,7 @@ def _player_info(player, sleeper_id):
     }
 
 
+@timed_cache(seconds=3600)
 def get_player_superlatives():
     """
     Player superlatives:
@@ -143,6 +171,7 @@ def get_player_superlatives():
     }
 
 
+@timed_cache(seconds=3600)
 def get_team_superlatives():
     """
     Team superlatives:
@@ -271,6 +300,7 @@ def get_team_superlatives():
     }
 
 
+@timed_cache(seconds=3600)
 def get_draft_superlatives():
     """
     Draft superlatives:
@@ -285,12 +315,18 @@ def get_draft_superlatives():
     startup_player_ids = [p.player_sleeper_id for p in startup_picks]
     players_lookup = _build_player_lookup(startup_player_ids)
 
+    # Batch-load all teams by team_id (avoids N+1 Teams.query.get per loop)
+    all_team_ids = set(
+        p.team_id for p in players_lookup.values() if p.team_id is not None
+    )
+    teams_by_id = _build_team_lookup_by_id(list(all_team_ids))
+
     loyalists = []
     for pick in startup_picks:
         player = players_lookup.get(pick.player_sleeper_id)
         if not player or player.team_id is None:
             continue
-        team = Teams.query.get(player.team_id)
+        team = teams_by_id.get(player.team_id)
         if not team:
             continue
         if team.sleeper_roster_id == pick.drafting_roster_id:
@@ -312,7 +348,7 @@ def get_draft_superlatives():
         player = players_lookup.get(pick.player_sleeper_id)
         if not player or player.team_id is None:
             continue
-        team = Teams.query.get(player.team_id)
+        team = teams_by_id.get(player.team_id)
         startup_steals.append({
             'player_sleeper_id': pick.player_sleeper_id,
             'first_name': player.first_name,
@@ -334,12 +370,18 @@ def get_draft_superlatives():
     rookie_player_ids = [p.player_sleeper_id for p in rookie_picks]
     rookie_players_lookup = _build_player_lookup(rookie_player_ids)
 
+    # Batch-load teams for rookie players
+    rookie_team_ids = set(
+        p.team_id for p in rookie_players_lookup.values() if p.team_id is not None
+    )
+    rookie_teams_by_id = _build_team_lookup_by_id(list(rookie_team_ids))
+
     rookie_steals = []
     for pick in rookie_picks:
         player = rookie_players_lookup.get(pick.player_sleeper_id)
         if not player or player.team_id is None:
             continue
-        team = Teams.query.get(player.team_id)
+        team = rookie_teams_by_id.get(player.team_id)
         if not team:
             continue
         if team.sleeper_roster_id == pick.drafting_roster_id:

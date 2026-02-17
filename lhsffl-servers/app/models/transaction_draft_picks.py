@@ -4,6 +4,9 @@ from app.models.schemas.transaction_draft_picks import TransactionDraftPicksJSON
 
 class TransactionDraftPicks(db.Model):
     __tablename__ = 'TransactionDraftPicks'
+    __table_args__ = (
+        db.Index('ix_txn_draft_picks_txn_id', 'transaction_id'),
+    )
 
     transaction_draft_pick_id = db.Column(db.Integer(), primary_key=True, autoincrement=True)
 
