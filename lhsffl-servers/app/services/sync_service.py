@@ -3,6 +3,7 @@ from datetime import datetime
 from app import db
 from app.models.sync_status import SyncStatus
 from app.logic.league import synchronize_teams, set_league_state, synchronize_matchups, synchronize_players
+from app.logic.transactions import synchronize_transactions
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -19,6 +20,7 @@ class SyncService:
         'TEAMS': 'teams',
         'MATCHUPS': 'matchups',
         'PLAYERS': 'players',
+        'TRANSACTIONS': 'transactions',
     }
     
     @staticmethod
@@ -96,6 +98,19 @@ class SyncService:
             return {'success': False, 'message': f'Players sync failed: {str(e)}'}
 
     @staticmethod
+    def sync_transactions():
+        """
+        Synchronize transactions with Sleeper API for the current week.
+        """
+        try:
+            result = synchronize_transactions()
+            SyncService.record_sync_status(SyncService.SYNC_ITEMS['TRANSACTIONS'], success=True)
+            return {'success': True, 'message': 'Transactions synchronized', 'result': result}
+        except Exception as e:
+            SyncService.record_sync_status(SyncService.SYNC_ITEMS['TRANSACTIONS'], success=False, error=str(e))
+            return {'success': False, 'message': f'Transactions sync failed: {str(e)}'}
+
+    @staticmethod
     def full_sync():
         """
         Perform a complete synchronization of Team and League State data.
@@ -107,6 +122,7 @@ class SyncService:
             'players': None,
             'teams': None,
             'matchups': None,
+            'transactions': None,
             'overall_success': True,
             'timestamp': datetime.utcnow()
         }
@@ -136,7 +152,13 @@ class SyncService:
             
             if not matchups_result['success']:
                 sync_results['overall_success'] = False
-            
+
+            transactions_result = SyncService.sync_transactions()
+            sync_results['transactions'] = transactions_result
+
+            if not transactions_result['success']:
+                sync_results['overall_success'] = False
+
             return sync_results
             
         except Exception as e:

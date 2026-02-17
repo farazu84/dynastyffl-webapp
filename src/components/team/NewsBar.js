@@ -4,9 +4,6 @@ import '../../styles/NewsBar.css';
 const NewsBar = ({ articles }) => {
     // Take the first 4 articles from the passed articles array
     const teamNews = articles ? articles.slice(0, 4) : [];
-    const isLoading = false;
-    const fetchError = null;
-
     const formatDate = (dateString) => {
         const date = new Date(dateString);
         return date.toLocaleDateString('en-US', {
@@ -34,32 +31,6 @@ const NewsBar = ({ articles }) => {
             ? title.substring(0, maxLength) + '...'
             : title;
     };
-
-    if (isLoading) {
-        return (
-            <div className="news-bar">
-                <div className="news-bar-header">
-                    <h3>Latest Team News</h3>
-                </div>
-                <div className="news-bar-content">
-                    <div className="news-loading">Loading news...</div>
-                </div>
-            </div>
-        );
-    }
-
-    if (fetchError) {
-        return (
-            <div className="news-bar">
-                <div className="news-bar-header">
-                    <h3>Latest Team News</h3>
-                </div>
-                <div className="news-bar-content">
-                    <div className="news-error">Unable to load news</div>
-                </div>
-            </div>
-        );
-    }
 
     if (teamNews.length === 0) {
         return (

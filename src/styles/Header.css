@@ -40,7 +40,7 @@ header h1 {
     align-items: center;
 }
 
-.header-menu button {
+.header-menu a {
     all: unset;
     padding: 12px 24px;
     background: rgba(255, 255, 255, 0.1);
@@ -58,7 +58,7 @@ header h1 {
     min-width: 80px;
 }
 
-.header-menu button::before {
+.header-menu a::before {
     content: '';
     position: absolute;
     top: 0;
@@ -69,23 +69,23 @@ header h1 {
     transition: left 0.5s;
 }
 
-.header-menu button:hover::before {
+.header-menu a:hover::before {
     left: 100%;
 }
 
-.header-menu button:hover {
+.header-menu a:hover {
     background: rgba(97, 218, 251, 0.2);
     border-color: #61dafb;
     transform: translateY(-2px);
     box-shadow: 0 8px 25px rgba(97, 218, 251, 0.3);
 }
 
-.header-menu button:active {
+.header-menu a:active {
     transform: translateY(-1px);
     box-shadow: 0 4px 15px rgba(97, 218, 251, 0.2);
 }
 
-.header-menu button:focus {
+.header-menu a:focus {
     outline: none;
     border-color: #61dafb;
     box-shadow: 0 0 0 3px rgba(97, 218, 251, 0.3);
@@ -113,7 +113,7 @@ header h1 {
         gap: 10px;
     }
     
-    .header-menu button {
+    .header-menu a {
         padding: 10px 20px;
         font-size: 0.9rem;
         min-width: 70px;
@@ -125,7 +125,7 @@ header h1 {
         font-size: 1.5em;
     }
     
-    .header-menu button {
+    .header-menu a {
         padding: 8px 16px;
         font-size: 0.85rem;
         min-width: 60px;

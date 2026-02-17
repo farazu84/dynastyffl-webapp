@@ -1,6 +1,4 @@
 const TeamHeader = ( {team} ) => {
-    console.log(team)
-    
     // Helper function to format names
     const formatName = (user) => {
         const hasFirstLast = user.first_name && user.last_name;

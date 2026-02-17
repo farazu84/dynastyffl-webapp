@@ -1,0 +1,241 @@
+/* League Superlatives Section */
+.league-superlatives-section {
+    width: 100%;
+    margin-top: 40px;
+}
+
+.league-superlatives-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.league-superlatives-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.league-superlatives-header h2 {
+    font-size: 1.8em;
+    font-weight: 700;
+    margin: 0;
+    color: white;
+}
+
+.league-superlatives-icon {
+    font-size: 1.4em;
+    color: #61dafb;
+}
+
+.league-superlatives-view-all {
+    color: #61dafb;
+    font-size: 0.9em;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+}
+
+.league-superlatives-view-all:hover {
+    opacity: 0.8;
+}
+
+.league-superlatives-loading,
+.league-superlatives-error {
+    text-align: center;
+    padding: 2rem;
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.league-superlatives-error {
+    color: #f44336;
+}
+
+/* Superlatives Cards Grid */
+.league-superlatives-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+}
+
+/* Individual Superlative Card */
+.superlative-card {
+    background: linear-gradient(135deg, #1e1e1e 0%, #2d2d2d 100%);
+    border: 1px solid #333;
+    border-radius: 10px;
+    padding: 18px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+
+/* Card Icon */
+.superlative-card-icon {
+    font-size: 1.3em;
+    color: #61dafb;
+}
+
+/* Card Title */
+.superlative-card-title {
+    font-size: 0.7em;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.9);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+}
+
+/* Card List */
+.superlative-card-list {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex: 1;
+}
+
+.superlative-card-entry {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Title row with tooltip */
+.superlative-card-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.superlative-card-tooltip {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    font-size: 0.55em;
+    color: rgba(255, 255, 255, 0.4);
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.superlative-card-tooltip::after {
+    content: attr(data-tip);
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1a1a1a;
+    border: 1px solid #444;
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 1.6em;
+    font-weight: 400;
+    letter-spacing: 0;
+    text-transform: none;
+    padding: 6px 10px;
+    border-radius: 6px;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    z-index: 10;
+}
+
+.superlative-card-tooltip:hover::after,
+.superlative-card-tooltip:focus::after {
+    opacity: 1;
+}
+
+.superlative-card-tooltip:focus {
+    outline: 1px solid rgba(97, 218, 251, 0.5);
+    outline-offset: 2px;
+}
+
+.superlative-entry-name-col {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
+    text-align: left;
+}
+
+.superlative-entry-subtitle {
+    font-size: 0.7em;
+    color: rgba(255, 255, 255, 0.4);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.superlative-card-entry-top .superlative-entry-name {
+    font-size: 0.95em;
+    font-weight: 600;
+    color: white;
+}
+
+.superlative-entry-name {
+    font-size: 0.82em;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.8);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+    text-align: left;
+}
+
+.superlative-entry-stat {
+    font-size: 0.7em;
+    font-weight: 600;
+    color: #61dafb;
+    background: rgba(97, 218, 251, 0.1);
+    padding: 2px 8px;
+    border-radius: 10px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    text-align: right;
+}
+
+.superlative-card-entry-top .superlative-entry-stat {
+    font-size: 0.75em;
+    padding: 3px 10px;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .league-superlatives-cards {
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .league-superlatives-cards {
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 10px;
+    }
+
+    .league-superlatives-header h2 {
+        font-size: 1.4em;
+    }
+}
+
+@media (max-width: 480px) {
+    .league-superlatives-cards {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+
+    .superlative-card {
+        padding: 14px;
+    }
+}

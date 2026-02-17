@@ -3,7 +3,7 @@ import os
 import json
 
 old_league_id = 1063040492125937664
-league_id = 1195252934627844096
+league_id = 1328498202462126080
 
 league_users_url = f'https://api.sleeper.app/v1/league/{league_id}/users'
 roster_url = f'https://api.sleeper.app/v1/league/{league_id}/rosters'

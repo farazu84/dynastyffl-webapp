@@ -1,0 +1,526 @@
+.trade-tree-page {
+    padding: 20px 20px 100px 20px;
+    max-width: min(95%, 1400px);
+    margin: 0 auto;
+}
+
+.trade-tree-header {
+    margin-bottom: 24px;
+}
+
+.trade-tree-title {
+    font-size: 2em;
+    font-weight: 700;
+    color: white;
+    margin: 0;
+}
+
+.trade-tree-subtitle {
+    font-size: 0.95em;
+    color: rgba(255, 255, 255, 0.5);
+    margin: 4px 0 0 0;
+}
+
+/* Origin Card */
+.origin-card {
+    background: linear-gradient(135deg, #1e1e1e 0%, #2d2d2d 100%);
+    border: 2px solid #61dafb;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 40px;
+}
+
+.origin-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.origin-card-badge {
+    font-size: 0.7em;
+    font-weight: 700;
+    color: #61dafb;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    border: 1px solid #61dafb;
+    border-radius: 20px;
+    padding: 4px 12px;
+}
+
+.origin-card-date {
+    font-size: 0.85em;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.origin-card-teams {
+    display: flex;
+    gap: 30px;
+}
+
+.origin-card-team {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.origin-card-team+.origin-card-team {
+    border-left: 1px solid #444;
+    padding-left: 30px;
+}
+
+.origin-card-team-label {
+    font-size: 0.65em;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.4);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.origin-card-team-name {
+    font-size: 1.1em;
+    font-weight: 700;
+    color: white;
+}
+
+.origin-card-assets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 4px;
+}
+
+.origin-card-pick {
+    display: inline-block;
+    font-size: 0.75em;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.7);
+    background: rgba(97, 218, 251, 0.1);
+    border: 1px solid rgba(97, 218, 251, 0.3);
+    border-radius: 16px;
+    padding: 4px 10px;
+}
+
+/* Player Chip */
+.player-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(97, 218, 251, 0.12);
+    border: 1px solid rgba(97, 218, 251, 0.3);
+    border-radius: 16px;
+    padding: 4px 10px;
+    font-size: 0.8em;
+}
+
+.player-chip-name {
+    font-weight: 600;
+    color: white;
+}
+
+.player-chip-pos {
+    font-size: 0.7em;
+    font-weight: 700;
+    padding: 1px 5px;
+    border-radius: 4px;
+    text-transform: uppercase;
+}
+
+.player-chip-pos-qb {
+    background: rgba(255, 107, 107, 0.3);
+    color: #ff6b6b;
+}
+
+.player-chip-pos-rb {
+    background: rgba(78, 205, 196, 0.3);
+    color: #4ecdc4;
+}
+
+.player-chip-pos-wr {
+    background: rgba(97, 218, 251, 0.3);
+    color: #61dafb;
+}
+
+.player-chip-pos-te {
+    background: rgba(255, 217, 61, 0.3);
+    color: #ffd93d;
+}
+
+.player-chip-pos-k {
+    background: rgba(149, 165, 166, 0.3);
+    color: #95a5a6;
+}
+
+.player-chip-pos-def {
+    background: rgba(149, 165, 166, 0.3);
+    color: #95a5a6;
+}
+
+/* Branch Layout */
+.trade-tree-branches {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+/* Team Branch */
+.team-branch {
+    flex: 1;
+    min-width: 280px;
+    background: linear-gradient(135deg, #1e1e1e 0%, #2d2d2d 100%);
+    border: 1px solid #333;
+    border-radius: 10px;
+    padding: 20px;
+}
+
+.team-branch-header {
+    margin-bottom: 16px;
+}
+
+.team-branch-label {
+    display: block;
+    font-size: 0.65em;
+    font-weight: 700;
+    color: #61dafb;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+}
+
+.team-branch-team-name {
+    font-size: 1em;
+    font-weight: 700;
+    color: white;
+}
+
+/* Acquired section */
+.team-branch-acquired {
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #333;
+}
+
+.team-branch-acquired-label {
+    display: block;
+    font-size: 0.65em;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.4);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+}
+
+.team-branch-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.team-branch-picks {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.team-branch-pick {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.team-branch-pick-label {
+    font-size: 0.8em;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.team-branch-pick-result {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75em;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.team-branch-pick-pending {
+    font-size: 0.75em;
+    color: rgba(255, 255, 255, 0.3);
+    font-style: italic;
+}
+
+/* Player Columns */
+.team-branch-player-columns {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    padding-bottom: 12px;
+    /* Space for scrollbar */
+}
+
+.player-branch {
+    flex: 1;
+    min-width: 300px;
+    display: flex;
+    flex-direction: column;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    padding: 12px;
+}
+
+.player-branch-header {
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Timeline */
+.team-branch-timeline {
+    position: relative;
+    padding-left: 20px;
+    margin-top: 8px;
+}
+
+.team-branch-timeline::before {
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #444;
+}
+
+/* Branch Card */
+.branch-card {
+    position: relative;
+    padding: 12px 0;
+}
+
+.branch-card-dot {
+    position: absolute;
+    left: -20px;
+    top: 18px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #61dafb;
+    border: 2px solid #2d2d2d;
+    z-index: 1;
+}
+
+.branch-card-content {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid #3a3a3a;
+    border-radius: 8px;
+    padding: 12px;
+}
+
+.branch-card-date {
+    display: block;
+    font-size: 0.7em;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.4);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+}
+
+.branch-card-icon {
+    font-size: 0.85em;
+    margin-right: 6px;
+    color: #61dafb;
+}
+
+.branch-card-description {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-top: 4px;
+}
+
+.branch-card-label {
+    font-size: 0.85em;
+    font-weight: 600;
+    color: white;
+}
+
+.branch-card-subtitle {
+    font-size: 0.75em;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.branch-card-players {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 8px;
+}
+
+/* Exchange Details */
+.branch-card-exchange {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.branch-card-exchange-section {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.branch-card-exchange-label {
+    font-size: 0.7em;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.4);
+    text-transform: uppercase;
+}
+
+.branch-card-exchange-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.branch-card-pick {
+    display: inline-block;
+    font-size: 0.7em;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    padding: 2px 6px;
+}
+
+/* Terminal Badge */
+.terminal-badge {
+    margin-top: 16px;
+    padding: 12px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.terminal-badge-held {
+    background: rgba(97, 218, 251, 0.08);
+    border: 1px solid rgba(97, 218, 251, 0.3);
+}
+
+.terminal-badge-label {
+    display: block;
+    font-size: 0.8em;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.terminal-badge-held .terminal-badge-label {
+    color: #4ecdc4;
+    /* Green-ish */
+}
+
+/* Specific Badge Colors */
+.terminal-badge-held {
+    background: rgba(78, 205, 196, 0.1);
+    border: 1px solid rgba(78, 205, 196, 0.3);
+}
+
+.terminal-badge-traded {
+    background: rgba(255, 217, 61, 0.08);
+    /* Yellow-ish */
+    border: 1px solid rgba(255, 217, 61, 0.3);
+}
+
+.terminal-badge-traded .terminal-badge-label {
+    color: #ffd93d;
+}
+
+.terminal-badge-released {
+    background: rgba(255, 107, 107, 0.08);
+    /* Red-ish */
+    border: 1px solid rgba(255, 107, 107, 0.3);
+}
+
+.terminal-badge-released .terminal-badge-label {
+    color: #ff6b6b;
+}
+
+.terminal-badge-drafted {
+    background: rgba(78, 205, 196, 0.1);
+    border: 1px solid rgba(78, 205, 196, 0.3);
+}
+
+.terminal-badge-drafted .terminal-badge-label {
+    color: #4ecdc4;
+}
+
+/* Subtitles */
+.terminal-badge-subtitle {
+    display: block;
+    font-size: 0.7em;
+    color: rgba(255, 255, 255, 0.4);
+    margin-top: 2px;
+}
+
+/* Loading & Error */
+.trade-tree-loading,
+.trade-tree-error {
+    text-align: center;
+    padding: 60px 20px;
+    font-size: 1rem;
+}
+
+.trade-tree-loading {
+    color: #61dafb;
+}
+
+.trade-tree-error {
+    color: #f44336;
+    background: #2a2a2a;
+    border-radius: 8px;
+    margin: 20px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .trade-tree-branches {
+        flex-direction: column;
+    }
+
+    .team-branch {
+        min-width: unset;
+    }
+
+    .origin-card-teams {
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .origin-card-team+.origin-card-team {
+        border-left: none;
+        padding-left: 0;
+        border-top: 1px solid #444;
+        padding-top: 16px;
+    }
+
+    .origin-card {
+        padding: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .trade-tree-page {
+        padding: 12px 12px 80px 12px;
+    }
+
+    .origin-card-badge {
+        font-size: 0.6em;
+    }
+}

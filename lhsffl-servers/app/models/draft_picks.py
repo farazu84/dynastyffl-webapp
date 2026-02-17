@@ -1,0 +1,32 @@
+from app import db
+from app.models.schemas.draft_picks import DraftPicksJSONSchema
+
+
+class DraftPicks(db.Model):
+    __tablename__ = 'DraftPicks'
+    __table_args__ = (
+        db.Index('ix_draft_picks_lookup', 'season', 'round', 'original_roster_id', 'type'),
+    )
+
+    draft_pick_id = db.Column(db.Integer(), primary_key=True, autoincrement=True)
+
+    season = db.Column(db.Integer(), nullable=False)
+
+    round = db.Column(db.Integer(), nullable=False)
+
+    pick_no = db.Column(db.Integer(), nullable=False)
+
+    draft_slot = db.Column(db.Integer(), nullable=False)
+
+    drafting_roster_id = db.Column(db.Integer(), nullable=False)
+
+    original_roster_id = db.Column(db.Integer(), nullable=True)
+
+    player_sleeper_id = db.Column(db.Integer(), nullable=False)
+
+    sleeper_draft_id = db.Column(db.BigInteger(), nullable=False)
+
+    type = db.Column(db.Enum('startup', 'rookie', 'expansion'), nullable=False)
+
+    def serialize(self):
+        return DraftPicksJSONSchema().dump(self)
