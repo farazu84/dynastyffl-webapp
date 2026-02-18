@@ -1,0 +1,48 @@
+/* =============================================================
+   Design Tokens — import once via index.css, available globally
+   ============================================================= */
+:root {
+  /* Primary accent */
+  --color-accent: #61dafb;
+  --color-accent-secondary: #21a9d8;
+  --color-accent-glow: rgba(97, 218, 251, 0.2);
+  --color-accent-glow-strong: rgba(97, 218, 251, 0.3);
+  --color-accent-bg: rgba(97, 218, 251, 0.1);
+
+  /* Card backgrounds */
+  --color-bg-card: #1e1e1e;
+  --color-bg-card-end: #2d2d2d;
+  --color-bg-card-dark: #1a1a1a;
+  --color-bg-card-alt: #2a2a2a;
+  --color-bg-card-alt-end: #3a3a3a;
+  --color-bg-card-hover: #252525;
+  --color-bg-card-hover-end: #343434;
+  --color-bg-widget: rgb(43, 43, 43);
+
+  /* Borders */
+  --color-border: #333;
+  --color-border-light: #444;
+
+  /* Text */
+  --color-text-muted: #ccc;
+  --color-text-dim: #aaa;
+  --color-text-secondary: #ddd;
+  --color-text-label: #9ca3af;
+
+  /* Semantic */
+  --color-win: #4ade80;
+  --color-loss: #f87171;
+  --color-error: #f44336;
+  --color-success: #4caf50;
+
+  /* Shadows */
+  --shadow-card: 0 4px 12px rgba(0, 0, 0, 0.15);
+  --shadow-card-hover: 0 8px 25px var(--color-accent-glow);
+
+  /* Motion */
+  --transition-standard: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* News section accent (intentionally distinct palette) */
+  --color-accent-news: #4f46e5;
+  --color-accent-news-secondary: #06b6d4;
+}

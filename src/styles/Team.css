@@ -1,10 +1,12 @@
 /* Modern Team Page Styling */
-ul li {
-    background: linear-gradient(135deg, #1e1e1e 0%, #2d2d2d 100%);
-    border: 1px solid #333;
+
+/* Scope to .team-page to avoid leaking into Article, League, etc. */
+.team-page ul li {
+    background: linear-gradient(135deg, var(--color-bg-card) 0%, var(--color-bg-card-end) 100%);
+    border: 1px solid var(--color-border);
     border-radius: 12px;
     overflow: hidden;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: var(--transition-standard);
     position: relative;
     height: auto;
     min-height: 0px;
@@ -16,30 +18,30 @@ ul li {
     cursor: pointer;
     padding: 15px 24px;
     color: white;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: var(--shadow-card);
 }
 
-ul li::before {
+.team-page ul li::before {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     height: 3px;
-    background: linear-gradient(90deg, #61dafb, #21a9d8);
+    background: linear-gradient(90deg, var(--color-accent), var(--color-accent-secondary));
     opacity: 0;
     transition: opacity 0.3s ease;
 }
 
-ul li:hover {
+.team-page ul li:hover {
     transform: translateY(-2px);
-    border-color: #61dafb;
-    box-shadow: 0 8px 25px rgba(97, 218, 251, 0.2);
-    background: linear-gradient(135deg, #252525 0%, #343434 100%);
-    color: #61dafb;
+    border-color: var(--color-accent);
+    box-shadow: var(--shadow-card-hover);
+    background: linear-gradient(135deg, var(--color-bg-card-hover) 0%, var(--color-bg-card-hover-end) 100%);
+    color: var(--color-accent);
 }
 
-ul li:hover::before {
+.team-page ul li:hover::before {
     opacity: 1;
 }
 
@@ -58,19 +60,19 @@ ul li:hover::before {
     position: relative;
     color: white;
     border-radius: 5px;
-    flex-direction: column; 
+    flex-direction: column;
 }
 
 .player-row {
-    flex-direction: row; 
-    display: flex; 
+    flex-direction: row;
+    display: flex;
     align-items: center;
     margin: 10px;
 }
 
 .player-col {
-    flex-direction: column; 
-    display: flex; 
+    flex-direction: column;
+    display: flex;
     align-items: flex-start;
     margin: 0
 }
@@ -80,12 +82,12 @@ ul li:hover::before {
     margin-right: 10px;
 }
 
-p {
+.team-page p {
     margin: 0;
     font-size: small;
 }
 
-h3, h2 {
+.team-page h3, .team-page h2 {
     margin: 0;
 }
 
@@ -115,7 +117,7 @@ h3, h2 {
         flex-direction: column;
         gap: 10px;
     }
-    
+
     .team-left-section,
     .team-right-section {
         max-width: 100%;
@@ -123,7 +125,7 @@ h3, h2 {
     }
 
     /* Mobile Team Card Styling */
-    ul li {
+    .team-page ul li {
         max-width: 100%;
         margin: 10px 0;
         padding: 18px 20px;
@@ -133,7 +135,7 @@ h3, h2 {
 
 /* Extra small screens */
 @media (max-width: 480px) {
-    ul li {
+    .team-page ul li {
         padding: 16px 18px;
         min-height: 65px;
         margin: 8px 0;

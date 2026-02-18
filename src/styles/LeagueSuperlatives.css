@@ -26,11 +26,11 @@
 
 .league-superlatives-icon {
     font-size: 1.4em;
-    color: #61dafb;
+    color: var(--color-accent);
 }
 
 .league-superlatives-view-all {
-    color: #61dafb;
+    color: var(--color-accent);
     font-size: 0.9em;
     font-weight: 600;
     text-transform: uppercase;
@@ -53,7 +53,7 @@
 }
 
 .league-superlatives-error {
-    color: #f44336;
+    color: var(--color-error);
 }
 
 /* Superlatives Cards Grid */
@@ -65,11 +65,11 @@
 
 /* Individual Superlative Card */
 .superlative-card {
-    background: linear-gradient(135deg, #1e1e1e 0%, #2d2d2d 100%);
-    border: 1px solid #333;
+    background: linear-gradient(135deg, var(--color-bg-card) 0%, var(--color-bg-card-end) 100%);
+    border: 1px solid var(--color-border);
     border-radius: 10px;
     padding: 18px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: var(--transition-standard);
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -79,7 +79,7 @@
 /* Card Icon */
 .superlative-card-icon {
     font-size: 1.3em;
-    color: #61dafb;
+    color: var(--color-accent);
 }
 
 /* Card Title */
@@ -197,8 +197,8 @@
 .superlative-entry-stat {
     font-size: 0.7em;
     font-weight: 600;
-    color: #61dafb;
-    background: rgba(97, 218, 251, 0.1);
+    color: var(--color-accent);
+    background: var(--color-accent-bg);
     padding: 2px 8px;
     border-radius: 10px;
     white-space: nowrap;

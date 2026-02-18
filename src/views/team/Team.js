@@ -115,7 +115,7 @@ const Team = React.memo(() => {
     }
 
     return (
-        <main>
+        <main className="team-page">
             <TeamHeader team={pickedTeam} />
             <NewsBar articles={articles} />
             <div className="team-content-split">

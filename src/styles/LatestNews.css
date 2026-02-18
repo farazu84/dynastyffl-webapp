@@ -71,7 +71,7 @@
 
 .compact-section-title {
     font-size: 1.5em;
-    color: #61dafb;
+    color: var(--color-accent);
     margin: 0 0 20px 0;
     font-weight: 600;
     text-align: left;
@@ -109,14 +109,14 @@
 }
 
 .compact-article {
-    background: linear-gradient(135deg, #2a2a2a 0%, #3a3a3a 100%);
-    border: 1px solid #444;
+    background: linear-gradient(135deg, var(--color-bg-card-alt) 0%, var(--color-bg-card-alt-end) 100%);
+    border: 1px solid var(--color-border-light);
     border-radius: 12px;
     padding: 0;
     display: flex;
     flex-direction: column;
     height: 240px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: var(--transition-standard);
     position: relative;
     overflow: hidden;
 }
@@ -147,7 +147,7 @@
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(97, 218, 251, 0.1), transparent);
+    background: linear-gradient(90deg, transparent, var(--color-accent-bg), transparent);
     transition: left 0.5s;
 }
 
@@ -156,9 +156,9 @@
 }
 
 .compact-article:hover {
-    border-color: #61dafb;
-    box-shadow: 0 4px 12px rgba(97, 218, 251, 0.2);
-    background: linear-gradient(135deg, #2d2d2d 0%, #3d3d3d 100%);
+    border-color: var(--color-accent);
+    box-shadow: 0 4px 12px var(--color-accent-glow);
+    background: linear-gradient(135deg, var(--color-bg-card-end) 0%, #3d3d3d 100%);
 }
 
 .compact-content {
@@ -177,16 +177,16 @@
 }
 
 .compact-author {
-    color: #61dafb;
+    color: var(--color-accent);
     font-weight: 600;
-    background: rgba(97, 218, 251, 0.1);
+    background: var(--color-accent-bg);
     padding: 2px 8px;
     border-radius: 12px;
-    border: 1px solid rgba(97, 218, 251, 0.3);
+    border: 1px solid var(--color-accent-glow-strong);
 }
 
 .compact-date {
-    color: #aaa;
+    color: var(--color-text-dim);
     font-style: italic;
 }
 
@@ -204,11 +204,11 @@
 }
 
 .compact-article:hover .compact-title {
-    color: #61dafb;
+    color: var(--color-accent);
 }
 
 .compact-excerpt {
-    color: #ccc;
+    color: var(--color-text-muted);
     font-size: 0.85em;
     line-height: 1.4;
     margin: 0;
@@ -221,11 +221,12 @@
 
 .latest-news-title {
     font-size: 2.5em;
-    color: #61dafb;
+    color: var(--color-accent);
     text-align: left;
+    margin-top: 0;
     margin-bottom: 30px;
     font-weight: 700;
-    background: linear-gradient(45deg, #61dafb, #21a9d8);
+    background: linear-gradient(45deg, var(--color-accent), var(--color-accent-secondary));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -233,12 +234,12 @@
 }
 
 .news-card {
-    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+    background: linear-gradient(135deg, var(--color-bg-card-dark) 0%, var(--color-bg-card-end) 100%);
     border-radius: 16px;
     overflow: hidden;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-    border: 1px solid #333;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid var(--color-border);
+    transition: var(--transition-standard);
     width: 100%;
     margin: 0;
     position: relative;
@@ -246,8 +247,8 @@
 
 .news-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 20px 40px rgba(97, 218, 251, 0.2);
-    border-color: #61dafb;
+    box-shadow: 0 20px 40px var(--color-accent-glow);
+    border-color: var(--color-accent);
 }
 
 .news-card.loading {
@@ -258,7 +259,7 @@
 }
 
 .loading-text {
-    color: #61dafb;
+    color: var(--color-accent);
     font-size: 1.2em;
     font-weight: 600;
     animation: pulse 2s ease-in-out infinite;
@@ -302,16 +303,16 @@
 }
 
 .news-author {
-    color: #61dafb;
+    color: var(--color-accent);
     font-weight: 600;
-    background: rgba(97, 218, 251, 0.1);
+    background: var(--color-accent-bg);
     padding: 4px 12px;
     border-radius: 20px;
-    border: 1px solid rgba(97, 218, 251, 0.3);
+    border: 1px solid var(--color-accent-glow-strong);
 }
 
 .news-date {
-    color: #ccc;
+    color: var(--color-text-muted);
     font-style: italic;
 }
 
@@ -325,11 +326,11 @@
 }
 
 .news-card:hover .news-title {
-    color: #61dafb;
+    color: var(--color-accent);
 }
 
 .news-excerpt {
-    color: #ddd;
+    color: var(--color-text-secondary);
     line-height: 1.6;
     margin: 0 0 25px 0;
     font-size: 1.1em;
@@ -339,13 +340,13 @@
     display: inline-flex;
     align-items: center;
     padding: 12px 24px;
-    background: linear-gradient(45deg, #61dafb, #21a9d8);
+    background: linear-gradient(45deg, var(--color-accent), var(--color-accent-secondary));
     color: white;
     text-decoration: none;
     border-radius: 8px;
     font-weight: 600;
     font-size: 1rem;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: var(--transition-standard);
     position: relative;
     overflow: hidden;
 }
@@ -368,7 +369,7 @@
 .read-more-btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 25px rgba(97, 218, 251, 0.4);
-    background: linear-gradient(45deg, #21a9d8, #61dafb);
+    background: linear-gradient(45deg, var(--color-accent-secondary), var(--color-accent));
 }
 
 .read-more-btn:active {
@@ -378,7 +379,7 @@
 .read-more-btn.disabled {
     background: #666;
     cursor: not-allowed;
-    color: #aaa;
+    color: var(--color-text-dim);
 }
 
 .read-more-btn.disabled:hover {
@@ -534,7 +535,7 @@
 .trending-players-wrapper .trending-players-container {
     margin-top: 0;
     padding: 20px;
-    background: rgb(43, 43, 43);
+    background: var(--color-bg-widget);
     border-radius: 8px;
     color: white;
     height: 100%;
@@ -574,27 +575,27 @@
         gap: 30px;
         min-height: auto;
     }
-    
+
     .latest-news-container {
         width: 100%;
         max-width: 100%;
     }
-    
+
     .trending-players-wrapper {
         flex: none;
         width: 100%;
         max-width: 100%;
         margin-right: 0;
     }
-    
+
     .trending-players-title-spacer {
         display: none;
     }
-    
+
     .trending-players-wrapper .trending-players-container {
         height: auto;
     }
-    
+
     .trending-players-wrapper .trending-players-embed iframe {
         height: 400px;
         min-height: 400px;

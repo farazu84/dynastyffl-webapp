@@ -1,7 +1,7 @@
 /* Rumor Mill Page Styling */
 .rumor-page {
     min-height: 100vh;
-    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+    background: linear-gradient(135deg, var(--color-bg-card-dark) 0%, var(--color-bg-card-end) 100%);
     color: white;
     padding: 40px 20px;
 }
@@ -9,20 +9,20 @@
 .rumor-container {
     max-width: 800px;
     margin: 0 auto;
-    background: linear-gradient(135deg, #2a2a2a 0%, #3a3a3a 100%);
+    background: linear-gradient(135deg, var(--color-bg-card-alt) 0%, var(--color-bg-card-alt-end) 100%);
     border-radius: 20px;
     padding: 40px;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-    border: 1px solid #444;
+    border: 1px solid var(--color-border-light);
 }
 
 .rumor-title {
     font-size: 3em;
-    color: #61dafb;
+    color: var(--color-accent);
     text-align: center;
     margin: 0 0 15px 0;
     font-weight: 700;
-    background: linear-gradient(45deg, #61dafb, #21a9d8);
+    background: linear-gradient(45deg, var(--color-accent), var(--color-accent-secondary));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -31,7 +31,7 @@
 
 .rumor-subtitle {
     text-align: center;
-    color: #ccc;
+    color: var(--color-text-muted);
     font-size: 1.2em;
     margin: 0 0 40px 0;
     font-style: italic;
@@ -52,13 +52,13 @@
 .form-label {
     font-size: 1.2em;
     font-weight: 600;
-    color: #61dafb;
+    color: var(--color-accent);
     margin: 0;
 }
 
 .form-helper {
     font-size: 0.9em;
-    color: #aaa;
+    color: var(--color-text-dim);
     margin: 0;
     font-style: italic;
 }
@@ -68,7 +68,7 @@
     min-height: 150px;
     padding: 20px;
     background: rgba(255, 255, 255, 0.05);
-    border: 2px solid #444;
+    border: 2px solid var(--color-border-light);
     border-radius: 12px;
     color: white;
     font-size: 1.1em;
@@ -81,8 +81,8 @@
 
 .rumor-textarea:focus {
     outline: none;
-    border-color: #61dafb;
-    box-shadow: 0 0 0 3px rgba(97, 218, 251, 0.2);
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px var(--color-accent-glow);
     background: rgba(255, 255, 255, 0.08);
 }
 
@@ -94,7 +94,7 @@
 .character-count {
     text-align: right;
     font-size: 0.85em;
-    color: #aaa;
+    color: var(--color-text-dim);
     margin-top: 5px;
 }
 
@@ -103,7 +103,7 @@
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 12px;
     background: rgba(255, 255, 255, 0.03);
-    border: 1px solid #444;
+    border: 1px solid var(--color-border-light);
     border-radius: 12px;
     padding: 20px;
     max-height: 300px;
@@ -122,7 +122,7 @@
 }
 
 .team-checkbox:hover {
-    background: rgba(97, 218, 251, 0.1);
+    background: var(--color-accent-bg);
 }
 
 .checkbox-input {
@@ -132,7 +132,7 @@
 .checkbox-custom {
     width: 20px;
     height: 20px;
-    border: 2px solid #61dafb;
+    border: 2px solid var(--color-accent);
     border-radius: 4px;
     position: relative;
     transition: all 0.3s ease;
@@ -140,8 +140,8 @@
 }
 
 .checkbox-input:checked + .checkbox-custom {
-    background: #61dafb;
-    border-color: #61dafb;
+    background: var(--color-accent);
+    border-color: var(--color-accent);
 }
 
 .checkbox-input:checked + .checkbox-custom::after {
@@ -163,7 +163,7 @@
 }
 
 .team-checkbox:hover .team-name {
-    color: #61dafb;
+    color: var(--color-accent);
 }
 
 .selected-teams {
@@ -175,12 +175,12 @@
     padding: 15px;
     background: rgba(97, 218, 251, 0.05);
     border-radius: 8px;
-    border: 1px solid rgba(97, 218, 251, 0.2);
+    border: 1px solid var(--color-accent-glow);
 }
 
 .selected-label {
     font-weight: 600;
-    color: #61dafb;
+    color: var(--color-accent);
     font-size: 0.9em;
 }
 
@@ -188,7 +188,7 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    background: #61dafb;
+    background: var(--color-accent);
     color: black;
     padding: 6px 12px;
     border-radius: 20px;
@@ -233,14 +233,14 @@
 .submit-btn {
     align-self: center;
     padding: 16px 40px;
-    background: linear-gradient(45deg, #61dafb, #21a9d8);
+    background: linear-gradient(45deg, var(--color-accent), var(--color-accent-secondary));
     color: white;
     border: none;
     border-radius: 12px;
     font-size: 1.1em;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: var(--transition-standard);
     position: relative;
     overflow: hidden;
     min-width: 200px;
@@ -264,7 +264,7 @@
 .submit-btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 10px 25px rgba(97, 218, 251, 0.4);
-    background: linear-gradient(45deg, #21a9d8, #61dafb);
+    background: linear-gradient(45deg, var(--color-accent-secondary), var(--color-accent));
 }
 
 .submit-btn:disabled {
@@ -300,13 +300,13 @@
 
 .submit-message.success {
     background: rgba(76, 175, 80, 0.2);
-    color: #4caf50;
+    color: var(--color-success);
     border: 1px solid rgba(76, 175, 80, 0.3);
 }
 
 .submit-message.error {
     background: rgba(244, 67, 54, 0.2);
-    color: #f44336;
+    color: var(--color-error);
     border: 1px solid rgba(244, 67, 54, 0.3);
 }
 

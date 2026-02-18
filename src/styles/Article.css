@@ -59,7 +59,7 @@ body:has(.article-page) .footer {
 
 .article-header h3 {
     display: block;
-    color: #61dafb;
+    color: var(--color-accent);
     margin: 0 0 20px 0;
     font-size: 1.2em;
     font-weight: bold;
@@ -122,7 +122,7 @@ body:has(.article-page) .footer {
 .article-content h5,
 .article-content h6 {
     display: block;
-    color: #61dafb;
+    color: var(--color-accent);
     margin: 24px 0 16px 0;
     line-height: 1.25;
     font-weight: bold;
@@ -152,48 +152,30 @@ body:has(.article-page) .footer {
 
 .article-content ul,
 .article-content ol {
-    /* Complete reset to prevent inheritance from other components */
-    all: unset;
     display: block;
     margin: 16px 0;
     padding-left: 32px;
     color: white;
     font-family: inherit;
     list-style: none;
-    background: none !important;
-    border: none !important;
-    box-shadow: none !important;
-    position: static !important;
 }
 
 .article-content li {
-    /* Complete reset to prevent inheritance from Team/League components */
-    all: unset;
     display: block;
     margin: 0;
     padding: 0;
     line-height: 1.5;
     color: white;
     font-family: inherit;
-    background: none !important;
-    border: none !important;
-    box-shadow: none !important;
-    position: static !important;
-    width: auto !important;
-    height: auto !important;
-    cursor: default !important;
-    border-radius: 0 !important;
 }
 
-/* Reset any pseudo-elements that might be inherited from Team/League list styles */
+/* Ensure no pseudo-elements from other list styles bleed in */
 .article-content ul li::before,
 .article-content ul li::after,
 .article-content ol li::before,
 .article-content ol li::after {
-    display: none !important;
-    content: none !important;
-    background: none !important;
-    position: static !important;
+    display: none;
+    content: none;
 }
 
 /* Fix for malformed list items that should be regular text */
@@ -271,7 +253,7 @@ body:has(.article-page) .footer {
 
 .article-content blockquote {
     display: block;
-    border-left: 4px solid #61dafb;
+    border-left: 4px solid var(--color-accent);
     margin: 16px 0;
     padding: 8px 16px;
     background-color: rgba(97, 218, 251, 0.1);
@@ -290,7 +272,7 @@ body:has(.article-page) .footer {
     color: white;
     font-family: inherit;
     table-layout: fixed;
-    border: 2px solid #61dafb;
+    border: 2px solid var(--color-accent);
     border-radius: 8px;
     overflow: hidden;
     background-color: #262626;
@@ -316,7 +298,7 @@ body:has(.article-page) .footer {
 }
 
 .article-content th {
-    background-color: #61dafb;
+    background-color: var(--color-accent);
     color: #000;
     font-weight: bold;
     font-size: 0.9em;

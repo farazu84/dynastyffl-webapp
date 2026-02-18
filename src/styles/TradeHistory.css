@@ -28,11 +28,11 @@
 
 .trade-history-icon {
     font-size: 1.4em;
-    color: #61dafb;
+    color: var(--color-accent);
 }
 
 .trade-history-view-all {
-    color: #61dafb;
+    color: var(--color-accent);
     font-size: 0.9em;
     font-weight: 600;
     text-transform: uppercase;
@@ -55,7 +55,7 @@
 }
 
 .trade-history-error {
-    color: #f44336;
+    color: var(--color-error);
 }
 
 /* Trade Cards Grid */
@@ -73,11 +73,11 @@
 
 /* Individual Trade Card */
 .trade-card {
-    background: linear-gradient(135deg, #1e1e1e 0%, #2d2d2d 100%);
-    border: 1px solid #333;
+    background: linear-gradient(135deg, var(--color-bg-card) 0%, var(--color-bg-card-end) 100%);
+    border: 1px solid var(--color-border);
     border-radius: 10px;
     padding: 16px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: var(--transition-standard);
     display: flex;
     flex-direction: column;
     gap: 14px;
@@ -85,7 +85,7 @@
 
 .trade-card:hover {
     transform: translateY(-2px);
-    border-color: #61dafb;
+    border-color: var(--color-accent);
     box-shadow: 0 8px 25px rgba(97, 218, 251, 0.15);
 }
 
@@ -125,13 +125,13 @@
 }
 
 .trade-card-team + .trade-card-team {
-    border-top: 1px solid #444;
+    border-top: 1px solid var(--color-border-light);
 }
 
 .trade-card-team-name {
     font-size: 0.75em;
     font-weight: 700;
-    color: #61dafb;
+    color: var(--color-accent);
     text-transform: uppercase;
     letter-spacing: 0.3px;
 }
