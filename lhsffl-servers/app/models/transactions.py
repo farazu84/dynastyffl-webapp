@@ -66,7 +66,7 @@ class Transactions(db.Model):
             query = query.join(TransactionRosters).filter(
                 TransactionRosters.sleeper_roster_id == roster_id
             )
-        query = query.filter_by(status='complete')
+        query = query.filter(cls.status == 'complete')
         query = query.order_by(cls.created_at.desc())
         return cls._with_eager_loads(query).all()
 
