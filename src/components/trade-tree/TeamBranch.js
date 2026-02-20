@@ -67,7 +67,7 @@ const calculateDuration = (startDateStr, endDateStr) => {
 };
 
 const TeamBranch = ({ team, pickMetadata = {}, originDate }) => {
-    const transactions = team.transactions || [];
+    const transactions = useMemo(() => team.transactions || [], [team.transactions]);
 
     // 1. Aggregate all assets (initial + subsequent) in order
     const orderedAssets = useMemo(() => {

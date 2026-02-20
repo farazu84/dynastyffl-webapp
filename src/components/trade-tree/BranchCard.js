@@ -3,7 +3,6 @@ import PlayerChip from './PlayerChip';
 import { formatDate, formatPickShort } from '../../utils/formatters';
 
 const getAcquisitions = (txn) => {
-    const acquisitions = [];
     const teamMap = new Map();
 
     // 1. Identify all teams involved from roster_moves

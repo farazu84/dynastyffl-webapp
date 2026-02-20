@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useParams } from "react-router-dom";
-import PlayerItem from './../../components/team/PlayerItem'
 import Starters from './../../components/team/Starters'
 import Bench from './../../components/team/Bench'
 import Taxi from './../../components/team/Taxi'
