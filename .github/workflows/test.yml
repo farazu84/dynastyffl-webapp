@@ -1,0 +1,37 @@
+name: Backend Tests
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    name: Run pytest
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: lhsffl-servers
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+          cache-dependency-path: lhsffl-servers/requirements.txt
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install pytest pytest-flask
+
+      - name: Run tests
+        env:
+          LEAGUE_ID: ci_placeholder
+        run: pytest tests/ -v --tb=short

@@ -97,16 +97,6 @@ class TestGetTransactions:
         assert len(data['transactions']) == 1
         assert data['transactions'][0]['type'] == 'free_agent'
 
-    @pytest.mark.xfail(
-        strict=True,
-        raises=Exception,
-        reason=(
-            "Bug in Transactions.get_filtered: after query.join(TransactionRosters), "
-            "the subsequent filter_by(status='complete') incorrectly targets the joined "
-            "TransactionRosters entity (which has no 'status' column) instead of Transactions. "
-            "Fix: replace filter_by(status='complete') with filter(Transactions.status == 'complete')."
-        ),
-    )
     def test_filter_by_roster_id(self, client, db):
         self._seed_mixed_transactions(db)
         # Only roster 1 is in txn 1 (trade) and txn 2 (waiver)
