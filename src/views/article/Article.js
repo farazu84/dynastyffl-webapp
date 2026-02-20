@@ -4,7 +4,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import '../../styles/Article.css';
-import fallbackImage from '../../studio-gib-1.png';
+
 import config from '../../config';
 
 
@@ -38,14 +38,6 @@ const Article = ( ) => {
             fetchArticle();
         }
     }, [articleId]);
-
-    const handleImageError = (e) => {
-        e.target.src = fallbackImage;
-    };
-
-    const getImageSrc = (thumbnail) => {
-        return thumbnail && thumbnail.trim() !== '' ? thumbnail : fallbackImage;
-    };
 
     if (isLoading) {
         return (

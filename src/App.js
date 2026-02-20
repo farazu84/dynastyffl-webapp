@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import './App.css';
 import Header from './Header';
-import Content from './Content';
 import League from './views/league/League'
 import Team from './views/team/Team'
 import Article from './views/article/Article';

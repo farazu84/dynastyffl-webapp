@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import TeamItem from './../../components/league/TeamItem';
 import ArticleHeader from './../../components/league/ArticleHeader';
 import TrendingPlayers from './../../components/league/TrendingPlayers';

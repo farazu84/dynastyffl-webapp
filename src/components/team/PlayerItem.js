@@ -1,6 +1,3 @@
-import { Link } from 'react-router-dom';
-
-
 const PlayerItem = ( { player }) => {
     // Format years of experience from player data
     const formatExperience = (yearsExp) => {
