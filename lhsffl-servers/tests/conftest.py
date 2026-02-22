@@ -24,7 +24,9 @@ Decorator usage
 """
 
 import os
+import re
 import inspect
+import importlib
 from itertools import count
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
@@ -35,6 +37,7 @@ import pytest
 
 # Must be set before importing create_app
 os.environ.setdefault('LEAGUE_ID', 'test_league_123')
+os.environ.setdefault('GOOGLE_CLIENT_ID', 'test-google-client-id')
 
 # ── Unique-ID counters (module-level; reset per process, fine for function-scoped DBs) ──
 _sleeper_txn_ids = count(start=10_000)
@@ -49,6 +52,7 @@ class TestConfig:
     SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SECRET_KEY = 'test-secret-key'
+    JWT_SECRET_KEY = 'test-jwt-secret-key'
 
 
 def _use_sqlite(app):
@@ -84,6 +88,23 @@ def client(app, db):
 # ═══════════════════════════════════════════════════════════════════════════
 # 2. Low-level row helpers
 # ═══════════════════════════════════════════════════════════════════════════
+
+def make_user(db, user_name='testuser', email='test@example.com', google_id='google-sub-123',
+              first_name='Test', last_name='User', admin=False, team_owner=False):
+    from app.models.users import Users
+    u = Users(
+        user_name=user_name,
+        first_name=first_name,
+        last_name=last_name,
+        email=email,
+        google_id=google_id,
+        admin=admin,
+        team_owner=team_owner,
+    )
+    db.session.add(u)
+    db.session.flush()  # populate user_id without requiring an explicit commit
+    return u
+
 
 def make_team(db, team_id, sleeper_roster_id, team_name='Team'):
     from app.models.teams import Teams
@@ -461,6 +482,50 @@ def with_waiver(
         wrapper.__qualname__  = fn.__qualname__
         wrapper.__doc__       = fn.__doc__
         wrapper.__signature__ = new_sig
+        return wrapper
+
+    return decorator
+
+
+def _camel_to_snake(name):
+    name = re.sub(r'(.)([A-Z][a-z]+)', r'\1_\2', name)
+    return re.sub(r'([a-z0-9])([A-Z])', r'\1_\2', name).lower()
+
+
+def create_resource(model_name, *, commit=True, **fields):
+    """
+    Decorator: insert a single row into the test DB before the test runs.
+
+    The model is imported lazily to avoid circular imports. The module path is
+    derived automatically: 'Users' -> app.models.users, 'DraftPicks' -> app.models.draft_picks.
+
+    Args:
+        model_name    Model class name as a string, e.g. 'Users', 'DraftPicks'.
+        commit        Commit after adding (default True); pass False to only flush.
+        **fields      Column values forwarded directly to the model constructor.
+
+    Example:
+        @create_resource('Transactions', type='free_agent', status='complete',
+                         sleeper_transaction_id=1, year=2024, week=1, sleeper_league_id=999)
+        def test_something(self, client, db):
+            ...
+    """
+    def decorator(fn):
+        def wrapper(*args, **kwargs):
+            module = importlib.import_module(f'app.models.{_camel_to_snake(model_name)}')
+            model_class = getattr(module, model_name)
+            db = kwargs['db']
+            db.session.add(model_class(**fields))
+            if commit:
+                db.session.commit()
+            else:
+                db.session.flush()
+            return fn(*args, **kwargs)
+
+        wrapper.__name__      = fn.__name__
+        wrapper.__qualname__  = fn.__qualname__
+        wrapper.__doc__       = fn.__doc__
+        wrapper.__signature__ = inspect.signature(fn)
         return wrapper
 
     return decorator

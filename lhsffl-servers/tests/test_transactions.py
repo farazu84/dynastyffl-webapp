@@ -27,7 +27,7 @@ from tests.conftest import (
     create_league,
     make_team, make_player, make_transaction, make_roster,
     make_player_move, make_pick_move, make_draft_pick, make_league_state,
-    with_trade, with_waiver, with_draft_pick,
+    with_trade, with_waiver, with_draft_pick, create_resource,
 )
 
 
@@ -89,11 +89,13 @@ class TestGetTransactions:
         assert len(data['transactions']) == 1
         assert data['transactions'][0]['type'] == 'waiver'
 
+    @create_resource('Transactions',
+                     sleeper_transaction_id=20001, type='free_agent', status='complete',
+                     year=2024, week=1, sleeper_league_id=999, created_at=datetime(2024, 9, 1))
+    @create_resource('Transactions',
+                     sleeper_transaction_id=20002, type='trade', status='complete',
+                     year=2024, week=1, sleeper_league_id=999, created_at=datetime(2024, 9, 2))
     def test_filter_by_type_free_agent(self, client, db, league):
-        # free_agent type can't be created with our decorators, so use low-level helpers
-        make_transaction(db, 1, txn_type='free_agent', year=2024, week=1)
-        make_transaction(db, 2, txn_type='trade',      year=2024, week=1)
-        db.session.commit()
         r = client.get('/v1/transactions?type=free_agent')
         data = r.get_json()
         assert r.status_code == 200
