@@ -4,7 +4,9 @@ CREATE TABLE Users (
     first_name VARCHAR(64) NOT NULL DEFAULT '',
     last_name VARCHAR(64) NOT NULL DEFAULT '',
     sleeper_user_id BIGINT unsigned DEFAULT NULL,
-    password VARCHAR(64) NOT NULL DEFAULT '',
+    email VARCHAR(255) UNIQUE DEFAULT NULL,
+    google_id VARCHAR(255) UNIQUE DEFAULT NULL,
+    password VARCHAR(256) NULL DEFAULT NULL,
     admin tinyint(4) NOT NULL DEFAULT '0',
     team_owner tinyint(4) NOT NULL DEFAULT '0',
     PRIMARY KEY (user_id)

@@ -2,16 +2,19 @@ import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
+from flask_jwt_extended import JWTManager
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 
 db = SQLAlchemy()
+jwt = JWTManager()
 
 def create_app(config=None):
     app = Flask(__name__)
     app.config.from_object(config)
     setup_db(app)
     db.init_app(app)
+    jwt.init_app(app)
     app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_port=1)
 
     # Enable CORS for all routes and origins
@@ -23,6 +26,7 @@ def create_app(config=None):
          supports_credentials=True)
 
     from app.endpoints import (
+        auth,
         test,
         users,
         teams,
@@ -34,6 +38,7 @@ def create_app(config=None):
         superlatives as superlatives_bp,
     )
 
+    app.register_blueprint(auth.auth, url_prefix='/v1')
     app.register_blueprint(test.test, url_prefix='/v1')
     app.register_blueprint(users.users, url_prefix='/v1')
     app.register_blueprint(teams.teams, url_prefix='/v1')

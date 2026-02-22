@@ -6,6 +6,6 @@ class UsersJSONSchema(Schema):
     first_name = fields.Str()
     last_name = fields.Str()
     sleeper_user_id = fields.Int()
-    password = fields.Str()
+    email = fields.Str()
     admin = fields.Bool()
     team_owner = fields.Bool()
