@@ -26,6 +26,7 @@ def create_app(config=None):
          supports_credentials=True)
 
     from app.endpoints import (
+        admin,
         auth,
         test,
         users,
@@ -34,10 +35,11 @@ def create_app(config=None):
         matchups,
         league,
         sync,
-        transactions as transactions_bp,
-        superlatives as superlatives_bp,
+        transactions,
+        superlatives,
     )
 
+    app.register_blueprint(admin.admin, url_prefix='/v1')
     app.register_blueprint(auth.auth, url_prefix='/v1')
     app.register_blueprint(test.test, url_prefix='/v1')
     app.register_blueprint(users.users, url_prefix='/v1')
@@ -46,8 +48,8 @@ def create_app(config=None):
     app.register_blueprint(matchups.matchups, url_prefix='/v1')
     app.register_blueprint(league.league, url_prefix='/v1')
     app.register_blueprint(sync.sync, url_prefix='/v1')
-    app.register_blueprint(transactions_bp.transactions, url_prefix='/v1')
-    app.register_blueprint(superlatives_bp.superlatives, url_prefix='/v1')
+    app.register_blueprint(transactions.transactions, url_prefix='/v1')
+    app.register_blueprint(superlatives.superlatives, url_prefix='/v1')
 
     # Validate required env vars
     if not os.environ.get('LEAGUE_ID'):

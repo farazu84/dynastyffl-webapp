@@ -8,10 +8,19 @@ import Rumor from './views/Rumor.js/Rumor';
 import News from './views/News/News';
 import Archive from './views/archive/Archive';
 import TradeTree from './views/archive/TradeTree';
+import Admin from './views/admin/Admin';
 import Footer from './Footer';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import { useAuth } from './hooks/useAuth';
+
+const AdminRoute = ({ children }) => {
+    const { user, loading } = useAuth();
+    if (loading) return null;
+    if (!user?.admin) return <Navigate to="/" replace />;
+    return children;
+};
 
 
 function App() {
@@ -29,6 +38,7 @@ function App() {
             <Route path="/rumors" element={<Rumor />} />
             <Route path="/archive/trades/:transactionId" element={<TradeTree />} />
             <Route path="/archive" element={<Archive />} />
+            <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
           </Routes>
           <Footer />
         </div>

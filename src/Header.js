@@ -41,6 +41,7 @@ const Header = () => {
                         <Link to="/news">News</Link>
                         <Link to="/archive">Archive</Link>
                         <Link to="/rumors">Rumor Mill</Link>
+                        {user?.admin && <Link to="/admin" className="admin-link">Admin</Link>}
                     </nav>
                     <div className="header-auth">
                         {user ? (
