@@ -26,13 +26,12 @@ def _token_pair(user):
 @auth.route('/auth/refresh', methods=['POST'])
 @jwt_required(refresh=True)
 def refresh():
-    user = Users.query.get(int(get_jwt_identity()))
+    user = db.session.get(Users, int(get_jwt_identity()))
 
     if not user:
         return jsonify(error='User not found'), 404
 
-    claims = {'admin': user.admin, 'team_owner': user.team_owner}
-    return jsonify(access_token=create_access_token(identity=str(user.user_id), additional_claims=claims))
+    return jsonify(access_token=_token_pair(user)['access_token'])
 
 
 @auth.route('/auth/google', methods=['POST'])
@@ -62,7 +61,6 @@ def google_login():
         user = Users.query.filter_by(email=email).first()
         if user:
             user.google_id = google_id
-            db.session.commit()
 
     if not user:
         user = Users(
@@ -73,7 +71,8 @@ def google_login():
             google_id=google_id,
         )
         db.session.add(user)
-        db.session.commit()
+
+    db.session.commit()
 
     return jsonify(**_token_pair(user), user=user.serialize())
 
@@ -89,7 +88,7 @@ def logout():
 @auth.route('/auth/me', methods=['GET'])
 @jwt_required()
 def me():
-    user = Users.query.get(int(get_jwt_identity()))
+    user = db.session.get(Users, int(get_jwt_identity()))
 
     if not user:
         return jsonify(error='User not found'), 404

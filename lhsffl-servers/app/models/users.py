@@ -1,7 +1,6 @@
 from .. import db
 from sqlalchemy.dialects.mysql import BIGINT
 from app.models.schemas.users import UsersJSONSchema
-from sqlalchemy.orm import relationship
 
 
 class Users(db.Model):
@@ -28,17 +27,6 @@ class Users(db.Model):
     team_owner = db.Column(db.Boolean(), nullable=False, default=False)
 
     owner_groups = db.relationship('TeamOwners', back_populates='user')
-
-    def get_user(self, user_id):
-        '''
-        Retrieve a user based on id
-        '''
-
-        query = 'SELECT first_name FROM Users WHERE user_id = :user_id'
-
-        result = session.query(self).filter(self.user_id==user_id).first()
-
-        return result
 
     def serialize(self):
         return UsersJSONSchema().dump(self)

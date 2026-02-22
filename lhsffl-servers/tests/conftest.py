@@ -52,7 +52,7 @@ class TestConfig:
     SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SECRET_KEY = 'test-secret-key'
-    JWT_SECRET_KEY = 'test-jwt-secret-key'
+    JWT_SECRET_KEY = 'test-jwt-secret-key-that-is-long-enough-for-hmac'
 
 
 def _use_sqlite(app):
