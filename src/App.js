@@ -8,27 +8,43 @@ import Rumor from './views/Rumor.js/Rumor';
 import News from './views/News/News';
 import Archive from './views/archive/Archive';
 import TradeTree from './views/archive/TradeTree';
+import Admin from './views/admin/Admin';
 import Footer from './Footer';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import { GoogleOAuthProvider } from '@react-oauth/google';
+import { useAuth } from './hooks/useAuth';
+
+const AdminRoute = ({ children }) => {
+    const { user, loading } = useAuth();
+    if (loading) return null;
+    if (!user?.admin) return <Navigate to="/" replace />;
+    return children;
+};
 
 
 function App() {
   return (
-    <Router>
-      <div className="App">
-        <Header />
-        <Routes>
-          <Route exact path="/" element={<League />} />
-          <Route path="/teams/:teamId" element={<Team />} />
-          <Route path="/articles/:articleId" element={<Article />} />
-          <Route path="/news" element={<News />} />
-          <Route path="/rumors" element={<Rumor />} />
-          <Route path="/archive/trades/:transactionId" element={<TradeTree />} />
-          <Route path="/archive" element={<Archive />} />
-        </Routes>
-        <Footer />
-      </div>
-    </Router>
+    <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}>
+    <AuthProvider>
+      <Router>
+        <div className="App">
+          <Header />
+          <Routes>
+            <Route exact path="/" element={<League />} />
+            <Route path="/teams/:teamId" element={<Team />} />
+            <Route path="/articles/:articleId" element={<Article />} />
+            <Route path="/news" element={<News />} />
+            <Route path="/rumors" element={<Rumor />} />
+            <Route path="/archive/trades/:transactionId" element={<TradeTree />} />
+            <Route path="/archive" element={<Archive />} />
+            <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
+          </Routes>
+          <Footer />
+        </div>
+      </Router>
+    </AuthProvider>
+    </GoogleOAuthProvider>
   );
 }
 

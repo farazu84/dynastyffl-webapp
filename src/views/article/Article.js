@@ -6,13 +6,19 @@ import rehypeRaw from 'rehype-raw';
 import '../../styles/Article.css';
 
 import config from '../../config';
+import { useAuth } from '../../hooks/useAuth';
+import { useAuthFetch } from '../../hooks/useAuthFetch';
 
 
 const Article = ( ) => {
     const { articleId } = useParams();
+    const { user } = useAuth();
+    const authFetch = useAuthFetch();
     const [article, setArticle] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [fetchError, setFetchError] = useState(null);
+    const [publishing, setPublishing] = useState(false);
+    const [publishError, setPublishError] = useState(null);
 
     useEffect(() => {
         const fetchArticle = async () => {
@@ -38,6 +44,21 @@ const Article = ( ) => {
             fetchArticle();
         }
     }, [articleId]);
+
+    const handlePublish = async () => {
+        setPublishing(true);
+        setPublishError(null);
+        try {
+            const res = await authFetch(`/admin/articles/${articleId}/publish`, { method: 'POST' });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Failed to publish');
+            setArticle(data.article);
+        } catch (err) {
+            setPublishError(err.message);
+        } finally {
+            setPublishing(false);
+        }
+    };
 
     if (isLoading) {
         return (
@@ -71,6 +92,19 @@ const Article = ( ) => {
 
     return (
         <div className="article-page">
+            {user?.admin && !article.published && (
+                <div className="article-publish-bar">
+                    <span className="article-draft-badge">Draft</span>
+                    <button
+                        className="article-publish-btn"
+                        onClick={handlePublish}
+                        disabled={publishing}
+                    >
+                        {publishing ? 'Publishing...' : 'Publish Article'}
+                    </button>
+                    {publishError && <span className="article-publish-error">{publishError}</span>}
+                </div>
+            )}
             <div className="article-header">
                 <h3>News</h3>
                 <h2>{article.title}</h2>

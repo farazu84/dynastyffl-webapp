@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import fallbackImage from '../../studio-gib-1.png';
 import TrendingPlayers from './TrendingPlayers';
+import CompactArticleCard from '../articles/CompactArticleCard';
 import '../../styles/LatestNews.css';
 import config from '../../config';
 import { cachedFetch } from '../../utils/apiCache';
@@ -124,32 +125,6 @@ const ArticleHeader = React.memo(() => {
         </Link>
     ), [handleImageError]);
 
-    const renderCompactArticle = useCallback((article, index) => (
-        <Link 
-            key={article.article_id || index}
-            to={article?.article_id ? `/articles/${article.article_id}` : '#'} 
-            state={{ article: article }}
-            className={`compact-article-link ${!article?.article_id ? 'disabled' : ''}`}
-        >
-            <div className="compact-article">
-                <div className="compact-image-container">
-                    <img 
-                        src={article.imageSrc} 
-                        alt={'League News'}
-                        className="compact-image"
-                        onError={handleImageError}
-                    />
-                </div>
-                <div className="compact-content">
-                    <div className="compact-meta">
-                        <span className="compact-author">{article?.author || 'League News'}</span>
-                        <span className="compact-date">{article.formattedDate}</span>
-                    </div>
-                    <h4 className="compact-title">{article?.title || 'League News'}</h4>
-                </div>
-            </div>
-        </Link>
-    ), [handleImageError]);
 
     if (isLoading) {
         return (
@@ -176,8 +151,8 @@ const ArticleHeader = React.memo(() => {
                             {processedArticles.length > 1 && (
                                 <div className="compact-articles-section">
                                     <div className="compact-articles-grid">
-                                        {processedArticles.slice(1, 5).map((article, index) => 
-                                            renderCompactArticle(article, index + 1)
+                                        {processedArticles.slice(1, 5).map((article, index) =>
+                                            <CompactArticleCard key={article.article_id || index + 1} article={article} />
                                         )}
                                     </div>
                                 </div>
