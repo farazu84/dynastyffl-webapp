@@ -67,6 +67,11 @@ export function AuthProvider({ children }) {
         localStorage.setItem('refresh_token', refresh_token);
     };
 
+    const impersonate = useCallback((access_token, impersonatedUser) => {
+        setAccessToken(access_token);
+        setUser(impersonatedUser);
+    }, []);
+
     const logout = useCallback(() => {
         if (accessToken) {
             fetch(`${BASE}/auth/logout`, {
@@ -98,7 +103,7 @@ export function AuthProvider({ children }) {
     }, [accessToken]);
 
     return (
-        <AuthContext.Provider value={{ user, accessToken, loading, googleLogin, logout, getToken }}>
+        <AuthContext.Provider value={{ user, accessToken, loading, googleLogin, logout, getToken, impersonate }}>
             {children}
         </AuthContext.Provider>
     );

@@ -35,6 +35,13 @@ def publish_article(article_id):
     return jsonify(success=True, article=article.serialize())
 
 
+@admin.route('/admin/team-owners', methods=['GET'])
+@admin_required
+def get_team_owners():
+    owners = Users.query.filter_by(team_owner=True).order_by(Users.user_name).all()
+    return jsonify(success=True, users=[u.serialize() for u in owners])
+
+
 @admin.route('/admin/impersonate/<int:user_id>', methods=['POST'])
 @admin_required
 def impersonate(user_id):

@@ -59,3 +59,43 @@
         grid-template-columns: repeat(2, 1fr);
     }
 }
+
+.admin-impersonate-row {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.admin-select {
+    flex: 1;
+    max-width: 360px;
+    background: #1e1e2e;
+    color: white;
+    border: 1px solid #444;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 0.95em;
+    cursor: pointer;
+}
+
+.admin-select:focus {
+    outline: none;
+    border-color: #61dafb;
+}
+
+.admin-impersonate-btn {
+    background: linear-gradient(45deg, #61dafb, #21a9d8);
+    color: #0a0a1a;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-size: 0.95em;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.admin-impersonate-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
