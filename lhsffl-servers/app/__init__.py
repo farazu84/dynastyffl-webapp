@@ -37,6 +37,7 @@ def create_app(config=None):
         sync,
         transactions,
         superlatives,
+        udfa,
     )
 
     app.register_blueprint(admin.admin, url_prefix='/v1')
@@ -50,6 +51,7 @@ def create_app(config=None):
     app.register_blueprint(sync.sync, url_prefix='/v1')
     app.register_blueprint(transactions.transactions, url_prefix='/v1')
     app.register_blueprint(superlatives.superlatives, url_prefix='/v1')
+    app.register_blueprint(udfa.udfa, url_prefix='/v1')
 
     # Validate required env vars
     if not os.environ.get('LEAGUE_ID'):

@@ -189,6 +189,42 @@ CREATE TABLE TransactionWaiverBudget (
     FOREIGN KEY (transaction_id) REFERENCES Transactions(transaction_id)
 )
 
+CREATE TABLE BiddingWindow (
+    bidding_window_id INT unsigned NOT NULL AUTO_INCREMENT,
+    year INT NOT NULL UNIQUE,
+    opens_at DATETIME NOT NULL,
+    closes_at DATETIME NOT NULL,
+    processed BOOLEAN NOT NULL DEFAULT FALSE,
+    PRIMARY KEY (bidding_window_id)
+)
+
+CREATE TABLE BidBudget (
+    bid_budget_id INT unsigned NOT NULL AUTO_INCREMENT,
+    team_id INT unsigned NOT NULL,
+    year INT NOT NULL,
+    starting_balance INT NOT NULL DEFAULT 100,
+    waiver_order INT NOT NULL,
+    PRIMARY KEY (bid_budget_id),
+    UNIQUE KEY uq_bid_budget_team_year (team_id, year),
+    FOREIGN KEY (team_id) REFERENCES Teams(team_id)
+)
+
+CREATE TABLE UDFABids (
+    bid_id INT unsigned NOT NULL AUTO_INCREMENT,
+    bid_budget_id INT unsigned NOT NULL,
+    team_id INT unsigned NOT NULL,
+    player_sleeper_id INT NOT NULL,
+    year INT NOT NULL,
+    amount INT NOT NULL,
+    status ENUM('pending', 'won', 'lost') NOT NULL DEFAULT 'pending',
+    placed_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (bid_id),
+    UNIQUE KEY uq_udfa_bid_team_player_year (team_id, player_sleeper_id, year),
+    FOREIGN KEY (bid_budget_id) REFERENCES BidBudget(bid_budget_id),
+    FOREIGN KEY (team_id) REFERENCES Teams(team_id)
+)
+
 CREATE TABLE DraftPicks (
     draft_pick_id INT unsigned NOT NULL AUTO_INCREMENT,
     season INT NOT NULL,
