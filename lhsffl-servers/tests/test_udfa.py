@@ -1,52 +1,3 @@
-"""
-Acceptance tests for the UDFA blind bidding system.
-
-Scenarios
-─────────
-  Window
-    1.  Public window endpoint reflects open / closed / not-yet-open / processed states
-
-  Player Pool  (GET /v1/udfa/players)
-    2.  Only eligible players returned (rookies, not drafted, not rostered)
-    3.  Each player carries only the requesting team's own bid — never another team's
-    4.  Budget summary is included in the response
-
-  Bidding  (POST /v1/udfa/bids)
-    5.  Successful bid placement — pending status, budget committed updated
-    6.  Upsert: updating the same player's bid amount
-    7.  Budget enforcement: cannot over-commit across multiple bids
-    8.  Eligibility enforcement: drafted / rostered / non-rookie players rejected
-    9.  Window enforcement: cannot bid when window is closed
-
-  My Bids  (GET /v1/udfa/bids)
-    10. Returns budget summary + bids for the requesting team only
-
-  Retraction  (DELETE /v1/udfa/bids/<id>)
-    11. Successful retraction frees up committed budget
-    12. Ownership and status enforcement
-
-  Access Control
-    13. Every endpoint enforces the correct auth / role requirements
-
-  Admin: Window Management  (POST /v1/admin/udfa/window)
-    14. Create and update; validates required fields and datetime format
-
-  Admin: All Bids  (GET /v1/admin/udfa/bids)
-    15. Admin sees every team's bids enriched with team name, waiver order, player info
-
-  Admin: Budget Seeding  (POST /v1/admin/udfa/budgets)
-    16. Carryover math: floor((prev_balance − won_bids) / 10) + 100
-    17. Skips teams that already have a budget for the target year
-
-  Settlement  (POST /v1/admin/udfa/process)
-    18. Single bidder wins
-    19. Highest bidder wins
-    20. Tie broken by waiver_order (lower = higher priority)
-    21. Winner → 'won', losers → 'lost'; window marked processed
-    22. Cannot settle twice
-    23. Multiple players settled independently in one pass
-"""
-
 from datetime import datetime, timedelta
 
 from flask_jwt_extended import create_access_token
@@ -96,11 +47,11 @@ def _owner_tok(app, n=1):
     return _owner_token(app, u.user_id)
 
 
-# ═══════════════════════════════════════════════════════════════════════════
-# 1. Window endpoint
-# ═══════════════════════════════════════════════════════════════════════════
-
 class TestWindow:
+    """
+    GET /v1/udfa/window — public endpoint, no auth required.
+    Reflects open / closed / not-yet-open / processed states.
+    """
 
     def test_no_window_returns_null(self, client, db):
         make_league_state(db, year=YEAR, week=1)
@@ -133,11 +84,13 @@ class TestWindow:
         assert client.get(f'/v1/udfa/window?year={YEAR}').get_json()['window']['is_open'] is False
 
 
-# ═══════════════════════════════════════════════════════════════════════════
-# 2-4. Player pool
-# ═══════════════════════════════════════════════════════════════════════════
 
 class TestGetUDFAPlayers:
+    """
+    GET /v1/udfa/players — team_owner_required.
+    Returns eligible players (rookie, unrostered, not in draft picks) with the
+    requesting team's own bid attached. Never exposes other teams' bids.
+    """
 
     @with_udfa_scenario()
     def test_returns_only_eligible_players(self, app, client, db):
@@ -210,11 +163,13 @@ class TestGetUDFAPlayers:
         assert res.status_code == 403
 
 
-# ═══════════════════════════════════════════════════════════════════════════
-# 5-9. Bidding
-# ═══════════════════════════════════════════════════════════════════════════
 
 class TestPlaceBid:
+    """
+    POST /v1/udfa/bids — team_owner_required.
+    Upserts a bid for the authenticated team. Enforces window open, player
+    eligibility, integer amounts ≥ $1, and available budget.
+    """
 
     def _place(self, client, token, player_sleeper_id, amount):
         return client.post('/v1/udfa/bids',
@@ -306,11 +261,13 @@ class TestPlaceBid:
         assert client.post('/v1/udfa/bids', json={}).status_code == 401
 
 
-# ═══════════════════════════════════════════════════════════════════════════
-# 10. My bids
-# ═══════════════════════════════════════════════════════════════════════════
 
 class TestGetMyBids:
+    """
+    GET /v1/udfa/bids — team_owner_required.
+    Returns the authenticated team's bids and budget. Never returns other teams' bids.
+    Budget fields: starting_balance, committed (pending), spent (won), available.
+    """
 
     @with_udfa_scenario()
     @create_resource('UDFABids', bid_budget_id=1, team_id=1, player_sleeper_id=501, year=YEAR, amount=20)
@@ -352,11 +309,13 @@ class TestGetMyBids:
         assert client.get('/v1/udfa/bids').status_code == 401
 
 
-# ═══════════════════════════════════════════════════════════════════════════
-# 11-12. Retraction
-# ═══════════════════════════════════════════════════════════════════════════
 
 class TestRetractBid:
+    """
+    DELETE /v1/udfa/bids/<id> — team_owner_required.
+    Only the owning team can retract a bid. Only pending bids can be retracted.
+    Window must be open.
+    """
 
     @with_udfa_scenario()
     def test_retract_pending_bid_succeeds(self, app, client, db):
@@ -412,11 +371,13 @@ class TestRetractBid:
         assert client.delete('/v1/udfa/bids/1').status_code == 401
 
 
-# ═══════════════════════════════════════════════════════════════════════════
-# 13. Access control
-# ═══════════════════════════════════════════════════════════════════════════
 
 class TestAccessControl:
+    """
+    Every endpoint enforces the correct role.
+    Team-owner endpoints reject admins (403). Admin endpoints reject team owners (403).
+    All protected endpoints require a valid JWT (401).
+    """
 
     @with_udfa_scenario()
     def test_players_requires_team_owner(self, app, client, db):
@@ -471,11 +432,13 @@ class TestAccessControl:
         assert client.post('/v1/admin/udfa/process', json={}).status_code == 401
 
 
-# ═══════════════════════════════════════════════════════════════════════════
-# 14. Admin: window management
-# ═══════════════════════════════════════════════════════════════════════════
 
 class TestAdminSetWindow:
+    """
+    POST /v1/admin/udfa/window — admin_required.
+    Creates or updates the bidding window for a given year.
+    Validates that year, opens_at, and closes_at are all present and ISO 8601.
+    """
 
     @with_udfa_scenario()
     def test_creates_new_window(self, app, client, db):
@@ -519,11 +482,13 @@ class TestAdminSetWindow:
         assert res.status_code == 400
 
 
-# ═══════════════════════════════════════════════════════════════════════════
-# 15. Admin: all bids view
-# ═══════════════════════════════════════════════════════════════════════════
 
 class TestAdminGetAllBids:
+    """
+    GET /v1/admin/udfa/bids — admin_required.
+    Returns all teams' bids for a given year, enriched with team name, waiver order,
+    and player info. Also returns all team budgets.
+    """
 
     @with_udfa_scenario()
     @create_resource('UDFABids', bid_budget_id=1, team_id=1, player_sleeper_id=501, year=YEAR, amount=10)
@@ -556,11 +521,14 @@ class TestAdminGetAllBids:
         assert bid['player']['sleeper_id'] == 501
 
 
-# ═══════════════════════════════════════════════════════════════════════════
-# 16-17. Admin: budget seeding
-# ═══════════════════════════════════════════════════════════════════════════
 
 class TestAdminSeedBudgets:
+    """
+    POST /v1/admin/udfa/budgets — admin_required.
+    Seeds BidBudget rows for a new year. Starting balance = $100 + carryover,
+    where carryover = floor((prev_balance - won_bids) / 10). Skips teams that
+    already have a budget for the target year.
+    """
 
     @with_udfa_scenario()
     def test_creates_budgets_for_new_year(self, app, client, db):
@@ -609,11 +577,14 @@ class TestAdminSeedBudgets:
         assert res.status_code == 400
 
 
-# ═══════════════════════════════════════════════════════════════════════════
-# 18-23. Settlement
-# ═══════════════════════════════════════════════════════════════════════════
 
 class TestSettlement:
+    """
+    POST /v1/admin/udfa/process — admin_required.
+    Resolves all pending bids: highest bid wins, ties broken by waiver_order (lower = higher
+    priority). Marks winner 'won', losers 'lost', sets window.processed=True.
+    Can only be run once per year.
+    """
 
     def _process(self, client, token, year=YEAR):
         return client.post('/v1/admin/udfa/process',
