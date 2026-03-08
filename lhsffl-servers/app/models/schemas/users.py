@@ -9,3 +9,4 @@ class UsersJSONSchema(Schema):
     email = fields.Str()
     admin = fields.Bool()
     team_owner = fields.Bool()
+    team_id = fields.Int(allow_none=True)
