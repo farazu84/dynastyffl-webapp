@@ -4,6 +4,7 @@ import BudgetBar from '../../components/udfa/BudgetBar';
 import PlayerTable from '../../components/udfa/PlayerTable';
 import BidModal from '../../components/udfa/BidModal';
 import BidWindowCountdown from '../../components/udfa/BidWindowCountdown';
+import BidResults from '../../components/udfa/BidResults';
 import '../../styles/UDFA.css';
 import '../../styles/TradeTree.css';
 
@@ -80,38 +81,50 @@ const UDFA = () => {
         return <main className="udfa-page"><p className="udfa-error">{error}</p></main>;
     }
 
+    const isProcessed = bidWindow?.processed;
+
     return (
         <main className="udfa-page">
             <div className="udfa-header">
                 <div className="udfa-header-left">
-                    <h2>UDFA Player Pool</h2>
-                    <p>Identify and bid on the next breakout rookie stars.</p>
+                    <h2>{isProcessed ? 'UDFA Results' : 'UDFA Player Pool'}</h2>
+                    <p>{isProcessed
+                        ? 'Bidding is complete. Here\'s how your picks shook out.'
+                        : 'Identify and bid on the next breakout rookie stars.'
+                    }</p>
                 </div>
                 <BidWindowCountdown window={bidWindow} />
             </div>
-            {budget && <BudgetBar budget={budget} />}
-            <PlayerTable
-                title="Active Bids"
-                players={players.filter(p => p.my_bid)}
-                showFilters={false}
-                onPlaceBid={handlePlaceBid}
-                onEditBid={handleEditBid}
-                onRetractBid={handleRetractBid}
-            />
-            <PlayerTable
-                title="Available Players"
-                players={players.filter(p => !p.my_bid)}
-                onPlaceBid={handlePlaceBid}
-                onEditBid={handleEditBid}
-                onRetractBid={handleRetractBid}
-            />
-            {modalPlayer && budget && (
-                <BidModal
-                    player={modalPlayer}
-                    budget={budget}
-                    onClose={() => setModalPlayer(null)}
-                    onSuccess={handleBidSuccess}
-                />
+
+            {isProcessed ? (
+                <BidResults budget={budget} />
+            ) : (
+                <>
+                    {budget && <BudgetBar budget={budget} />}
+                    <PlayerTable
+                        title="Active Bids"
+                        players={players.filter(p => p.my_bid)}
+                        showFilters={false}
+                        onPlaceBid={handlePlaceBid}
+                        onEditBid={handleEditBid}
+                        onRetractBid={handleRetractBid}
+                    />
+                    <PlayerTable
+                        title="Available Players"
+                        players={players.filter(p => !p.my_bid)}
+                        onPlaceBid={handlePlaceBid}
+                        onEditBid={handleEditBid}
+                        onRetractBid={handleRetractBid}
+                    />
+                    {modalPlayer && budget && (
+                        <BidModal
+                            player={modalPlayer}
+                            budget={budget}
+                            onClose={() => setModalPlayer(null)}
+                            onSuccess={handleBidSuccess}
+                        />
+                    )}
+                </>
             )}
         </main>
     );

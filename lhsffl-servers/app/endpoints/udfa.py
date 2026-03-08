@@ -63,6 +63,67 @@ def get_udfa_players():
     return jsonify(success=True, players=player_list, budget=budget.serialize() if budget else None)
 
 
+@udfa.route('/udfa/results', methods=['GET'])
+@team_owner_required
+def get_udfa_results():
+    year = request.args.get('year', get_current_year(), type=int)
+    team_id = _get_team_id()
+    if not team_id:
+        return jsonify(success=False, error='No team associated with your account'), 403
+
+    window = BiddingWindow.query.filter_by(year=year).first()
+    if not window or not window.processed:
+        return jsonify(success=False, error='Results not available yet'), 400
+
+    from app.models.teams import Teams
+    teams_map = {t.team_id: t.team_name for t in Teams.query.all()}
+    waiver_map = {b.team_id: b.waiver_order for b in BidBudget.query.filter_by(year=year).all()}
+
+    all_bids = UDFABids.query.filter_by(year=year).all()
+
+    player_ids = list({b.player_sleeper_id for b in all_bids})
+    players_map = {
+        p.sleeper_id: serialize_udfa_player(p)
+        for p in Players.query.filter(Players.sleeper_id.in_(player_ids)).all()
+    } if player_ids else {}
+
+    # Group by player
+    grouped = {}
+    for bid in all_bids:
+        pid = bid.player_sleeper_id
+        if pid not in grouped:
+            grouped[pid] = {'player': players_map.get(pid), 'my_bid': None, 'all_bids': []}
+        entry = {
+            'team_name': teams_map.get(bid.team_id, 'Unknown'),
+            'amount': bid.amount,
+            'status': bid.status,
+            'waiver_order': waiver_map.get(bid.team_id),
+            'is_mine': bid.team_id == team_id,
+        }
+        grouped[pid]['all_bids'].append(entry)
+        if bid.team_id == team_id:
+            grouped[pid]['my_bid'] = entry
+
+    # Sort all_bids per player: amount desc, winner first on ties, waiver_order asc on ties
+    results = []
+    for entry in grouped.values():
+        entry['all_bids'].sort(key=lambda b: (
+            -b['amount'],
+            0 if b['status'] == 'won' else 1,
+            b['waiver_order'] if b['waiver_order'] is not None else 999
+        ))
+        top_amount = entry['all_bids'][0]['amount'] if entry['all_bids'] else 0
+        top_bids = [b for b in entry['all_bids'] if b['amount'] == top_amount]
+        is_tied = len(top_bids) > 1
+        for b in entry['all_bids']:
+            b['show_waiver'] = is_tied and b['amount'] == top_amount and b['waiver_order'] is not None
+        results.append(entry)
+    results.sort(key=lambda e: (0 if e['my_bid'] and e['my_bid']['status'] == 'won' else 1, -(e['my_bid']['amount'] if e['my_bid'] else 0)))
+
+    budget = BidBudget.query.filter_by(team_id=team_id, year=year).first()
+    return jsonify(success=True, results=results, budget=budget.serialize() if budget else None)
+
+
 @udfa.route('/udfa/bids', methods=['GET'])
 @team_owner_required
 def get_my_bids():

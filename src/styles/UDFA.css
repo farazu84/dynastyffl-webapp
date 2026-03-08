@@ -428,3 +428,276 @@
     font-size: 0.75rem;
     color: #aaa;
 }
+
+/* ── Bid Results ─────────────────────────────────────────────────────────── */
+
+.bid-results {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+/* Summary bar */
+.bid-results-summary {
+    display: flex;
+    gap: 0;
+    background: #1a1a1a;
+    border: 1px solid #2e2e2e;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.bid-results-stat {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 20px 24px;
+    border-right: 1px solid #2e2e2e;
+}
+
+.bid-results-stat:last-child {
+    border-right: none;
+}
+
+.bid-results-stat-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #555;
+}
+
+.bid-results-stat-value {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: white;
+}
+
+.bid-results-stat-value--won {
+    color: #4caf7d;
+}
+
+/* Result sections */
+.result-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.result-section-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 0 0 12px 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.result-section-title--won {
+    color: #4caf7d;
+}
+
+.result-section-title--lost {
+    color: #555;
+}
+
+.result-section-title--other {
+    color: #666;
+}
+
+.result-table-header {
+    display: grid;
+    grid-template-columns: 32px 1fr 120px 120px;
+    column-gap: 24px;
+    padding: 0 20px 10px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #444;
+}
+
+.result-col-center { text-align: center; }
+.result-col-right  { text-align: right; }
+
+.result-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+/* ── Result Cards ─────────────────────────────────────────────────────────── */
+
+.result-card {
+    border-radius: 10px;
+    border: 1px solid #252525;
+    border-left: 3px solid #252525;
+    background: #191919;
+    overflow: hidden;
+}
+
+.result-card--won   { border-left-color: #4caf7d; }
+.result-card--lost  { border-left-color: #252525; opacity: 0.72; }
+.result-card--other { border-left-color: #3a3a3a; }
+
+/* Player identity strip */
+.result-card-player {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px 14px 16px;
+    gap: 16px;
+}
+
+.result-card-player-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.result-card-player-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.result-card-player-name {
+    font-size: 0.975rem;
+    font-weight: 600;
+    color: white;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.result-card-player-meta {
+    font-size: 0.75rem;
+    color: #555;
+}
+
+.result-card-outcome {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 1px;
+    flex-shrink: 0;
+}
+
+.result-card-outcome-label {
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.result-card-outcome--won .result-card-outcome-label { color: #4caf7d; }
+.result-card-outcome--lost .result-card-outcome-label { color: #484848; }
+
+.result-card-outcome-amount {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: white;
+}
+
+/* Bid breakdown table */
+.result-bids-table {
+    border-top: 1px solid #222;
+}
+
+.result-bids-header {
+    display: grid;
+    grid-template-columns: 28px 1fr 64px 56px 20px;
+    gap: 0 12px;
+    padding: 6px 18px 6px 44px;
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #383838;
+    background: #141414;
+    border-bottom: 1px solid #1e1e1e;
+}
+
+.result-bids-row {
+    display: grid;
+    grid-template-columns: 28px 1fr 64px 56px 20px;
+    gap: 0 12px;
+    align-items: center;
+    padding: 8px 18px;
+    border-top: 1px solid #1c1c1c;
+    font-size: 0.82rem;
+    color: #4a4a4a;
+    transition: background 0.15s;
+}
+
+.result-bids-row:first-of-type {
+    border-top: none;
+}
+
+.result-bids-row--winner {
+    color: #3d8f63;
+    background: rgba(76, 175, 125, 0.04);
+}
+
+.result-bids-row--mine {
+    color: #4a90b8;
+}
+
+.result-bids-row--winner.result-bids-row--mine {
+    color: #4caf7d;
+}
+
+.result-bids-rank {
+    font-size: 0.7rem;
+    color: #333;
+    font-weight: 600;
+}
+
+.result-bids-team {
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.result-bids-you-tag {
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #61dafb;
+    background: rgba(97, 218, 251, 0.1);
+    border: 1px solid rgba(97, 218, 251, 0.2);
+    border-radius: 4px;
+    padding: 1px 5px;
+    flex-shrink: 0;
+}
+
+.result-bids-waiver {
+    font-size: 0.78rem;
+    color: #f5a623;
+    font-weight: 600;
+    text-align: center;
+}
+
+.result-bids-amount {
+    font-weight: 700;
+    font-size: 0.88rem;
+    text-align: right;
+    color: inherit;
+}
+
+.result-bids-winner-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #4caf7d;
+    opacity: 0.8;
+}
