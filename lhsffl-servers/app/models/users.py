@@ -28,5 +28,11 @@ class Users(db.Model):
 
     owner_groups = db.relationship('TeamOwners', back_populates='user')
 
+    @property
+    def team_id(self):
+        if self.owner_groups:
+            return self.owner_groups[0].team_id
+        return None
+
     def serialize(self):
         return UsersJSONSchema().dump(self)

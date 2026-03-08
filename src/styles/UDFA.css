@@ -1,0 +1,703 @@
+.udfa-page {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 32px 24px;
+    color: white;
+}
+
+.udfa-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
+
+.udfa-header-left h2 {
+    font-size: 2rem;
+    margin: 0 0 6px 0;
+    text-align: left;
+}
+
+.udfa-header-left p {
+    color: #aaa;
+    margin: 0;
+    font-size: 0.95rem;
+    text-align: left;
+}
+
+/* Bid Window Countdown */
+.bid-window-countdown {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+    padding-top: 4px;
+}
+
+.bid-window-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #666;
+}
+
+.bid-window-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: white;
+    font-variant-numeric: tabular-nums;
+}
+
+.bid-window-value.bid-window-open {
+    color: #4caf7d;
+}
+
+.bid-window-value.bid-window-closed {
+    color: #888;
+    font-size: 1rem;
+}
+
+.udfa-status {
+    color: #aaa;
+    text-align: center;
+    padding: 40px;
+}
+
+.udfa-error {
+    color: #f44336;
+    text-align: center;
+    padding: 40px;
+}
+
+/* Player Table */
+.player-table {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 32px;
+}
+
+.player-table-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #aaa;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin: 0 0 12px 0;
+    text-align: left;
+}
+
+.player-table-header-static {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #666;
+}
+
+.player-table-header-static.nfl-team-static {
+    text-align: center;
+}
+
+/* Double-class selector beats .player-row-item alone */
+.player-row-item.player-table-header {
+    background: none;
+    border: none;
+    padding-top: 0;
+    padding-bottom: 10px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #666;
+}
+
+.player-row-item.player-table-header span:last-child { text-align: right; }
+.player-row-item.player-table-header span:nth-child(2) { text-align: left; }
+
+.udfa-header-filter {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    cursor: pointer;
+}
+
+.udfa-header-filter.nfl-team-filter,
+.udfa-header-filter.position-filter {
+    justify-content: center;
+}
+
+.udfa-header-filter-text {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #666;
+    pointer-events: none;
+}
+
+.udfa-header-filter-caret {
+    font-size: 0.65rem;
+    color: #666;
+    margin-left: 3px;
+    pointer-events: none;
+}
+
+.udfa-header-filter.active .udfa-header-filter-text,
+.udfa-header-filter.active .udfa-header-filter-caret { color: #61dafb; }
+
+/* Invisible select overlaid on top — clicking anywhere opens the dropdown */
+.udfa-header-select-hidden {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 1;
+}
+
+.udfa-header-select-hidden option {
+    background: #1e1e2e;
+    color: white;
+}
+
+.player-table-body {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.player-row-item {
+    display: grid;
+    grid-template-columns: 32px 1fr 120px 160px;
+    column-gap: 24px;
+    align-items: center;
+    background: #2a2a2a;
+    border: 1px solid #333;
+    border-radius: 10px;
+    padding: 16px 20px;
+}
+
+.player-row-position {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.player-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    align-items: flex-start;
+}
+
+.player-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: white;
+}
+
+.player-meta {
+    font-size: 0.78rem;
+    color: #888;
+}
+
+.player-row-nfl-team {
+    text-align: center;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: white;
+    letter-spacing: 0.03em;
+}
+
+.player-row-bid-status {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+/* Bid Modal */
+.bid-modal-player-info {
+    background: #1e1e1e;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.bid-modal-player-name-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.bid-modal-player-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: white;
+}
+
+.bid-modal-player-meta {
+    display: flex;
+    gap: 12px;
+    font-size: 0.8rem;
+    color: #888;
+}
+
+.bid-modal-budget {
+    font-size: 0.85rem;
+    color: #aaa;
+    margin-bottom: 16px;
+}
+
+.bid-modal-budget strong {
+    color: #4caf7d;
+}
+
+/* Pagination */
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.pagination-btn {
+    background: #2a2a2a;
+    border: 1px solid #444;
+    color: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s, border-color 0.15s;
+}
+
+.pagination-btn:hover:not(:disabled) {
+    background: #333;
+    border-color: #61dafb;
+}
+
+.pagination-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.pagination-info {
+    font-size: 0.8rem;
+    color: #888;
+    min-width: 48px;
+    text-align: center;
+}
+
+/* Active bid */
+.bid-active {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.bid-active-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.bid-active-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #61dafb;
+}
+
+.bid-active-amount {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: white;
+}
+
+.bid-icon-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 6px;
+    color: #888;
+    display: flex;
+    align-items: center;
+    transition: color 0.15s, background 0.15s;
+}
+
+.bid-icon-btn:hover { background: #333; color: white; }
+.bid-icon-btn.danger:hover { background: rgba(244, 67, 54, 0.15); color: #f44336; }
+
+/* Place bid button */
+.place-bid-btn {
+    background: #1a6fd4;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 9px 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.place-bid-btn:hover { background: #1560bb; }
+
+/* Budget Bar */
+.budget-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #0d1b2e;
+    border: 1px solid #1e3a5f;
+    border-radius: 10px;
+    padding: 20px 28px;
+    margin-bottom: 32px;
+    gap: 24px;
+}
+
+.budget-stats {
+    display: flex;
+    gap: 40px;
+}
+
+.budget-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.budget-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.budget-label.starting { color: #61dafb; }
+.budget-label.committed { color: #f5a623; }
+.budget-label.available { color: #4caf7d; }
+.budget-label.waiver { color: #b388ff; }
+
+.budget-value {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: white;
+}
+
+.budget-value.committed {
+    color: #f5a623;
+}
+
+.budget-progress-section {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+    min-width: 180px;
+}
+
+.budget-progress-track {
+    width: 180px;
+    height: 8px;
+    background: #1e3a5f;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.budget-progress-fill {
+    height: 100%;
+    background: #61dafb;
+    border-radius: 4px;
+    transition: width 0.4s ease;
+}
+
+.budget-progress-label {
+    font-size: 0.75rem;
+    color: #aaa;
+}
+
+/* ── Bid Results ─────────────────────────────────────────────────────────── */
+
+.bid-results {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+/* Summary bar */
+.bid-results-summary {
+    display: flex;
+    gap: 0;
+    background: #1a1a1a;
+    border: 1px solid #2e2e2e;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.bid-results-stat {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 20px 24px;
+    border-right: 1px solid #2e2e2e;
+}
+
+.bid-results-stat:last-child {
+    border-right: none;
+}
+
+.bid-results-stat-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #555;
+}
+
+.bid-results-stat-value {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: white;
+}
+
+.bid-results-stat-value--won {
+    color: #4caf7d;
+}
+
+/* Result sections */
+.result-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.result-section-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 0 0 12px 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.result-section-title--won {
+    color: #4caf7d;
+}
+
+.result-section-title--lost {
+    color: #555;
+}
+
+.result-section-title--other {
+    color: #666;
+}
+
+.result-table-header {
+    display: grid;
+    grid-template-columns: 32px 1fr 120px 120px;
+    column-gap: 24px;
+    padding: 0 20px 10px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #444;
+}
+
+.result-col-center { text-align: center; }
+.result-col-right  { text-align: right; }
+
+.result-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+/* ── Result Cards ─────────────────────────────────────────────────────────── */
+
+.result-card {
+    border-radius: 10px;
+    border: 1px solid #252525;
+    border-left: 3px solid #252525;
+    background: #191919;
+    overflow: hidden;
+}
+
+.result-card--won   { border-left-color: #4caf7d; }
+.result-card--lost  { border-left-color: #252525; opacity: 0.72; }
+.result-card--other { border-left-color: #3a3a3a; }
+
+/* Player identity strip */
+.result-card-player {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px 14px 16px;
+    gap: 16px;
+}
+
+.result-card-player-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.result-card-player-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.result-card-player-name {
+    font-size: 0.975rem;
+    font-weight: 600;
+    color: white;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.result-card-player-meta {
+    font-size: 0.75rem;
+    color: #555;
+}
+
+.result-card-outcome {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 1px;
+    flex-shrink: 0;
+}
+
+.result-card-outcome-label {
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.result-card-outcome--won .result-card-outcome-label { color: #4caf7d; }
+.result-card-outcome--lost .result-card-outcome-label { color: #484848; }
+
+.result-card-outcome-amount {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: white;
+}
+
+/* Bid breakdown table */
+.result-bids-table {
+    border-top: 1px solid #222;
+}
+
+.result-bids-header {
+    display: grid;
+    grid-template-columns: 28px 1fr 64px 56px 20px;
+    gap: 0 12px;
+    padding: 6px 18px 6px 44px;
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #383838;
+    background: #141414;
+    border-bottom: 1px solid #1e1e1e;
+}
+
+.result-bids-row {
+    display: grid;
+    grid-template-columns: 28px 1fr 64px 56px 20px;
+    gap: 0 12px;
+    align-items: center;
+    padding: 8px 18px;
+    border-top: 1px solid #1c1c1c;
+    font-size: 0.82rem;
+    color: #4a4a4a;
+    transition: background 0.15s;
+}
+
+.result-bids-row:first-of-type {
+    border-top: none;
+}
+
+.result-bids-row--winner {
+    color: #3d8f63;
+    background: rgba(76, 175, 125, 0.04);
+}
+
+.result-bids-row--mine {
+    color: #4a90b8;
+}
+
+.result-bids-row--winner.result-bids-row--mine {
+    color: #4caf7d;
+}
+
+.result-bids-rank {
+    font-size: 0.7rem;
+    color: #333;
+    font-weight: 600;
+}
+
+.result-bids-team {
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.result-bids-you-tag {
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #61dafb;
+    background: rgba(97, 218, 251, 0.1);
+    border: 1px solid rgba(97, 218, 251, 0.2);
+    border-radius: 4px;
+    padding: 1px 5px;
+    flex-shrink: 0;
+}
+
+.result-bids-waiver {
+    font-size: 0.78rem;
+    color: #f5a623;
+    font-weight: 600;
+    text-align: center;
+}
+
+.result-bids-amount {
+    font-weight: 700;
+    font-size: 0.88rem;
+    text-align: right;
+    color: inherit;
+}
+
+.result-bids-winner-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #4caf7d;
+    opacity: 0.8;
+}

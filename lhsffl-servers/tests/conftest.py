@@ -531,6 +531,119 @@ def create_resource(model_name, *, commit=True, **fields):
     return decorator
 
 
+def with_udfa_scenario(
+    *,
+    year: int = 2026,
+    window_open: bool = True,
+    window_processed: bool = False,
+):
+    """Decorator: seed a complete UDFA scenario (3 teams, 6 players, bidding window)."""
+    def decorator(fn):
+        def wrapper(*args, **kwargs):
+            from app.models.users import Users
+            from app.models.teams import Teams
+            from app.models.team_owners import TeamOwners
+            from app.models.players import Players
+            from app.models.league_state import LeagueState
+            from app.models.draft_picks import DraftPicks
+            from app.models.bid_budget import BidBudget
+            from app.models.bidding_window import BiddingWindow
+
+            db = kwargs['db']
+
+            db.session.add(LeagueState(league_state_id=1, year=year, week=1, current=True))
+
+            db.session.add(Users(user_name='admin', email='admin@t.com', google_id='gid-adm',
+                                 first_name='Admin', last_name='User', admin=True, team_owner=False))
+            db.session.flush()
+
+            for i in range(1, 4):
+                t = Teams(team_id=i, sleeper_roster_id=i, team_name=f'Team {i}', championships=0)
+                u = Users(user_name=f'owner{i}', email=f'o{i}@t.com',
+                          google_id=f'gid-o{i}', first_name=f'Owner{i}',
+                          last_name='User', admin=False, team_owner=True)
+                db.session.add_all([t, u])
+                db.session.flush()
+                db.session.add(TeamOwners(user_id=u.user_id, team_id=i, primary_owner=True))
+                db.session.add(BidBudget(team_id=i, year=year, starting_balance=100, waiver_order=i))
+                db.session.flush()
+
+            # eligible: rookie, unrostered, not in DraftPicks
+            db.session.add_all([
+                Players(player_id=501, sleeper_id=501, first_name='Jerry',
+                        last_name='Rice', position='WR', years_exp=0,
+                        team_id=None, taxi=False, starter=False, active=True),
+                Players(player_id=502, sleeper_id=502, first_name='Roger',
+                        last_name='Craig', position='RB', years_exp=0,
+                        team_id=None, taxi=False, starter=False, active=True),
+                Players(player_id=503, sleeper_id=503, first_name='Joe',
+                        last_name='Montana', position='QB', years_exp=0,
+                        team_id=None, taxi=False, starter=False, active=True),
+                Players(player_id=506, sleeper_id=506, first_name='Steve',
+                        last_name='Young', position='QB', years_exp=0,
+                        team_id=None, taxi=False, starter=False, active=True),
+                Players(player_id=507, sleeper_id=507, first_name='Ronnie',
+                        last_name='Lott', position='WR', years_exp=0,
+                        team_id=None, taxi=False, starter=False, active=True),
+                Players(player_id=508, sleeper_id=508, first_name='Dwight',
+                        last_name='Clark', position='WR', years_exp=0,
+                        team_id=None, taxi=False, starter=False, active=True),
+                Players(player_id=509, sleeper_id=509, first_name='Logan',
+                        last_name='Couture', position='TE', years_exp=0,
+                        team_id=None, taxi=False, starter=False, active=True),
+                Players(player_id=510, sleeper_id=510, first_name='Tomas',
+                        last_name='Hertl', position='RB', years_exp=0,
+                        team_id=None, taxi=False, starter=False, active=True),
+                Players(player_id=511, sleeper_id=511, first_name='Erik',
+                        last_name='Karlsson', position='WR', years_exp=0,
+                        team_id=None, taxi=False, starter=False, active=True),
+                # ineligible – drafted in our rookie draft this year
+                Players(player_id=500, sleeper_id=500, first_name='Patrick',
+                        last_name='Marleau', position='WR', years_exp=0,
+                        team_id=None, taxi=False, starter=False, active=True),
+                # ineligible – already on Team 1's roster
+                Players(player_id=504, sleeper_id=504, first_name='Brent',
+                        last_name='Burns', position='TE', years_exp=0,
+                        team_id=1, taxi=False, starter=False, active=True),
+                # ineligible – veteran
+                Players(player_id=505, sleeper_id=505, first_name='Joe',
+                        last_name='Thornton', position='QB', years_exp=3,
+                        team_id=None, taxi=False, starter=False, active=True),
+            ])
+            db.session.add(DraftPicks(season=year, round=1, pick_no=1, draft_slot=1,
+                                      drafting_roster_id=1, original_roster_id=1,
+                                      player_sleeper_id=500, sleeper_draft_id=9999,
+                                      type='rookie'))
+
+            if window_processed:
+                window = BiddingWindow(year=year,
+                                       opens_at=datetime.utcnow() - timedelta(days=7),
+                                       closes_at=datetime.utcnow() - timedelta(days=1),
+                                       processed=True)
+            elif window_open:
+                window = BiddingWindow(year=year,
+                                       opens_at=datetime.utcnow() - timedelta(days=1),
+                                       closes_at=datetime.utcnow() + timedelta(days=7),
+                                       processed=False)
+            else:
+                window = BiddingWindow(year=year,
+                                       opens_at=datetime.utcnow() - timedelta(days=7),
+                                       closes_at=datetime.utcnow() - timedelta(hours=1),
+                                       processed=False)
+            db.session.add(window)
+            db.session.commit()
+
+            return fn(*args, **kwargs)
+
+        wrapper.__name__      = fn.__name__
+        wrapper.__qualname__  = fn.__qualname__
+        wrapper.__doc__       = fn.__doc__
+        wrapper.__signature__ = inspect.signature(fn)
+        return wrapper
+
+    return decorator
+
+
 def with_draft_pick(
     name: str = 'draft_pick',
     *,
