@@ -127,7 +127,7 @@ const BidResults = ({ budget: initialBudget }) => {
                 </div>
                 <div className="bid-results-stat">
                     <span className="bid-results-stat-label">Bids Placed</span>
-                    <span className="bid-results-stat-value">{results.length}</span>
+                    <span className="bid-results-stat-value">{wonEntries.length + lostEntries.length}</span>
                 </div>
                 {budget && (
                     <div className="bid-results-stat">
