@@ -100,7 +100,7 @@
     cursor: not-allowed;
 }
 
-/* DatePicker dark theme overrides */
+/* Date inputs */
 .admin-datepicker-wrap {
     display: flex;
     flex-direction: column;
@@ -115,85 +115,10 @@
     color: #555;
 }
 
-.admin-datepicker-input {
-    width: 200px;
+input[type="date"].admin-input {
+    width: 160px;
     cursor: pointer;
-}
-
-.react-datepicker {
-    background: #1a1a1a !important;
-    border: 1px solid #333 !important;
-    border-radius: 10px !important;
-    font-family: inherit !important;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.5) !important;
-}
-
-.react-datepicker__header {
-    background: #111 !important;
-    border-bottom: 1px solid #2a2a2a !important;
-    border-radius: 10px 10px 0 0 !important;
-}
-
-.react-datepicker__current-month,
-.react-datepicker__day-name,
-.react-datepicker-time__header {
-    color: #aaa !important;
-}
-
-.react-datepicker__day {
-    color: white !important;
-    border-radius: 6px !important;
-}
-
-.react-datepicker__day:hover {
-    background: #2a2a2a !important;
-}
-
-.react-datepicker__day--selected,
-.react-datepicker__day--keyboard-selected {
-    background: #61dafb !important;
-    color: #0a0a1a !important;
-    font-weight: 700 !important;
-}
-
-.react-datepicker__day--disabled {
-    color: #444 !important;
-}
-
-.react-datepicker__navigation-icon::before {
-    border-color: #666 !important;
-}
-
-.react-datepicker__navigation:hover .react-datepicker__navigation-icon::before {
-    border-color: #61dafb !important;
-}
-
-.react-datepicker__time-container {
-    border-left: 1px solid #2a2a2a !important;
-}
-
-.react-datepicker__time {
-    background: #1a1a1a !important;
-}
-
-.react-datepicker__time-list-item {
-    color: white !important;
-}
-
-.react-datepicker__time-list-item:hover {
-    background: #2a2a2a !important;
-}
-
-.react-datepicker__time-list-item--selected {
-    background: #61dafb !important;
-    color: #0a0a1a !important;
-    font-weight: 700 !important;
-}
-
-.react-datepicker__triangle::before,
-.react-datepicker__triangle::after {
-    border-bottom-color: #1a1a1a !important;
-    border-top-color: #1a1a1a !important;
+    color-scheme: dark;
 }
 
 /* UDFA Management */
