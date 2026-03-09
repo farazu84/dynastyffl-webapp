@@ -3,16 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthFetch } from '../../hooks/useAuthFetch';
 import { useAuth } from '../../hooks/useAuth';
 import CompactArticleCard from '../../components/articles/CompactArticleCard';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
 import './Admin.css';
 
 const currentYear = new Date().getFullYear();
-const toMidnightISO = (date) => {
-    const d = new Date(date);
-    d.setHours(0, 0, 0, 0);
-    return d.toISOString();
-};
+const today = new Date().toISOString().split('T')[0];
+const toMidnightISO = (dateStr) => new Date(dateStr).toISOString();
 
 const Admin = () => {
     const authFetch = useAuthFetch();
@@ -29,8 +24,8 @@ const Admin = () => {
     const [impersonateError, setImpersonateError] = useState(null);
 
     // UDFA — Bidding Window
-    const [opensAt, setOpensAt] = useState(new Date());
-    const [closesAt, setClosesAt] = useState(new Date());
+    const [opensAt, setOpensAt] = useState(today);
+    const [closesAt, setClosesAt] = useState(today);
     const [windowStatus, setWindowStatus] = useState(null);
     const [windowError, setWindowError] = useState(null);
     const [settingWindow, setSettingWindow] = useState(false);
@@ -189,23 +184,21 @@ const Admin = () => {
                     <div className="admin-udfa-row">
                         <div className="admin-datepicker-wrap">
                             <label className="admin-datepicker-label">Opens</label>
-                            <DatePicker
-                                selected={opensAt}
-                                onChange={setOpensAt}
-                                dateFormat="MMM d, yyyy"
-                                className="admin-input admin-datepicker-input"
-                                popperClassName="admin-datepicker-popper"
+                            <input
+                                type="date"
+                                className="admin-input"
+                                value={opensAt}
+                                onChange={e => setOpensAt(e.target.value)}
                             />
                         </div>
                         <div className="admin-datepicker-wrap">
                             <label className="admin-datepicker-label">Closes</label>
-                            <DatePicker
-                                selected={closesAt}
-                                onChange={setClosesAt}
-                                dateFormat="MMM d, yyyy"
-                                minDate={opensAt}
-                                className="admin-input admin-datepicker-input"
-                                popperClassName="admin-datepicker-popper"
+                            <input
+                                type="date"
+                                className="admin-input"
+                                value={closesAt}
+                                min={opensAt}
+                                onChange={e => setClosesAt(e.target.value)}
                             />
                         </div>
                         <button className="admin-action-btn" onClick={handleSetWindow} disabled={settingWindow || !opensAt || !closesAt}>
