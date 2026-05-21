@@ -8,7 +8,7 @@
 .admin-title {
     font-size: 2.5em;
     font-weight: 700;
-    background: linear-gradient(45deg, #61dafb, #21a9d8);
+    background: linear-gradient(45deg, #2b7dd8, #4a9aeb);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -22,9 +22,9 @@
 .admin-section-title {
     font-size: 1.4em;
     font-weight: 600;
-    color: #fbbf24;
+    color: #2b7dd8;
     margin-bottom: 20px;
-    border-bottom: 1px solid #444;
+    border-bottom: 1px solid #253a5e;
     padding-bottom: 10px;
 }
 
@@ -35,7 +35,7 @@
 }
 
 .admin-status {
-    color: #aaa;
+    color: #8090a8;
     font-size: 1em;
 }
 
@@ -69,9 +69,9 @@
 .admin-select {
     flex: 1;
     max-width: 360px;
-    background: #1e1e2e;
+    background: #0a1428;
     color: white;
-    border: 1px solid #444;
+    border: 1px solid #253a5e;
     border-radius: 8px;
     padding: 10px 14px;
     font-size: 0.95em;
@@ -80,12 +80,12 @@
 
 .admin-select:focus {
     outline: none;
-    border-color: #61dafb;
+    border-color: #2b7dd8;
 }
 
 .admin-impersonate-btn {
-    background: linear-gradient(45deg, #61dafb, #21a9d8);
-    color: #0a0a1a;
+    background: linear-gradient(45deg, #2b7dd8, #4a9aeb);
+    color: white;
     border: none;
     border-radius: 8px;
     padding: 10px 20px;
@@ -112,7 +112,7 @@
     font-weight: 700;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: #555;
+    color: #3a4a60;
 }
 
 input[type="date"].admin-input {
@@ -123,8 +123,8 @@ input[type="date"].admin-input {
 
 /* UDFA Management */
 .admin-udfa-block {
-    background: #1a1a1a;
-    border: 1px solid #2e2e2e;
+    background: #0a1020;
+    border: 1px solid #1a2a3a;
     border-radius: 10px;
     padding: 20px 24px;
     margin-bottom: 16px;
@@ -140,13 +140,13 @@ input[type="date"].admin-input {
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.07em;
-    color: #888;
+    color: #5a6a80;
     margin: 0 0 12px 0;
 }
 
 .admin-udfa-block-desc {
     font-size: 0.85rem;
-    color: #666;
+    color: #4a5a70;
     margin: -4px 0 14px 0;
 }
 
@@ -162,8 +162,8 @@ input[type="date"].admin-input {
 }
 
 .admin-input {
-    background: #111;
-    border: 1px solid #333;
+    background: #060a14;
+    border: 1px solid #1c2d45;
     border-radius: 8px;
     color: white;
     padding: 9px 14px;
@@ -173,13 +173,13 @@ input[type="date"].admin-input {
 }
 
 .admin-input:focus {
-    border-color: #61dafb;
+    border-color: #2b7dd8;
 }
 
 
 .admin-action-btn {
-    background: linear-gradient(45deg, #61dafb, #21a9d8);
-    color: #0a0a1a;
+    background: linear-gradient(45deg, #2b7dd8, #4a9aeb);
+    color: white;
     border: none;
     border-radius: 8px;
     padding: 9px 20px;
@@ -208,7 +208,7 @@ input[type="date"].admin-input {
 
 .admin-process-results {
     margin-top: 14px;
-    border-top: 1px solid #2a2a2a;
+    border-top: 1px solid #111d35;
     padding-top: 14px;
 }
 
@@ -223,8 +223,8 @@ input[type="date"].admin-input {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: #111;
-    border: 1px solid #2a2a2a;
+    background: #060a14;
+    border: 1px solid #111d35;
     border-radius: 6px;
     padding: 8px 14px;
     font-size: 0.875rem;

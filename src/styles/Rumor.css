@@ -18,11 +18,11 @@
 
 .rumor-title {
     font-size: 3em;
-    color: #61dafb;
+    color: #2b7dd8;
     text-align: center;
     margin: 0 0 15px 0;
     font-weight: 700;
-    background: linear-gradient(45deg, #61dafb, #21a9d8);
+    background: linear-gradient(45deg, #2b7dd8, #4a9aeb);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -52,7 +52,7 @@
 .form-label {
     font-size: 1.2em;
     font-weight: 600;
-    color: #61dafb;
+    color: #2b7dd8;
     margin: 0;
 }
 
@@ -81,8 +81,8 @@
 
 .rumor-textarea:focus {
     outline: none;
-    border-color: #61dafb;
-    box-shadow: 0 0 0 3px rgba(97, 218, 251, 0.2);
+    border-color: #2b7dd8;
+    box-shadow: 0 0 0 3px rgba(43, 125, 216, 0.2);
     background: rgba(255, 255, 255, 0.08);
 }
 
@@ -122,7 +122,7 @@
 }
 
 .team-checkbox:hover {
-    background: rgba(97, 218, 251, 0.1);
+    background: rgba(43, 125, 216, 0.1);
 }
 
 .checkbox-input {
@@ -132,7 +132,7 @@
 .checkbox-custom {
     width: 20px;
     height: 20px;
-    border: 2px solid #61dafb;
+    border: 2px solid #2b7dd8;
     border-radius: 4px;
     position: relative;
     transition: all 0.3s ease;
@@ -140,8 +140,8 @@
 }
 
 .checkbox-input:checked + .checkbox-custom {
-    background: #61dafb;
-    border-color: #61dafb;
+    background: #2b7dd8;
+    border-color: #2b7dd8;
 }
 
 .checkbox-input:checked + .checkbox-custom::after {
@@ -150,7 +150,7 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    color: black;
+    color: white;
     font-weight: bold;
     font-size: 12px;
 }
@@ -163,7 +163,7 @@
 }
 
 .team-checkbox:hover .team-name {
-    color: #61dafb;
+    color: #2b7dd8;
 }
 
 .selected-teams {
@@ -173,14 +173,14 @@
     align-items: center;
     margin-top: 10px;
     padding: 15px;
-    background: rgba(97, 218, 251, 0.05);
+    background: rgba(43, 125, 216, 0.05);
     border-radius: 8px;
-    border: 1px solid rgba(97, 218, 251, 0.2);
+    border: 1px solid rgba(43, 125, 216, 0.2);
 }
 
 .selected-label {
     font-weight: 600;
-    color: #61dafb;
+    color: #2b7dd8;
     font-size: 0.9em;
 }
 
@@ -188,8 +188,8 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    background: #61dafb;
-    color: black;
+    background: #2b7dd8;
+    color: white;
     padding: 6px 12px;
     border-radius: 20px;
     font-size: 0.85em;
@@ -211,7 +211,7 @@
 .remove-tag {
     background: none;
     border: none;
-    color: black;
+    color: white;
     font-size: 16px;
     font-weight: bold;
     cursor: pointer;
@@ -233,7 +233,7 @@
 .submit-btn {
     align-self: center;
     padding: 16px 40px;
-    background: linear-gradient(45deg, #61dafb, #21a9d8);
+    background: linear-gradient(45deg, #2b7dd8, #4a9aeb);
     color: white;
     border: none;
     border-radius: 12px;
@@ -263,8 +263,8 @@
 
 .submit-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 10px 25px rgba(97, 218, 251, 0.4);
-    background: linear-gradient(45deg, #21a9d8, #61dafb);
+    box-shadow: 0 10px 25px rgba(43, 125, 216, 0.4);
+    background: linear-gradient(45deg, #1a5fb8, #2b7dd8);
 }
 
 .submit-btn:disabled {

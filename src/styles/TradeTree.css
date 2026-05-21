@@ -24,7 +24,7 @@
 /* Origin Card */
 .origin-card {
     background: linear-gradient(135deg, #1e1e1e 0%, #2d2d2d 100%);
-    border: 2px solid #61dafb;
+    border: 2px solid #2b7dd8;
     border-radius: 12px;
     padding: 24px;
     margin-bottom: 40px;
@@ -40,10 +40,10 @@
 .origin-card-badge {
     font-size: 0.7em;
     font-weight: 700;
-    color: #61dafb;
+    color: #2b7dd8;
     text-transform: uppercase;
     letter-spacing: 1.5px;
-    border: 1px solid #61dafb;
+    border: 1px solid #2b7dd8;
     border-radius: 20px;
     padding: 4px 12px;
 }
@@ -99,8 +99,8 @@
     font-size: 0.75em;
     font-weight: 500;
     color: rgba(255, 255, 255, 0.7);
-    background: rgba(97, 218, 251, 0.1);
-    border: 1px solid rgba(97, 218, 251, 0.3);
+    background: rgba(43, 125, 216, 0.1);
+    border: 1px solid rgba(43, 125, 216, 0.3);
     border-radius: 16px;
     padding: 4px 10px;
 }
@@ -110,8 +110,8 @@
     display: inline-flex;
     align-items: center;
     gap: 5px;
-    background: rgba(97, 218, 251, 0.12);
-    border: 1px solid rgba(97, 218, 251, 0.3);
+    background: rgba(43, 125, 216, 0.12);
+    border: 1px solid rgba(43, 125, 216, 0.3);
     border-radius: 16px;
     padding: 4px 10px;
     font-size: 0.8em;
@@ -141,8 +141,8 @@
 }
 
 .player-chip-pos-wr {
-    background: rgba(97, 218, 251, 0.3);
-    color: #61dafb;
+    background: rgba(43, 125, 216, 0.3);
+    color: #4a9aeb;
 }
 
 .player-chip-pos-te {
@@ -185,7 +185,7 @@
     display: block;
     font-size: 0.65em;
     font-weight: 700;
-    color: #61dafb;
+    color: #2b7dd8;
     text-transform: uppercase;
     letter-spacing: 2px;
     margin-bottom: 4px;
@@ -258,7 +258,6 @@
     gap: 16px;
     overflow-x: auto;
     padding-bottom: 12px;
-    /* Space for scrollbar */
 }
 
 .player-branch {
@@ -307,7 +306,7 @@
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    background: #61dafb;
+    background: #2b7dd8;
     border: 2px solid #2d2d2d;
     z-index: 1;
 }
@@ -332,7 +331,7 @@
 .branch-card-icon {
     font-size: 0.85em;
     margin-right: 6px;
-    color: #61dafb;
+    color: #2b7dd8;
 }
 
 .branch-card-description {
@@ -409,8 +408,8 @@
 }
 
 .terminal-badge-held {
-    background: rgba(97, 218, 251, 0.08);
-    border: 1px solid rgba(97, 218, 251, 0.3);
+    background: rgba(43, 125, 216, 0.08);
+    border: 1px solid rgba(43, 125, 216, 0.3);
 }
 
 .terminal-badge-label {
@@ -423,7 +422,6 @@
 
 .terminal-badge-held .terminal-badge-label {
     color: #4ecdc4;
-    /* Green-ish */
 }
 
 /* Specific Badge Colors */
@@ -434,7 +432,6 @@
 
 .terminal-badge-traded {
     background: rgba(255, 217, 61, 0.08);
-    /* Yellow-ish */
     border: 1px solid rgba(255, 217, 61, 0.3);
 }
 
@@ -444,7 +441,6 @@
 
 .terminal-badge-released {
     background: rgba(255, 107, 107, 0.08);
-    /* Red-ish */
     border: 1px solid rgba(255, 107, 107, 0.3);
 }
 
@@ -478,7 +474,7 @@
 }
 
 .trade-tree-loading {
-    color: #61dafb;
+    color: #2b7dd8;
 }
 
 .trade-tree-error {

@@ -26,11 +26,11 @@
 
 .league-superlatives-icon {
     font-size: 1.4em;
-    color: #61dafb;
+    color: #2b7dd8;
 }
 
 .league-superlatives-view-all {
-    color: #61dafb;
+    color: #2b7dd8;
     font-size: 0.9em;
     font-weight: 600;
     text-transform: uppercase;
@@ -79,7 +79,7 @@
 /* Card Icon */
 .superlative-card-icon {
     font-size: 1.3em;
-    color: #61dafb;
+    color: #2b7dd8;
 }
 
 /* Card Title */
@@ -157,7 +157,7 @@
 }
 
 .superlative-card-tooltip:focus {
-    outline: 1px solid rgba(97, 218, 251, 0.5);
+    outline: 1px solid rgba(43, 125, 216, 0.5);
     outline-offset: 2px;
 }
 
@@ -197,8 +197,8 @@
 .superlative-entry-stat {
     font-size: 0.7em;
     font-weight: 600;
-    color: #61dafb;
-    background: rgba(97, 218, 251, 0.1);
+    color: #2b7dd8;
+    background: rgba(43, 125, 216, 0.1);
     padding: 2px 8px;
     border-radius: 10px;
     white-space: nowrap;

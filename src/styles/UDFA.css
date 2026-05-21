@@ -143,7 +143,7 @@
 }
 
 .udfa-header-filter.active .udfa-header-filter-text,
-.udfa-header-filter.active .udfa-header-filter-caret { color: #61dafb; }
+.udfa-header-filter.active .udfa-header-filter-caret { color: #2b7dd8; }
 
 /* Invisible select overlaid on top — clicking anywhere opens the dropdown */
 .udfa-header-select-hidden {
@@ -284,7 +284,7 @@
 
 .pagination-btn:hover:not(:disabled) {
     background: #333;
-    border-color: #61dafb;
+    border-color: #2b7dd8;
 }
 
 .pagination-btn:disabled {
@@ -316,7 +316,7 @@
     font-size: 0.65rem;
     font-weight: 700;
     letter-spacing: 0.08em;
-    color: #61dafb;
+    color: #2b7dd8;
 }
 
 .bid-active-amount {
@@ -342,7 +342,7 @@
 
 /* Place bid button */
 .place-bid-btn {
-    background: #1a6fd4;
+    background: #2b7dd8;
     color: white;
     border: none;
     border-radius: 8px;
@@ -353,7 +353,7 @@
     transition: background 0.15s;
 }
 
-.place-bid-btn:hover { background: #1560bb; }
+.place-bid-btn:hover { background: #1a5fb8; }
 
 /* Budget Bar */
 .budget-bar {
@@ -386,7 +386,7 @@
     text-transform: uppercase;
 }
 
-.budget-label.starting { color: #61dafb; }
+.budget-label.starting { color: #2b7dd8; }
 .budget-label.committed { color: #f5a623; }
 .budget-label.available { color: #4caf7d; }
 .budget-label.waiver { color: #b388ff; }
@@ -419,7 +419,7 @@
 
 .budget-progress-fill {
     height: 100%;
-    background: #61dafb;
+    background: #2b7dd8;
     border-radius: 4px;
     transition: width 0.4s ease;
 }
@@ -672,9 +672,9 @@
     font-weight: 700;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: #61dafb;
-    background: rgba(97, 218, 251, 0.1);
-    border: 1px solid rgba(97, 218, 251, 0.2);
+    color: #2b7dd8;
+    background: rgba(43, 125, 216, 0.1);
+    border: 1px solid rgba(43, 125, 216, 0.2);
     border-radius: 4px;
     padding: 1px 5px;
     flex-shrink: 0;

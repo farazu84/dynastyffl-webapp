@@ -1,7 +1,7 @@
-/* Ensure black background everywhere for article page */
+/* Ensure navy background everywhere for article page */
 body:has(.article-page),
 html:has(.article-page) {
-    background-color: black !important;
+    background-color: #060a14 !important;
     margin: 0 !important;
     padding: 0 !important;
     min-height: 100vh !important;
@@ -11,16 +11,16 @@ html:has(.article-page) {
 .article-page {
     /* Reset all inherited styles */
     all: initial;
-    
+
     /* Apply only the styles we want */
     display: block;
     max-width: 800px;
     margin: 0 auto;
-    padding: 20px 20px 100px 20px; /* Extra bottom padding to prevent blue chunk */
-    background-color: #1a1a1a;
+    padding: 20px 20px 100px 20px;
+    background-color: #0a1020;
     color: white;
-    min-height: calc(100vh - 40px); /* Account for padding */
-    width: calc(100% - 40px); /* Account for left/right padding */
+    min-height: calc(100vh - 40px);
+    width: calc(100% - 40px);
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
     box-sizing: border-box;
     position: relative;
@@ -38,7 +38,7 @@ html:has(.article-page) {
     content: "";
     display: block;
     height: 50px;
-    background-color: #1a1a1a;
+    background-color: #0a1020;
 }
 
 /* Override any footer or other global elements when viewing articles */
@@ -52,14 +52,14 @@ body:has(.article-page) .footer {
     display: block;
     text-align: center;
     margin-bottom: 30px;
-    border-bottom: 1px solid #333;
+    border-bottom: 1px solid #1c2d45;
     padding-bottom: 20px;
     color: inherit;
 }
 
 .article-header h3 {
     display: block;
-    color: #61dafb;
+    color: #2b7dd8;
     margin: 0 0 20px 0;
     font-size: 1.2em;
     font-weight: bold;
@@ -78,7 +78,7 @@ body:has(.article-page) .footer {
 
 .article-meta {
     display: block;
-    color: #ccc;
+    color: #8090a8;
     font-size: 0.9em;
     margin: 5px 0;
     font-family: inherit;
@@ -122,23 +122,23 @@ body:has(.article-page) .footer {
 .article-content h5,
 .article-content h6 {
     display: block;
-    color: #61dafb;
+    color: #2b7dd8;
     margin: 24px 0 16px 0;
     line-height: 1.25;
     font-weight: bold;
     font-family: inherit;
 }
 
-.article-content h1 { 
-    font-size: 2em; 
+.article-content h1 {
+    font-size: 2em;
     display: block;
 }
-.article-content h2 { 
-    font-size: 1.5em; 
+.article-content h2 {
+    font-size: 1.5em;
     display: block;
 }
-.article-content h3 { 
-    font-size: 1.25em; 
+.article-content h3 {
+    font-size: 1.25em;
     display: block;
 }
 
@@ -152,7 +152,6 @@ body:has(.article-page) .footer {
 
 .article-content ul,
 .article-content ol {
-    /* Complete reset to prevent inheritance from other components */
     all: unset;
     display: block;
     margin: 16px 0;
@@ -167,7 +166,6 @@ body:has(.article-page) .footer {
 }
 
 .article-content li {
-    /* Complete reset to prevent inheritance from Team/League components */
     all: unset;
     display: block;
     margin: 0;
@@ -217,7 +215,6 @@ body:has(.article-page) .footer {
     display: block;
 }
 
-/* Also handle cases where there are just a few scattered list items */
 .article-content ul li:only-child {
     list-style: none;
     margin: 0;
@@ -244,13 +241,13 @@ body:has(.article-page) .footer {
 .article-content em {
     display: inline;
     font-style: italic;
-    color: #ddd;
+    color: #c0c8d4;
     font-family: inherit;
 }
 
 .article-content code {
     display: inline;
-    background-color: #2d2d2d;
+    background-color: #111d35;
     padding: 2px 6px;
     border-radius: 4px;
     font-family: 'Courier New', monospace;
@@ -260,7 +257,7 @@ body:has(.article-page) .footer {
 
 .article-content pre {
     display: block;
-    background-color: #2d2d2d;
+    background-color: #111d35;
     padding: 16px;
     border-radius: 8px;
     overflow-x: auto;
@@ -271,10 +268,10 @@ body:has(.article-page) .footer {
 
 .article-content blockquote {
     display: block;
-    border-left: 4px solid #61dafb;
+    border-left: 4px solid #2b7dd8;
     margin: 16px 0;
     padding: 8px 16px;
-    background-color: rgba(97, 218, 251, 0.1);
+    background-color: rgba(43, 125, 216, 0.08);
     font-style: italic;
     color: white;
     font-family: inherit;
@@ -290,17 +287,17 @@ body:has(.article-page) .footer {
     color: white;
     font-family: inherit;
     table-layout: fixed;
-    border: 2px solid #61dafb;
+    border: 2px solid #2b7dd8;
     border-radius: 8px;
     overflow: hidden;
-    background-color: #262626;
+    background-color: #0f1a2e;
 }
 
 /* Style table cells with proper sizing */
 .article-content th,
 .article-content td {
     display: table-cell;
-    border: 1px solid #444;
+    border: 1px solid #253a5e;
     padding: 10px 12px;
     text-align: left;
     color: white;
@@ -312,12 +309,12 @@ body:has(.article-page) .footer {
     overflow-wrap: break-word;
     hyphens: auto;
     max-width: 0;
-    background-color: #2a2a2a;
+    background-color: #111d35;
 }
 
 .article-content th {
-    background-color: #61dafb;
-    color: #000;
+    background-color: #2b7dd8;
+    color: white;
     font-weight: bold;
     font-size: 0.9em;
     text-transform: uppercase;
@@ -330,8 +327,8 @@ body:has(.article-page) .footer {
     display: flex;
     align-items: center;
     gap: 12px;
-    background: rgba(251, 191, 36, 0.08);
-    border: 1px solid rgba(251, 191, 36, 0.35);
+    background: rgba(212, 167, 44, 0.08);
+    border: 1px solid rgba(212, 167, 44, 0.35);
     border-radius: 8px;
     padding: 10px 16px;
     margin-bottom: 20px;
@@ -344,9 +341,9 @@ body:has(.article-page) .footer {
     display: inline-block;
     padding: 3px 10px;
     border-radius: 12px;
-    background: rgba(251, 191, 36, 0.15);
-    border: 1px solid rgba(251, 191, 36, 0.4);
-    color: #fbbf24;
+    background: rgba(212, 167, 44, 0.15);
+    border: 1px solid rgba(212, 167, 44, 0.4);
+    color: #d4a72c;
     font-size: 0.75em;
     font-weight: 700;
     text-transform: uppercase;
@@ -358,8 +355,8 @@ body:has(.article-page) .footer {
     all: unset;
     display: inline-block;
     padding: 8px 20px;
-    background: #fbbf24;
-    color: #1a1a1a;
+    background: #d4a72c;
+    color: #060a14;
     border-radius: 6px;
     font-size: 0.9em;
     font-weight: 700;
@@ -369,7 +366,7 @@ body:has(.article-page) .footer {
 }
 
 .article-publish-btn:hover:not(:disabled) {
-    background: #f59e0b;
+    background: #b08920;
 }
 
 .article-publish-btn:disabled {

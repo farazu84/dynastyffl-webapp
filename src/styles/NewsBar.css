@@ -1,10 +1,10 @@
 /* NewsBar Component Styling - Thin Horizontal Bar */
 
 .news-bar {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.03);
     border-radius: 8px;
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.07);
     margin: 0 1.5em 1.5rem 1.5em;
     overflow: hidden;
     height: 70px;
@@ -18,7 +18,7 @@
     padding: 0 1rem;
     flex-shrink: 0;
     gap: 1rem;
-    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .news-bar-header h3 {
@@ -26,7 +26,7 @@
     font-weight: 600;
     color: white;
     margin: 0;
-    background: linear-gradient(135deg, #4f46e5, #06b6d4);
+    background: linear-gradient(135deg, #2b7dd8, #4a9aeb);
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -43,7 +43,7 @@
 }
 
 .view-all-link:hover {
-    color: #06b6d4;
+    color: #2b7dd8;
 }
 
 .news-bar-content {
@@ -81,8 +81,6 @@
     flex: 1;
 }
 
-/* No scrollbar needed for fixed layout */
-
 .news-item-link {
     text-decoration: none;
     color: inherit;
@@ -95,10 +93,10 @@
     align-items: center;
     gap: 0.75rem;
     padding: 0.5rem 0.75rem;
-    background: rgba(255, 255, 255, 0.03);
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    border-right: 1px solid rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.02);
+    border-top: 1px solid rgba(255, 255, 255, 0.04);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    border-right: 1px solid rgba(255, 255, 255, 0.04);
     transition: all 0.3s ease;
     width: 100%;
     height: 50px;
@@ -106,7 +104,7 @@
 }
 
 .news-item-link:first-child .news-item {
-    border-left: 1px solid rgba(255, 255, 255, 0.05);
+    border-left: 1px solid rgba(255, 255, 255, 0.04);
     border-radius: 6px 0 0 6px;
 }
 
@@ -116,22 +114,22 @@
 
 .news-item-link:only-child .news-item {
     border-radius: 6px;
-    border-left: 1px solid rgba(255, 255, 255, 0.05);
+    border-left: 1px solid rgba(255, 255, 255, 0.04);
 }
 
 .news-item:hover {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(79, 70, 229, 0.3);
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(43, 125, 216, 0.3);
     transform: translateY(-2px);
 }
 
 .news-item-badge {
-    background: linear-gradient(135deg, #4f46e5, #06b6d4);
+    background: linear-gradient(135deg, #2b7dd8, #4a9aeb);
     color: white;
     padding: 0.15rem 0.4rem;
     border-radius: 8px;
     font-size: 0.6rem;
-    font-weight: 600;
+    font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.2px;
     flex-shrink: 0;
@@ -187,40 +185,40 @@
         height: 60px;
         margin: 0 1.5em 1.5rem 1.5em;
     }
-    
+
     .news-bar-header {
         padding: 0 0.75rem;
         gap: 0.75rem;
     }
-    
+
     .news-bar-header h3 {
         font-size: 0.8rem;
     }
-    
+
     .view-all-link {
         font-size: 0.7rem;
     }
-    
+
     .news-items {
         padding: 0 0.75rem;
     }
-    
+
     .news-item {
         height: 40px;
         gap: 0.5rem;
         padding: 0.4rem 0.5rem;
     }
-    
+
     .news-item-badge {
         min-width: 40px;
         font-size: 0.55rem;
         padding: 0.1rem 0.3rem;
     }
-    
+
     .news-item-title {
         font-size: 0.75rem;
     }
-    
+
     .news-item-meta {
         font-size: 0.65rem;
     }
@@ -231,44 +229,44 @@
         height: 50px;
         margin: 0 1.5em 1.5rem 1.5em;
     }
-    
+
     .news-bar-header {
         padding: 0 0.5rem;
         gap: 0.5rem;
     }
-    
+
     .news-bar-header h3 {
         font-size: 0.75rem;
     }
-    
+
     .view-all-link {
         font-size: 0.65rem;
     }
-    
+
     .news-items {
         padding: 0 0.5rem;
     }
-    
+
     .news-item {
         height: 35px;
         gap: 0.4rem;
         padding: 0.3rem 0.4rem;
     }
-    
+
     .news-item-badge {
         min-width: 35px;
         font-size: 0.5rem;
         padding: 0.1rem 0.25rem;
     }
-    
+
     .news-item-title {
         font-size: 0.7rem;
     }
-    
+
     .news-item-meta {
         font-size: 0.6rem;
     }
-    
+
     .news-item-author {
         margin-right: 0.25rem;
     }

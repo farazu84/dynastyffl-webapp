@@ -28,11 +28,11 @@
 
 .trade-history-icon {
     font-size: 1.4em;
-    color: #61dafb;
+    color: #2b7dd8;
 }
 
 .trade-history-view-all {
-    color: #61dafb;
+    color: #2b7dd8;
     font-size: 0.9em;
     font-weight: 600;
     text-transform: uppercase;
@@ -85,8 +85,8 @@
 
 .trade-card:hover {
     transform: translateY(-2px);
-    border-color: #61dafb;
-    box-shadow: 0 8px 25px rgba(97, 218, 251, 0.15);
+    border-color: #2b7dd8;
+    box-shadow: 0 8px 25px rgba(43, 125, 216, 0.15);
 }
 
 /* Card Header */
@@ -131,7 +131,7 @@
 .trade-card-team-name {
     font-size: 0.75em;
     font-weight: 700;
-    color: #61dafb;
+    color: #2b7dd8;
     text-transform: uppercase;
     letter-spacing: 0.3px;
 }
