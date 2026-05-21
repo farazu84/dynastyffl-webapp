@@ -28,10 +28,17 @@ def trigger_manual_sync():
             result = SyncService.sync_players()
         elif sync_type == 'transactions':
             result = SyncService.sync_transactions()
+        elif sync_type == 'player_ids':
+            result = SyncService.sync_player_ids()
+        elif sync_type == 'nfl_draft':
+            result = SyncService.sync_nfl_draft()
+        elif sync_type == 'game_logs':
+            season = data.get('season')
+            result = SyncService.sync_game_logs(season=int(season) if season else None)
         else:
             return jsonify({
                 'success': False,
-                'error': 'Invalid sync type. Use: full, teams, league_state, matchups, players, or transactions'
+                'error': 'Invalid sync type. Use: full, teams, league_state, matchups, players, transactions, player_ids, nfl_draft, or game_logs'
             }), 400
         
         return jsonify({

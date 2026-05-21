@@ -9,7 +9,7 @@ class SyncStatus(db.Model):
     
     sync_status_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
 
-    sync_item = db.Column(db.Enum('teams', 'league_state', 'players', 'matchups', 'transactions'), nullable=False)
+    sync_item = db.Column(db.Enum('teams', 'league_state', 'players', 'matchups', 'transactions', 'nfl_draft', 'game_logs', 'player_ids'), nullable=False)
 
     timestamp = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 

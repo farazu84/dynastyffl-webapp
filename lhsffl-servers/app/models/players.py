@@ -78,6 +78,8 @@ class Players(db.Model):
 
     swish_id = db.Column(db.Integer(), nullable=True)
 
+    pfr_id = db.Column(db.String(16), nullable=True)
+
 
 
     def serialize(self):
