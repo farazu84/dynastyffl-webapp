@@ -2,7 +2,7 @@ import logging
 from datetime import datetime
 from app import db
 from app.models.sync_status import SyncStatus
-from app.logic.league import synchronize_teams, set_league_state, synchronize_matchups, synchronize_players
+from app.logic.league import synchronize_teams, set_league_state, synchronize_matchups, synchronize_players, seed_matchups
 from app.logic.transactions import synchronize_transactions
 
 logging.basicConfig(level=logging.INFO)
@@ -69,6 +69,16 @@ class SyncService:
         except Exception as e:
             SyncService.record_sync_status(SyncService.SYNC_ITEMS['TEAMS'], success=False, error=str(e))
             return {'success': False, 'message': f'Teams sync failed: {str(e)}'}
+
+    @staticmethod
+    def seed_matchups():
+        try:
+            result = seed_matchups(num_weeks=14)
+            SyncService.record_sync_status(SyncService.SYNC_ITEMS['MATCHUPS'], success=True)
+            return {'success': True, 'message': 'Matchups seeded', 'result': result}
+        except Exception as e:
+            SyncService.record_sync_status(SyncService.SYNC_ITEMS['MATCHUPS'], success=False, error=str(e))
+            return {'success': False, 'message': f'Matchup seeding failed: {str(e)}'}
 
     @staticmethod
     def sync_matchups():

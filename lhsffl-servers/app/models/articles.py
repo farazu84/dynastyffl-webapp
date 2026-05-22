@@ -1,6 +1,7 @@
 import requests
-import json 
+import json
 import os
+import textwrap
 
 from .. import db
 from sqlalchemy.dialects.mysql import DATETIME
@@ -46,40 +47,33 @@ class Articles(db.Model):
         team_dict = {}
         for team in teams:
             team_info = {
-                'starters': json.dumps([player.serialize() for player in team.starters]),
+                'starters': [player.ai_serialize() for player in team.starters],
                 'owner_names': [f"{owner.first_name} {owner.last_name}" for owner in team.owners]
             }
             team_dict[team.team_name] = team_info
 
-        system_prompt = f"""
-        You are generating a matchup preview article for a fantasy football league. This is a PPR league.
-        It is week {matchup.week} of the {matchup.year} season.
-        I will pass you a serialized json object of the two teams playing each other.
-        Use the starters to generate the matchup preview. You may also consider any injuries to the player.
-        Consider the positional advantages.
-        Here is the scoring rules for the league:
-        - 1 point for each reception
-        - .04 points for each throwing yard
-        - .1 points for each recieving yard
-        - .1 points for each rushing yard
-        - 6 points for each passing touchdown
-        - 6 points for each rushing touchdown
-        - 4 points for a throwing touchdown
-        - -4 point for each interception
-        - -2 point for each fumble lost
-        Do not write the league scoring rules in the article.
-        Please return the matchup preview using markdown formatting. Only use markdown formatting and be creative.
-        But make sure it still looks like an article.
-        """
+        system_prompt = textwrap.dedent(f"""\
+        ## Role
+        You are a sports writer generating a matchup preview article for a fantasy football league (PPR scoring).
 
-        user_prompt = f"""
-        Here are the teams involved in this weeks matchup
-        {json.dumps(team_dict, indent=4)}
-        """
+        ## Context
+        Week {matchup.week} of the {matchup.year} NFL season.
 
-        print(system_prompt)
-        print('--------------------------------')
-        print(user_prompt)
+        ## Instructions
+        - Analyze the two teams using the starters JSON provided
+        - Consider positional advantages and any injury concerns
+        - Use web search to look up current season stats, recent performance, and matchup context for the players
+        - Only cite statistics and facts that come from the provided data or your web search results
+        - Do not fabricate any statistics, scores, or rankings
+
+        ## Scoring Reference (do not include in article)
+        PPR | 0.04 pts/passing yard | 0.1 pts/rushing+receiving yard | 6 pts/rushing+receiving TD | 4 pts/passing TD | -4/INT | -2/fumble lost
+
+        ## Output Format
+        Return the article in markdown. Be creative and write like a real sports journalist.
+        """)
+
+        user_prompt = f"Here are the teams for this week's matchup:\n{json.dumps(team_dict, indent=2)}"
 
         response = requests.post(
                 url="https://openrouter.ai/api/v1/chat/completions",
@@ -89,7 +83,7 @@ class Articles(db.Model):
                 },
                 json={
                     "transforms": ["middle-out"],
-                    "model": os.environ["OPENROUTER_MODEL"],
+                    "model": os.environ["OPENROUTER_MODEL"] + ":online",
                     "messages": [
                         {
                             "role": "system",
@@ -146,34 +140,30 @@ class Articles(db.Model):
         team_dict = {}
         for team in teams:
             team_info = {
-                'starters': json.dumps([player.serialize() for player in team.starters]),
-                'bench': json.dumps([player.serialize() for player in team.players if not player.starter]),
+                'starters': [player.ai_serialize() for player in team.starters],
+                'bench': [player.ai_serialize() for player in team.players if not player.starter],
                 'owner_names': [f"{owner.first_name} {owner.last_name}" for owner in team.owners]
             }
             team_dict[team.team_name] = team_info
 
-        system_prompt = f"""
-        You are spreading rumors about a fantasy football league. This is a PPR league.
-        Please return the article using markdown formatting. Use proper markdown syntax
-        I will pass you a serialized json object of the teams involved in the rumor.
-        Use the players on the team and the rumor to consider why the rumor would make sense for the team involved in this rumor.
-        Here is the scoring rules for the league:
-        - 1 point for each reception
-        - .04 points for each throwing yard
-        - .1 points for each recieving yard
-        - .1 points for each rushing yard
-        - 6 points for each passing touchdown
-        - 6 points for each rushing touchdown
-        - 4 points for a throwing touchdown
-        - -4 point for each interception
-        - -2 point for each fumble lost
-        Do not write the league scoring rules in the article.
-        Do not propose any trade unless it is explicitly mentioned in the rumor.
-        Please return the rumor using markdown formatting. Only use markdown formatting and be creative.
-        But make sure it still looks like an article.
-        Here are the teams involved:
-        {json.dumps(team_dict, indent=4)}
-        """
+        system_prompt = textwrap.dedent(f"""\
+        ## Role
+        You are a fantasy football insider spreading a rumor about teams in a PPR league.
+
+        ## Instructions
+        - Use the roster data and the rumor to explain why the move would make sense for the teams involved
+        - Use web search to find current player values, recent performance, and relevant context
+        - Only cite statistics and facts from the provided data or your web search results
+        - Do not propose any trade unless it is explicitly mentioned in the rumor
+        - Do not fabricate any statistics, scores, or rankings
+
+        ## Teams Involved
+        {json.dumps(team_dict, indent=2)}
+
+        ## Output Format
+        Return the article in markdown. Be creative and write like a fantasy football insider column.
+        Do not include the scoring rules in the article.
+        """)
 
         user_prompt = rumor
 
@@ -185,7 +175,7 @@ class Articles(db.Model):
                 },
                 json={
                     "transforms": ["middle-out"],
-                    "model": os.environ["OPENROUTER_MODEL"],
+                    "model": os.environ["OPENROUTER_MODEL"] + ":online",
                     "messages": [
                         {
                             "role": "system",
@@ -243,48 +233,43 @@ class Articles(db.Model):
         team_dict = {}
         for team in teams:
             team_info = {
-                'starters': json.dumps([player.serialize() for player in team.starters]),
+                'players': [player.ai_serialize() for player in team.players],
                 'owner_names': [f"{owner.first_name} {owner.last_name}" for owner in team.owners]
             }
             team_dict[team.team_name] = team_info
 
         from app.league_state_manager import get_current_year, get_current_week
-        
-        # Get current state from global manager (no DB query!)
+
         current_year = get_current_year()
         current_week = get_current_week()
-        
+
         article_title = f'{current_year} Week {current_week} Power Rankings'
 
-        system_prompt = f"""
-        You are generating power rankings for a fantasy football league. This is a PPR league.
-        It is week {current_week} of the {current_year} season.
-        I will pass you a serialized json object of all the teams in the league.
-        Use the starters and bench players to generate the power rankings.
-        The starters should be given a much higher weight than the bench players.
-        The power rankings should be in order of the teams from 1 to 10.
-        Give your reasoning for why you ranked the teams the way you did.
-        Here is the scoring rules for the league:
-        - 1 point for each reception
-        - .04 points for each throwing yard
-        - .1 points for each recieving yard
-        - .1 points for each rushing yard
-        - 6 points for each passing touchdown
-        - 6 points for each rushing touchdown
-        - 4 points for a throwing touchdown
-        - -4 point for each interception
-        - -2 point for each fumble lost
-        Do not write the league scoring rules in the article.
-        Please return the power rankings using markdown formatting. Only use markdown formatting and be creative.
-        But make sure it still looks like an article.
-        Break the teams up, please use multiple line and dividers to make the article more readable.
-        """
+        system_prompt = textwrap.dedent(f"""\
+        ## Role
+        You are a fantasy football analyst generating weekly power rankings for a PPR league.
 
-        user_prompt = f"""
-        Here are the teams, please generate me a power rankings article.
-        {json.dumps(team_dict, indent=4)}
-        """
-        print(user_prompt)
+        ## Context
+        Week {current_week} of the {current_year} NFL season.
+
+        ## Instructions
+        - Rank all 10 teams from 1 (best) to 10 (worst)
+        - Remember the most valuable players may not always be the starters, so consider the value of all players on the roster
+        - Remember this is a dynasty football league, so player ages and long term performance are important
+        - The starting lineup consists of 1 QB, 2 RBs, 3 WRs, 1 TE, 1 Flex(RB,WR,TE), 1 K
+        - So this means QBs are generally less valuable than they are in real life
+        - Use web search to factor in recent player performance, relevant news, and recent injuries
+        - Only cite statistics and facts from the provided data or your web search results
+        - Do not fabricate any statistics, scores, or rankings
+        - Provide reasoning and analysis for each team's ranking
+
+        ## Output Format
+        Return the article in markdown. Use headers and dividers between teams to aid readability.
+        Write like a confident analyst. Do not include the scoring rules in the article.
+        """)
+
+        user_prompt = f"Here are the league's teams:\n{json.dumps(team_dict, indent=2)}"
+
         response = requests.post(
                 url="https://openrouter.ai/api/v1/chat/completions",
                 headers={
@@ -293,7 +278,10 @@ class Articles(db.Model):
                 },
                 json={
                     "transforms": ["middle-out"],
-                    "model": os.environ["OPENROUTER_MODEL"],
+                    "model": os.environ["OPENROUTER_MODEL"] + ":online",
+                    "temperature": 0.4,
+                    "top_p": 0.9,
+                    "max_tokens": 4000,
                     "messages": [
                         {
                             "role": "system",
@@ -345,16 +333,12 @@ class Articles(db.Model):
         Generate a title for an article.
         '''
 
-        system_prompt = f"""
-        You are generating a title for an article.
-        I will pass you the content of the article that is in Markdown form.
-        Generate a plain text title for the article.
-        """
+        system_prompt = textwrap.dedent("""\
+        Generate a short, plain text title for the fantasy football article provided.
+        Return only the title — no quotes, no markdown, no explanation.
+        """)
 
-        user_prompt = f"""
-        Here is the content of the article:
-        {article}
-        """
+        user_prompt = article
 
         response = requests.post(
             url="https://openrouter.ai/api/v1/chat/completions",

@@ -253,6 +253,80 @@ def synchronize_players():
         raise
 
 
+def seed_matchups(num_weeks=14):
+    '''
+    Seeds the Matchups table with all matchup pairings for the current season.
+    Calls the Sleeper API for each week and inserts rows with 0 points for weeks
+    that haven't been played yet. Skips weeks that already have rows.
+    '''
+    league_id = os.getenv('LEAGUE_ID')
+    if not league_id:
+        raise RuntimeError("LEAGUE_ID environment variable is not set")
+
+    league_state = LeagueState.query.filter_by(current=True).first()
+    if not league_state:
+        raise ValueError("No current league state found. Please set league state first.")
+
+    year = league_state.year
+    inserted_total = 0
+    skipped_total = 0
+
+    for week in range(1, num_weeks + 1):
+        existing = Matchups.query.filter_by(week=week, year=year).first()
+        if existing:
+            print(f"Week {week}: already seeded, skipping")
+            skipped_total += 1
+            continue
+
+        response = requests.get(f'https://api.sleeper.app/v1/league/{league_id}/matchups/{week}')
+        response.raise_for_status()
+        sleeper_matchups = response.json()
+
+        if not sleeper_matchups:
+            print(f"Week {week}: no data returned from Sleeper, stopping")
+            break
+
+        matchup_groups = {}
+        for entry in sleeper_matchups:
+            mid = entry['matchup_id']
+            matchup_groups.setdefault(mid, []).append(entry)
+
+        inserted_week = 0
+        for mid, teams in matchup_groups.items():
+            if len(teams) != 2:
+                print(f"Week {week} matchup {mid}: expected 2 teams, got {len(teams)}, skipping")
+                continue
+
+            team1, team2 = teams
+
+            db.session.add(Matchups(
+                year=year,
+                week=week,
+                sleeper_matchup_id=mid,
+                sleeper_roster_id=team1['roster_id'],
+                opponent_sleeper_roster_id=team2['roster_id'],
+            ))
+            db.session.add(Matchups(
+                year=year,
+                week=week,
+                sleeper_matchup_id=mid,
+                sleeper_roster_id=team2['roster_id'],
+                opponent_sleeper_roster_id=team1['roster_id'],
+            ))
+            inserted_week += 2
+
+        db.session.commit()
+        print(f"Week {week}: inserted {inserted_week} matchup rows")
+        inserted_total += inserted_week
+
+    return {
+        'year': year,
+        'weeks_seeded': num_weeks - skipped_total,
+        'weeks_skipped': skipped_total,
+        'rows_inserted': inserted_total,
+    }
+
+
 def synchronize_matchups():
     '''
     Synchronizes matchups with the Sleeper API for the current week.

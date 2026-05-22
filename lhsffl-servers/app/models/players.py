@@ -82,3 +82,10 @@ class Players(db.Model):
 
     def serialize(self):
         return PlayersJSONSchema().dump(self)
+
+    def ai_serialize(self):
+        return {
+            'name': f'{self.first_name} {self.last_name}',
+            'starter': self.starter,
+            'taxi': self.taxi,
+        }
