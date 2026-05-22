@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, request
 from app.models.matchups import Matchups
 from app.models.articles import Articles
 from app.models.league_state import LeagueState
@@ -104,8 +104,59 @@ def get_matchup_articles(matchup_id, week_number):
         return jsonify(success=False, error="Matchup not found"), 404
 
     article = Articles.generate_pregame_report(matchup)
-    
+
     if not article:
         return jsonify(success=False, error="Failed to generate pregame report. Check server logs for details."), 500
 
     return jsonify(success=True, article=article.serialize())
+
+
+@matchups.route('/matchups/<int:matchup_id>/week/<int:week_number>/simulate', methods=['POST', 'OPTIONS'])
+def simulate_matchup(matchup_id, week_number):
+    '''
+    Run the AI agent ensemble simulation for a matchup.
+    Each agent independently predicts player scores through a different analytical lens.
+    Results are aggregated to produce win probabilities and score distributions.
+    '''
+    from app.logic.simulation import run_simulation
+    current_year = get_current_year()
+    matchup = Matchups.query.filter_by(week=week_number, sleeper_matchup_id=matchup_id, year=current_year).first()
+
+    if not matchup:
+        return jsonify(success=False, error="Matchup not found"), 404
+
+    data = request.get_json() if request.is_json else {}
+    n_agents = data.get('n_agents', None)
+
+    try:
+        simulation = run_simulation(matchup, week_number, n_agents=n_agents)
+    except RuntimeError as e:
+        return jsonify(success=False, error=str(e)), 500
+
+    return jsonify(success=True, simulation=simulation._response_data)
+
+
+@matchups.route('/matchups/<int:matchup_id>/week/<int:week_number>/generate_simulation_report', methods=['GET', 'OPTIONS'])
+def generate_simulation_report(matchup_id, week_number):
+    '''
+    Run a simulation then generate a narrative article summarizing the results,
+    highlighting analyst disagreements and key player predictions.
+    '''
+    from app.logic.simulation import run_simulation
+
+    matchup = Matchups.query.filter_by(week=week_number, sleeper_matchup_id=matchup_id).first()
+
+    if not matchup:
+        return jsonify(success=False, error="Matchup not found"), 404
+
+    try:
+        simulation = run_simulation(matchup, week_number)
+    except RuntimeError as e:
+        return jsonify(success=False, error=str(e)), 500
+
+    article = Articles.generate_simulation_report(matchup, simulation._response_data)
+
+    if not article:
+        return jsonify(success=False, error="Simulation ran but narrative article generation failed. Check server logs."), 500
+
+    return jsonify(success=True, article=article.serialize(), simulation=simulation._response_data)

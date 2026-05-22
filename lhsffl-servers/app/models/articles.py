@@ -19,7 +19,7 @@ class Articles(db.Model):
 
     article_teams = relationship('ArticleTeams', back_populates='article')
 
-    article_type = db.Column(db.Enum('power_ranking', 'team_analysis', 'rumors', 'trade_analysis', 'injury', 'matchup_analysis', 'matchup_breakdown'), nullable=True)
+    article_type = db.Column(db.Enum('power_ranking', 'team_analysis', 'rumors', 'trade_analysis', 'injury', 'matchup_analysis', 'matchup_breakdown', 'simulation_report'), nullable=True)
 
     author = db.Column(db.String(64), nullable=True)
 
@@ -130,6 +130,99 @@ class Articles(db.Model):
             team_id=matchup.opponent_team.team_id,
         )
 
+        db.session.add(article_team1)
+        db.session.add(article_team2)
+        db.session.commit()
+
+        return article
+
+    @staticmethod
+    def generate_simulation_report(matchup, simulation_data):
+        '''
+        Generate a narrative article from AI ensemble simulation results.
+        Highlights analyst disagreements and key player predictions.
+        '''
+        team_a = simulation_data['team_a']
+        team_b = simulation_data['team_b']
+        n_agents = simulation_data['n_agents']
+
+        system_prompt = textwrap.dedent(f"""\
+        ## Role
+        You are a fantasy football analyst summarizing an AI prediction market for a matchup preview.
+
+        ## Context
+        Week {matchup.week} of the {matchup.year} NFL season.
+        {n_agents} independent analyst agents each predicted this matchup through different analytical lenses
+        (stats-based, injury-focused, matchup specialist, recent form, contrarian, weather, usage/targets, consensus projections).
+
+        ## Instructions
+        - Write a compelling narrative article summarizing the simulation results
+        - Highlight where analysts agreed and where they strongly disagreed (high uncertainty = interesting story)
+        - Call out specific players who divided opinion or drove the predictions
+        - Note the win probability and what it means (e.g., 65% is a moderate favorite, not a lock)
+        - Write like a fantasy football columnist — confident, engaging, data-driven
+        - Do not fabricate any details beyond what is provided in the simulation data
+        - Do not include the scoring rules
+
+        ## Output Format
+        Return the article in markdown. Include a compelling headline.
+        """)
+
+        user_prompt = (
+            f"Here are the simulation results:\n\n"
+            f"**{team_a['name']}** — Win probability: {round(team_a['win_probability'] * 100, 1)}% | "
+            f"Median score: {team_a['median_score']} | Uncertainty (IQR): {team_a['uncertainty']}\n"
+            f"Player projections: {json.dumps(team_a['player_projections'], indent=2)}\n\n"
+            f"**{team_b['name']}** — Win probability: {round(team_b['win_probability'] * 100, 1)}% | "
+            f"Median score: {team_b['median_score']} | Uncertainty (IQR): {team_b['uncertainty']}\n"
+            f"Player projections: {json.dumps(team_b['player_projections'], indent=2)}\n\n"
+            f"Raw agent predictions (each row is one analyst's output):\n"
+            f"{json.dumps(simulation_data['agent_results'], indent=2)}"
+        )
+
+        response = requests.post(
+            url="https://openrouter.ai/api/v1/chat/completions",
+            headers={
+                "Authorization": f'Bearer {os.environ["OPENROUTER_API_KEY"]}',
+                "Content-Type": "application/json",
+            },
+            json={
+                "transforms": ["middle-out"],
+                "model": os.environ["OPENROUTER_MODEL"],
+                "messages": [
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt},
+                ],
+            },
+        )
+
+        if response.ok:
+            response_json = response.json()
+            print(response_json)
+        else:
+            print(response.text)
+            return None
+
+        full_content = response_json['choices'][0]['message']['content']
+
+        article = Articles(
+            article_type='simulation_report',
+            author=os.environ["OPENROUTER_MODEL"],
+            title=f'Simulation Report: {matchup.team.team_name} vs {matchup.opponent_team.team_name} - Week {matchup.week}',
+            content=full_content,
+            thumbnail='',
+        )
+        db.session.add(article)
+        db.session.flush()
+
+        article_team1 = ArticleTeams(
+            article_id=article.article_id,
+            team_id=matchup.team.team_id,
+        )
+        article_team2 = ArticleTeams(
+            article_id=article.article_id,
+            team_id=matchup.opponent_team.team_id,
+        )
         db.session.add(article_team1)
         db.session.add(article_team2)
         db.session.commit()

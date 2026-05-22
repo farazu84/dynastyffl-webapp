@@ -81,4 +81,23 @@ class Players(db.Model):
 
 
     def serialize(self):
+<<<<<<< Updated upstream
         return PlayersJSONSchema().dump(self)
+=======
+        return PlayersJSONSchema().dump(self)
+
+    def ai_serialize(self):
+        return {
+            'name': f'{self.first_name} {self.last_name}',
+            'starter': self.starter,
+            'taxi': self.taxi,
+        }
+
+    def simulation_serialize(self):
+        return {
+            'name': f'{self.first_name} {self.last_name}',
+            'position': self.position,
+            'injury_status': self.injury_status,
+            'practice_participation': self.practice_participation,
+        }
+>>>>>>> Stashed changes
