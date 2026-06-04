@@ -170,7 +170,7 @@
 }
 
 .featured-article-link:hover .featured-title {
-    color: var(--gold-hi);
+    color: var(--ink);
 }
 
 .featured-meta {
@@ -319,7 +319,7 @@
     min-width: 0;
 }
 
-.article-title {
+.news-article .article-title {
     font-family: var(--display);
     font-weight: 600;
     font-size: 15px;
@@ -337,7 +337,7 @@
 }
 
 .news-article:hover .article-title {
-    color: var(--gold-hi);
+    color: var(--ink);
 }
 
 .article-meta {

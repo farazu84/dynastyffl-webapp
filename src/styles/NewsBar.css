@@ -157,7 +157,7 @@
 }
 
 .news-item-link:hover .news-item-title {
-    color: var(--gold-hi);
+    color: var(--ink);
 }
 
 .news-item-meta {

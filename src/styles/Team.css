@@ -30,7 +30,7 @@ h2, h3 {
 
 h2 {
     font-size: 1.3rem;
-    margin: 20px 0 12px;
+    margin: 20px 0 4px;
     display: flex;
     align-items: center;
     gap: 10px;
@@ -58,6 +58,12 @@ p {
 }
 
 /* ── Player list items ─────────────────────────────────────────── */
+ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
 ul li {
     background: var(--field-700);
     border: 1px solid var(--stroke);
@@ -94,7 +100,7 @@ ul li:hover {
     transform: translateY(-2px);
     box-shadow: 0 10px 26px rgba(0, 0, 0, .45);
     background: var(--field-600);
-    color: var(--gold-hi);
+    color: var(--ink);
 }
 
 ul li:hover::before {

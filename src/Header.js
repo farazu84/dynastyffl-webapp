@@ -39,8 +39,8 @@ const Header = () => {
                     <div className="header-brand">
                         <img className="header-crest" src={crestLogo} alt="408 Gridiron crest" />
                         <div className="header-wordmark">
-                            <span className="wordmark-pre">Est. 2018 · South Bay</span>
-                            <h1>LHS Gridiron</h1>
+                            <span className="wordmark-pre">Est. 2018 · San Jose</span>
+                            <h1>408 Gridiron</h1>
                             <span className="wordmark-sub">Fantasy Football League</span>
                         </div>
                     </div>

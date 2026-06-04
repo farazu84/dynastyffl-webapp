@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Link } from 'react-router-dom';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import fallbackImage from '../../studio-gib-1.png';
 import TrendingPlayers from './TrendingPlayers';
 import CompactArticleCard from '../articles/CompactArticleCard';
@@ -119,7 +121,11 @@ const ArticleHeader = React.memo(() => {
                         <span className="news-date">{article.formattedDate}</span>
                     </div>
                     <h3 className="news-title">{article?.title || 'Latest League News'}</h3>
-                    <p className="news-excerpt">{article.excerpt}</p>
+                    <div className="news-markdown-excerpt">
+                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                            {article?.content || ''}
+                        </ReactMarkdown>
+                    </div>
                 </div>
             </div>
         </Link>

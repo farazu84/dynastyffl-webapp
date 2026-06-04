@@ -79,10 +79,6 @@ code {
 }
 
 footer {
-  position: fixed;
-  left: 0;
-  bottom: 0;
-  width: 100%;
   color: var(--muted);
   text-align: center;
   font-family: var(--mono);
@@ -92,4 +88,5 @@ footer {
   background: linear-gradient(180deg, transparent, rgba(0, 0, 0, .4));
   border-top: 1px solid var(--stroke);
   padding: 12px 0;
+  margin-top: 40px;
 }
