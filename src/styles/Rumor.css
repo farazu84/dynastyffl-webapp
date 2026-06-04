@@ -1,42 +1,59 @@
-/* Rumor Mill Page Styling */
+/* ── Rumor Mill page ───────────────────────────────────────────── */
 .rumor-page {
     min-height: 100vh;
-    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-    color: white;
+    background: var(--field-800);
+    color: var(--ink);
     padding: 40px 20px;
 }
 
 .rumor-container {
     max-width: 800px;
     margin: 0 auto;
-    background: linear-gradient(135deg, #2a2a2a 0%, #3a3a3a 100%);
-    border-radius: 20px;
+    background: var(--field-700);
+    border-radius: var(--r-lg);
     padding: 40px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-    border: 1px solid #444;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
+    border: 1px solid var(--stroke);
+    position: relative;
 }
 
+/* crimson→gold top accent */
+.rumor-container::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--crimson) 0%, var(--gold) 50%, var(--crimson) 100%);
+    border-radius: var(--r-lg) var(--r-lg) 0 0;
+}
+
+/* ── Title ─────────────────────────────────────────────────────── */
 .rumor-title {
-    font-size: 3em;
-    color: #61dafb;
+    font-family: var(--display);
+    font-size: 2.8em;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
     text-align: center;
     margin: 0 0 15px 0;
-    font-weight: 700;
-    background: linear-gradient(45deg, #61dafb, #21a9d8);
+    background: linear-gradient(90deg, var(--gold) 0%, var(--crimson) 60%, var(--gold) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    line-clamp: unset;
 }
 
 .rumor-subtitle {
     text-align: center;
-    color: #ccc;
-    font-size: 1.2em;
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
     margin: 0 0 40px 0;
-    font-style: italic;
 }
 
+/* ── Form ──────────────────────────────────────────────────────── */
 .rumor-form {
     display: flex;
     flex-direction: column;
@@ -50,62 +67,70 @@
 }
 
 .form-label {
-    font-size: 1.2em;
+    font-family: var(--mono);
+    font-size: 11px;
     font-weight: 600;
-    color: #61dafb;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--gold);
     margin: 0;
 }
 
 .form-helper {
-    font-size: 0.9em;
-    color: #aaa;
+    font-family: var(--body);
+    font-size: 0.85em;
+    color: var(--mute-dim);
     margin: 0;
     font-style: italic;
 }
 
+/* ── Textarea ──────────────────────────────────────────────────── */
 .rumor-textarea {
     width: 100%;
     min-height: 150px;
-    padding: 20px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 2px solid #444;
-    border-radius: 12px;
-    color: white;
-    font-size: 1.1em;
+    padding: 16px 20px;
+    background: rgba(255, 255, 255, .04);
+    border: 1px solid var(--stroke-2);
+    border-radius: var(--r-md);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 1em;
     line-height: 1.6;
     resize: vertical;
-    transition: all 0.3s ease;
-    font-family: inherit;
+    transition: border-color .2s, box-shadow .2s;
     box-sizing: border-box;
 }
 
 .rumor-textarea:focus {
     outline: none;
-    border-color: #61dafb;
-    box-shadow: 0 0 0 3px rgba(97, 218, 251, 0.2);
-    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(212, 162, 74, .18);
+    background: rgba(255, 255, 255, .06);
 }
 
 .rumor-textarea::placeholder {
-    color: #888;
+    color: var(--mute-dim);
     font-style: italic;
 }
 
 .character-count {
     text-align: right;
-    font-size: 0.85em;
-    color: #aaa;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: .1em;
+    color: var(--mute-dim);
     margin-top: 5px;
 }
 
+/* ── Teams dropdown ────────────────────────────────────────────── */
 .teams-dropdown {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 12px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid #444;
-    border-radius: 12px;
-    padding: 20px;
+    gap: 8px;
+    background: rgba(255, 255, 255, .02);
+    border: 1px solid var(--stroke);
+    border-radius: var(--r-md);
+    padding: 16px;
     max-height: 300px;
     overflow-y: auto;
 }
@@ -113,16 +138,16 @@
 .team-checkbox {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     cursor: pointer;
-    padding: 12px;
-    border-radius: 8px;
-    transition: all 0.3s ease;
+    padding: 10px;
+    border-radius: var(--r-sm);
+    transition: background .2s;
     position: relative;
 }
 
 .team-checkbox:hover {
-    background: rgba(97, 218, 251, 0.1);
+    background: rgba(212, 162, 74, .08);
 }
 
 .checkbox-input {
@@ -130,18 +155,18 @@
 }
 
 .checkbox-custom {
-    width: 20px;
-    height: 20px;
-    border: 2px solid #61dafb;
-    border-radius: 4px;
+    width: 18px;
+    height: 18px;
+    border: 1px solid var(--gold);
+    border-radius: var(--r-sm);
     position: relative;
-    transition: all 0.3s ease;
+    transition: background .2s, border-color .2s;
     flex-shrink: 0;
 }
 
 .checkbox-input:checked + .checkbox-custom {
-    background: #61dafb;
-    border-color: #61dafb;
+    background: var(--gold);
+    border-color: var(--gold);
 }
 
 .checkbox-input:checked + .checkbox-custom::after {
@@ -150,69 +175,71 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    color: black;
+    color: var(--field-900);
     font-weight: bold;
-    font-size: 12px;
+    font-size: 11px;
 }
 
 .team-name {
-    font-size: 1em;
+    font-family: var(--body);
+    font-size: 0.9em;
     font-weight: 500;
-    color: white;
-    transition: color 0.3s ease;
+    color: var(--silver);
+    transition: color .2s;
 }
 
 .team-checkbox:hover .team-name {
-    color: #61dafb;
+    color: var(--gold-hi);
 }
 
+/* ── Selected teams ────────────────────────────────────────────── */
 .selected-teams {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
     align-items: center;
     margin-top: 10px;
-    padding: 15px;
-    background: rgba(97, 218, 251, 0.05);
-    border-radius: 8px;
-    border: 1px solid rgba(97, 218, 251, 0.2);
+    padding: 14px 16px;
+    background: rgba(212, 162, 74, .05);
+    border-radius: var(--r-md);
+    border: 1px solid var(--hairline);
 }
 
 .selected-label {
+    font-family: var(--mono);
     font-weight: 600;
-    color: #61dafb;
-    font-size: 0.9em;
+    font-size: 10px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--gold);
 }
 
 .selected-team-tag {
     display: flex;
     align-items: center;
     gap: 6px;
-    background: #61dafb;
-    color: black;
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 0.85em;
+    background: var(--gold);
+    color: var(--field-900);
+    padding: 5px 12px;
+    border-radius: var(--r-sm);
+    font-family: var(--mono);
+    font-size: 0.8em;
     font-weight: 600;
+    letter-spacing: .06em;
+    text-transform: uppercase;
     animation: slideIn 0.3s ease;
 }
 
 @keyframes slideIn {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
 
 .remove-tag {
     background: none;
     border: none;
-    color: black;
-    font-size: 16px;
+    color: var(--field-900);
+    font-size: 14px;
     font-weight: bold;
     cursor: pointer;
     padding: 0;
@@ -222,25 +249,30 @@
     align-items: center;
     justify-content: center;
     border-radius: 50%;
-    transition: all 0.2s ease;
+    transition: background .15s;
+    opacity: .8;
 }
 
 .remove-tag:hover {
-    background: rgba(0, 0, 0, 0.2);
-    transform: scale(1.1);
+    background: rgba(0, 0, 0, .25);
+    opacity: 1;
 }
 
+/* ── Submit button ─────────────────────────────────────────────── */
 .submit-btn {
     align-self: center;
-    padding: 16px 40px;
-    background: linear-gradient(45deg, #61dafb, #21a9d8);
-    color: white;
-    border: none;
-    border-radius: 12px;
-    font-size: 1.1em;
-    font-weight: 600;
+    padding: 13px 40px;
+    background: transparent;
+    color: var(--ink);
+    border: 1px solid var(--gold);
+    border-radius: var(--r-sm);
+    font-family: var(--display);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: .2em;
+    text-transform: uppercase;
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: background .15s, color .15s, box-shadow .15s, transform .15s;
     position: relative;
     overflow: hidden;
     min-width: 200px;
@@ -249,12 +281,11 @@
 .submit-btn::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: -100%;
+    top: 0; left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    transition: left 0.5s;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.1), transparent);
+    transition: left .5s;
 }
 
 .submit-btn:hover::before {
@@ -262,20 +293,28 @@
 }
 
 .submit-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 25px rgba(97, 218, 251, 0.4);
-    background: linear-gradient(45deg, #21a9d8, #61dafb);
+    background: var(--gold);
+    color: var(--field-900);
+    box-shadow: 0 6px 20px rgba(212, 162, 74, .35);
+    transform: translateY(-1px);
+}
+
+.submit-btn:active {
+    transform: translateY(0);
+    box-shadow: none;
 }
 
 .submit-btn:disabled {
-    background: #666;
+    border-color: var(--stroke-2);
+    color: var(--mute-dim);
     cursor: not-allowed;
     transform: none;
     box-shadow: none;
 }
 
 .submit-btn:disabled:hover {
-    background: #666;
+    background: transparent;
+    color: var(--mute-dim);
     transform: none;
     box-shadow: none;
 }
@@ -284,33 +323,38 @@
     display: none;
 }
 
+/* ── Submit message ────────────────────────────────────────────── */
 .submit-message {
     text-align: center;
-    padding: 15px 20px;
-    border-radius: 8px;
+    padding: 14px 20px;
+    border-radius: var(--r-md);
+    font-family: var(--mono);
+    font-size: 11px;
     font-weight: 600;
+    letter-spacing: .12em;
+    text-transform: uppercase;
     margin-top: 20px;
     animation: fadeIn 0.5s ease;
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
 
 .submit-message.success {
-    background: rgba(76, 175, 80, 0.2);
+    background: rgba(76, 175, 80, .12);
     color: #4caf50;
-    border: 1px solid rgba(76, 175, 80, 0.3);
+    border: 1px solid rgba(76, 175, 80, .3);
 }
 
 .submit-message.error {
-    background: rgba(244, 67, 54, 0.2);
+    background: rgba(244, 67, 54, .12);
     color: #f44336;
-    border: 1px solid rgba(244, 67, 54, 0.3);
+    border: 1px solid rgba(244, 67, 54, .3);
 }
 
-/* Responsive Design */
+/* ── Responsive ────────────────────────────────────────────────── */
 @media (max-width: 768px) {
     .rumor-page {
         padding: 20px 15px;
@@ -322,10 +366,6 @@
 
     .rumor-title {
         font-size: 2.2em;
-    }
-
-    .rumor-subtitle {
-        font-size: 1em;
     }
 
     .teams-dropdown {
@@ -357,7 +397,6 @@
     }
 
     .rumor-textarea {
-        padding: 15px;
-        font-size: 1em;
+        padding: 12px 16px;
     }
 }

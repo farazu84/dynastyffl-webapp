@@ -1,69 +1,72 @@
-/* Ensure black background everywhere for article page */
+/* ── Article page — hard resets isolate this from global styles ── */
+/* Note: this file intentionally uses literal hex values because    */
+/* all: initial / all: unset on .article-page can break var()       */
+/* inheritance. Palette reference:                                  */
+/*   #0a1322 = field-900  #0e1a30 = field-800  #142342 = field-700  */
+/*   #1b2d52 = field-600  #25395f = stroke     #36507f = stroke-2   */
+/*   #d4a24a = gold       #ecc777 = gold-hi    #a8243a = crimson    */
+/*   #f1f4fa = ink        #8696b3 = muted      #c9d2e2 = silver     */
+
 body:has(.article-page),
 html:has(.article-page) {
-    background-color: black !important;
+    background-color: #0e1a30 !important;
     margin: 0 !important;
     padding: 0 !important;
     min-height: 100vh !important;
 }
 
-/* Complete CSS reset for article page */
 .article-page {
-    /* Reset all inherited styles */
     all: initial;
-    
-    /* Apply only the styles we want */
     display: block;
     max-width: 800px;
     margin: 0 auto;
-    padding: 20px 20px 100px 20px; /* Extra bottom padding to prevent blue chunk */
-    background-color: #1a1a1a;
-    color: white;
-    min-height: calc(100vh - 40px); /* Account for padding */
-    width: calc(100% - 40px); /* Account for left/right padding */
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+    padding: 20px 20px 100px 20px;
+    background-color: #142342;
+    color: #f1f4fa;
+    min-height: calc(100vh - 40px);
+    width: calc(100% - 40px);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
     box-sizing: border-box;
     position: relative;
 }
 
-/* Reset all child elements */
 .article-page * {
     all: unset;
     display: revert;
     box-sizing: border-box;
 }
 
-/* Ensure no elements extend beyond the article page */
 .article-page::after {
     content: "";
     display: block;
     height: 50px;
-    background-color: #1a1a1a;
+    background-color: #142342;
 }
 
-/* Override any footer or other global elements when viewing articles */
 body:has(.article-page) footer,
 body:has(.article-page) .footer {
     display: none !important;
 }
 
-/* Article header styles */
+/* ── Article header ────────────────────────────────────────────── */
 .article-header {
     display: block;
     text-align: center;
     margin-bottom: 30px;
-    border-bottom: 1px solid #333;
+    border-bottom: 1px solid #25395f;
     padding-bottom: 20px;
     color: inherit;
 }
 
 .article-header h3 {
     display: block;
-    color: #61dafb;
+    color: #d4a24a;
     margin: 0 0 20px 0;
-    font-size: 1.2em;
-    font-weight: bold;
-    font-family: inherit;
+    font-size: 0.75em;
+    font-weight: 700;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
 }
 
 .article-header h2 {
@@ -71,17 +74,20 @@ body:has(.article-page) .footer {
     margin: 10px 0;
     font-size: 2em;
     line-height: 1.2;
-    font-weight: bold;
-    color: white;
-    font-family: inherit;
+    font-weight: 700;
+    color: #f1f4fa;
+    font-family: 'Oswald', 'Arial Narrow', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: .04em;
 }
 
 .article-meta {
     display: block;
-    color: #ccc;
-    font-size: 0.9em;
+    color: #8696b3;
+    font-size: 0.85em;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    letter-spacing: .1em;
     margin: 5px 0;
-    font-family: inherit;
 }
 
 .article-thumbnail {
@@ -92,20 +98,19 @@ body:has(.article-page) .footer {
     margin: 20px 0;
 }
 
-/* Markdown content container - completely isolated */
+/* ── Article body ──────────────────────────────────────────────── */
 .article-content {
     display: block;
     white-space: normal;
     text-align: left;
     font-size: 1rem;
-    line-height: 1.6;
+    line-height: 1.7;
     margin: 0;
     padding: 0;
-    color: white;
+    color: #c9d2e2;
     font-family: inherit;
 }
 
-/* Reset all elements inside article content */
 .article-content * {
     all: unset;
     display: revert;
@@ -114,7 +119,7 @@ body:has(.article-page) .footer {
     font-family: inherit;
 }
 
-/* Style markdown elements specifically with explicit resets */
+/* ── Content headings ──────────────────────────────────────────── */
 .article-content h1,
 .article-content h2,
 .article-content h3,
@@ -122,42 +127,35 @@ body:has(.article-page) .footer {
 .article-content h5,
 .article-content h6 {
     display: block;
-    color: #61dafb;
-    margin: 24px 0 16px 0;
+    color: #d4a24a;
+    margin: 24px 0 12px 0;
     line-height: 1.25;
-    font-weight: bold;
-    font-family: inherit;
+    font-weight: 700;
+    font-family: 'Oswald', 'Arial Narrow', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: .06em;
 }
 
-.article-content h1 { 
-    font-size: 2em; 
-    display: block;
-}
-.article-content h2 { 
-    font-size: 1.5em; 
-    display: block;
-}
-.article-content h3 { 
-    font-size: 1.25em; 
-    display: block;
-}
+.article-content h1 { font-size: 1.8em; display: block; }
+.article-content h2 { font-size: 1.4em; display: block; }
+.article-content h3 { font-size: 1.2em; display: block; }
 
 .article-content p {
     display: block;
-    margin: 16px 0;
-    line-height: 1.6;
-    color: white;
+    margin: 14px 0;
+    line-height: 1.7;
+    color: #c9d2e2;
     font-family: inherit;
 }
 
+/* ── Lists ─────────────────────────────────────────────────────── */
 .article-content ul,
 .article-content ol {
-    /* Complete reset to prevent inheritance from other components */
     all: unset;
     display: block;
     margin: 16px 0;
     padding-left: 32px;
-    color: white;
+    color: #c9d2e2;
     font-family: inherit;
     list-style: none;
     background: none !important;
@@ -167,13 +165,12 @@ body:has(.article-page) .footer {
 }
 
 .article-content li {
-    /* Complete reset to prevent inheritance from Team/League components */
     all: unset;
     display: block;
     margin: 0;
     padding: 0;
-    line-height: 1.5;
-    color: white;
+    line-height: 1.6;
+    color: #c9d2e2;
     font-family: inherit;
     background: none !important;
     border: none !important;
@@ -185,7 +182,6 @@ body:has(.article-page) .footer {
     border-radius: 0 !important;
 }
 
-/* Reset any pseudo-elements that might be inherited from Team/League list styles */
 .article-content ul li::before,
 .article-content ul li::after,
 .article-content ol li::before,
@@ -196,14 +192,12 @@ body:has(.article-page) .footer {
     position: static !important;
 }
 
-/* Fix for malformed list items that should be regular text */
 .article-content li p {
     margin: 0;
     display: inline;
     color: inherit;
 }
 
-/* Hide list markers for single-item lists (likely malformed text) */
 .article-content ul:has(li:only-child) {
     list-style: none;
     padding-left: 0;
@@ -217,7 +211,6 @@ body:has(.article-page) .footer {
     display: block;
 }
 
-/* Also handle cases where there are just a few scattered list items */
 .article-content ul li:only-child {
     list-style: none;
     margin: 0;
@@ -225,7 +218,6 @@ body:has(.article-page) .footer {
     display: block;
 }
 
-/* Ensure proper spacing for actual lists (multiple items) */
 .article-content ul:not(:has(li:only-child)) li {
     list-style-type: disc;
 }
@@ -234,76 +226,81 @@ body:has(.article-page) .footer {
     list-style-type: decimal;
 }
 
+/* ── Inline ────────────────────────────────────────────────────── */
 .article-content strong {
     display: inline;
-    font-weight: bold;
-    color: #fff;
+    font-weight: 700;
+    color: #f1f4fa;
     font-family: inherit;
 }
 
 .article-content em {
     display: inline;
     font-style: italic;
-    color: #ddd;
+    color: #c9d2e2;
     font-family: inherit;
 }
 
+/* ── Code ──────────────────────────────────────────────────────── */
 .article-content code {
     display: inline;
-    background-color: #2d2d2d;
+    background-color: #1b2d52;
+    border: 1px solid #25395f;
     padding: 2px 6px;
     border-radius: 4px;
-    font-family: 'Courier New', monospace;
-    font-size: 0.9em;
-    color: white;
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+    font-size: 0.85em;
+    color: #ecc777;
 }
 
 .article-content pre {
     display: block;
-    background-color: #2d2d2d;
+    background-color: #0a1322;
+    border: 1px solid #25395f;
     padding: 16px;
-    border-radius: 8px;
+    border-radius: 6px;
     overflow-x: auto;
     margin: 16px 0;
-    color: white;
-    font-family: 'Courier New', monospace;
+    color: #c9d2e2;
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
 }
 
+/* ── Blockquote ────────────────────────────────────────────────── */
 .article-content blockquote {
     display: block;
-    border-left: 4px solid #61dafb;
-    margin: 16px 0;
-    padding: 8px 16px;
-    background-color: rgba(97, 218, 251, 0.1);
+    border-left: 3px solid #d4a24a;
+    margin: 20px 0;
+    padding: 10px 18px;
+    background-color: rgba(212, 162, 74, .07);
     font-style: italic;
-    color: white;
+    color: #c9d2e2;
     font-family: inherit;
+    border-radius: 0 4px 4px 0;
 }
 
-/* Table wrapper to prevent overflow */
+/* ── Table ─────────────────────────────────────────────────────── */
 .article-content table {
     display: table;
     width: 100%;
     max-width: 100%;
     margin: 24px 0;
     border-collapse: collapse;
-    color: white;
+    color: #c9d2e2;
     font-family: inherit;
     table-layout: fixed;
-    border: 2px solid #61dafb;
-    border-radius: 8px;
+    border: 1px solid #36507f;
+    border-radius: 6px;
     overflow: hidden;
-    background-color: #262626;
+    background-color: #142342;
 }
 
-/* Style table cells with proper sizing */
 .article-content th,
 .article-content td {
     display: table-cell;
-    border: 1px solid #444;
+    border: 1px solid #25395f;
     padding: 10px 12px;
     text-align: left;
-    color: white;
+    color: #c9d2e2;
     font-family: inherit;
     vertical-align: top;
     font-size: 0.85em;
@@ -312,27 +309,28 @@ body:has(.article-page) .footer {
     overflow-wrap: break-word;
     hyphens: auto;
     max-width: 0;
-    background-color: #2a2a2a;
+    background-color: #1b2d52;
 }
 
 .article-content th {
-    background-color: #61dafb;
-    color: #000;
-    font-weight: bold;
-    font-size: 0.9em;
+    background-color: #d4a24a;
+    color: #0a1322;
+    font-weight: 700;
+    font-size: 0.8em;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: .1em;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
 }
 
-/* Publish bar — needs explicit resets because .article-page * { all: unset } */
+/* ── Publish bar ───────────────────────────────────────────────── */
 .article-publish-bar {
     all: unset;
     display: flex;
     align-items: center;
     gap: 12px;
-    background: rgba(251, 191, 36, 0.08);
-    border: 1px solid rgba(251, 191, 36, 0.35);
-    border-radius: 8px;
+    background: rgba(212, 162, 74, .07);
+    border: 1px solid rgba(212, 162, 74, .3);
+    border-radius: 6px;
     padding: 10px 16px;
     margin-bottom: 20px;
     box-sizing: border-box;
@@ -344,43 +342,47 @@ body:has(.article-page) .footer {
     display: inline-block;
     padding: 3px 10px;
     border-radius: 12px;
-    background: rgba(251, 191, 36, 0.15);
-    border: 1px solid rgba(251, 191, 36, 0.4);
-    color: #fbbf24;
+    background: rgba(212, 162, 74, .15);
+    border: 1px solid rgba(212, 162, 74, .4);
+    color: #d4a24a;
     font-size: 0.75em;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: .1em;
     box-sizing: border-box;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
 }
 
 .article-publish-btn {
     all: unset;
     display: inline-block;
-    padding: 8px 20px;
-    background: #fbbf24;
-    color: #1a1a1a;
-    border-radius: 6px;
-    font-size: 0.9em;
+    padding: 7px 20px;
+    background: #d4a24a;
+    color: #0a1322;
+    border-radius: 4px;
+    font-size: 0.85em;
     font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
     cursor: pointer;
     transition: background 0.2s;
     box-sizing: border-box;
+    font-family: 'Oswald', 'Arial Narrow', sans-serif;
 }
 
 .article-publish-btn:hover:not(:disabled) {
-    background: #f59e0b;
+    background: #ecc777;
 }
 
 .article-publish-btn:disabled {
-    opacity: 0.6;
+    opacity: 0.5;
     cursor: not-allowed;
 }
 
 .article-publish-error {
     all: unset;
     display: inline-block;
-    color: #ff6b6b;
+    color: #f87171;
     font-size: 0.85em;
     box-sizing: border-box;
 }

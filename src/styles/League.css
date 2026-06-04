@@ -1,265 +1,5 @@
-  .teamList {
-    width: 100%;
-    max-width: 90%;
-    padding: 0;
-    padding-top: 5px;
-    margin: 0;
-  }
-
-  .teamList ul {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 12px;
-    padding: 0;
-    margin: 0;
-    list-style: none;
-  }
-
-  .teamList ul li {
-    background: linear-gradient(135deg, #1e1e1e 0%, #2d2d2d 100%);
-    border: 1px solid #333;
-    border-radius: 8px;
-    overflow: hidden;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    height: auto;
-    min-height: 0px;
-    display: flex;
-    align-items: center;
-    margin: 0;
-    padding: 0;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  }
-
-  /* Compact styling for sidebar team list */
-  .league-standings-sidebar .teamList ul {
-    grid-template-columns: 1fr;
-    gap: 6px;
-  }
-
-  .league-standings-sidebar .teamList ul li {
-    min-height: 40px;
-    max-height: 40px;
-    height: 40px;
-    border-radius: 6px;
-  }
-
-  .teamList ul li::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, #61dafb, #21a9d8);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  }
-
-  .teamList ul li:hover {
-    transform: translateY(-2px);
-    border-color: #61dafb;
-    box-shadow: 0 8px 25px rgba(97, 218, 251, 0.2);
-    background: linear-gradient(135deg, #252525 0%, #343434 100%);
-  }
-
-  .teamList ul li:hover::before {
-    opacity: 1;
-  }
-
-  .team-link {
-    text-decoration: none;
-    color: white;
-    display: flex;
-    align-items: center;
-    width: 100%;
-    height: 100%;
-    padding: 20px 24px;
-    cursor: pointer;
-    transition: color 0.3s ease;
-    position: relative;
-  }
-
-  /* Compact padding for sidebar team links */
-  .league-standings-sidebar .team-link {
-    padding: 8px 12px;
-    height: 40px;
-    box-sizing: border-box;
-  }
-
-  .team-link:hover {
-    color: #61dafb;
-  }
-
-  .team-link p {
-    margin: 0;
-    padding: 0;
-    font-size: 1.1em;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-  }
-
-  /* Team Info Layout */
-  .team-info {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 15px;
-  }
-
-  /* Compact team info for sidebar */
-  .league-standings-sidebar .team-info {
-    gap: 8px;
-  }
-
-  .team-name {
-    margin: 0;
-    padding: 0;
-    font-size: 1.1em;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    flex: 1;
-  }
-
-  .team-stats {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 6px;
-    min-width: 120px;
-  }
-
-  .record {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 1.1rem;
-    font-weight: 700;
-  }
-
-  /* Compact styling for sidebar team stats */
-  .league-standings-sidebar .team-name {
-    font-size: 0.9em;
-    line-height: 1.2;
-  }
-
-  .league-standings-sidebar .team-stats {
-    gap: 2px;
-    min-width: 80px;
-  }
-
-  .league-standings-sidebar .record {
-    font-size: 0.8rem;
-    line-height: 1;
-  }
-
-  .record .wins {
-    color: #4ade80;
-  }
-
-  .record .separator {
-    color: #9ca3af;
-    font-weight: 400;
-  }
-
-  .record .losses {
-    color: #f87171;
-  }
-
-  .points {
-    display: flex;
-    gap: 12px;
-    font-size: 0.8rem;
-  }
-
-  /* Compact points styling for sidebar */
-  .league-standings-sidebar .points {
-    gap: 6px;
-    font-size: 0.65rem;
-    line-height: 1;
-  }
-
-  .points-for,
-  .points-against {
-    display: flex;
-    align-items: center;
-    gap: 3px;
-  }
-
-  .points .label {
-    color: #9ca3af;
-    font-weight: 500;
-  }
-
-  .points .value {
-    color: #ffffff;
-    font-weight: 600;
-  }
-
-
-
-  .matchup-card {
-    display: flex;
-    width: 100%;
-    max-width: 100%;
-    margin: 1.5em 0;
-    padding: 1em;
-    background: rgb(63, 125, 187);
-    border-radius: 5px;
-    color: white;
-    align-items: flex-start;
-    justify-content: center;
-    box-sizing: border-box;
-  }
-
-  .matchup-team {
-    flex: 1;
-    margin: 0 10px;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .matchup-vs {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    margin: 0 20px;
-    min-width: 60px;
-  }
-
-  /* Player column styling for matchups */
-  .matchup-player-col {
-    min-width: 60px;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .matchup-player-position {
-    margin: 2px 0;
-    font-size: 0.9em;
-    font-weight: bold;
-  }
-
-  .matchup-player-name {
-    margin: 2px 0;
-    font-size: 0.8em;
-    line-height: 1.1;
-  }
-
-  .matchup-player-team {
-    margin: 2px 0;
-    font-size: 0.75em;
-    color: white;
-  }
-
-  /* League main container - new layout */
-  .league-main-container {
+/* ── League main layout ────────────────────────────────────────── */
+.league-main-container {
     display: flex;
     flex-direction: row;
     gap: 20px;
@@ -267,316 +7,568 @@
     width: 100%;
     box-sizing: border-box;
     align-items: flex-start;
-  }
+}
 
-  .league-left-content {
+.league-left-content {
     flex: 2;
     max-width: calc(100% - 440px);
     display: flex;
     flex-direction: column;
-  }
+}
 
-  .current-matchups-section {
+/* ── Team list ─────────────────────────────────────────────────── */
+.teamList {
+    width: 100%;
+    max-width: 90%;
+    padding: 0;
+    padding-top: 5px;
+    margin: 0;
+}
+
+.teamList ul {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 10px;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.teamList ul li {
+    background: var(--field-700);
+    border: 1px solid var(--stroke);
+    border-radius: var(--r-md);
+    overflow: hidden;
+    transition: border-color .2s, transform .2s, box-shadow .2s;
+    position: relative;
+    height: auto;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, .2);
+}
+
+/* Compact sidebar list */
+.league-standings-sidebar .teamList ul {
+    grid-template-columns: 1fr;
+    gap: 6px;
+}
+
+.league-standings-sidebar .teamList ul li {
+    min-height: 40px;
+    max-height: 40px;
+    height: 40px;
+    border-radius: var(--r-sm);
+}
+
+/* gold-to-crimson top accent, hidden until hover */
+.teamList ul li::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--gold) 0%, var(--crimson) 100%);
+    opacity: 0;
+    transition: opacity .2s;
+}
+
+.teamList ul li:hover {
+    border-color: var(--gold);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 28px rgba(0, 0, 0, .45);
+    background: var(--field-600);
+}
+
+.teamList ul li:hover::before {
+    opacity: 1;
+}
+
+/* ── Team link ─────────────────────────────────────────────────── */
+.team-link {
+    text-decoration: none;
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    padding: 18px 22px;
+    cursor: pointer;
+    transition: color .2s;
+    position: relative;
+}
+
+.league-standings-sidebar .team-link {
+    padding: 8px 12px;
+    height: 40px;
+    box-sizing: border-box;
+}
+
+.team-link:hover {
+    color: var(--gold-hi);
+}
+
+.team-link p {
+    margin: 0;
+    padding: 0;
+    font-family: var(--body);
+    font-size: 1.05em;
+    font-weight: 600;
+    letter-spacing: .01em;
+}
+
+/* ── Team info ─────────────────────────────────────────────────── */
+.team-info {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 14px;
+}
+
+.league-standings-sidebar .team-info {
+    gap: 8px;
+}
+
+.team-name {
+    margin: 0;
+    padding: 0;
+    font-family: var(--body);
+    font-size: 1.05em;
+    font-weight: 600;
+    letter-spacing: .01em;
+    color: var(--ink);
+    flex: 1;
+    transition: color .2s;
+}
+
+.team-link:hover .team-name {
+    color: var(--gold-hi);
+}
+
+.league-standings-sidebar .team-name {
+    font-size: 0.9em;
+    line-height: 1.2;
+}
+
+/* ── Record ────────────────────────────────────────────────────── */
+.team-stats {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 5px;
+    min-width: 120px;
+}
+
+.league-standings-sidebar .team-stats {
+    gap: 2px;
+    min-width: 80px;
+}
+
+.record {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 1.05rem;
+    letter-spacing: .04em;
+}
+
+.league-standings-sidebar .record {
+    font-size: 0.8rem;
+    line-height: 1;
+}
+
+.record .wins {
+    color: var(--green);
+}
+
+.record .separator {
+    color: var(--stroke-2);
+    font-weight: 500;
+}
+
+.record .losses {
+    color: var(--red);
+}
+
+/* ── Points ────────────────────────────────────────────────────── */
+.points {
+    display: flex;
+    gap: 10px;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+}
+
+.league-standings-sidebar .points {
+    gap: 6px;
+    font-size: 0.62rem;
+    line-height: 1;
+}
+
+.points-for,
+.points-against {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+
+.points .label {
+    color: var(--mute-dim);
+    font-weight: 400;
+}
+
+.points .value {
+    color: #9aa9c4;
+    font-weight: 600;
+}
+
+/* ── Matchup card ──────────────────────────────────────────────── */
+.matchup-card {
+    display: flex;
+    width: 100%;
+    max-width: 100%;
+    margin: 1.5em 0;
+    padding: 1.2em 1.4em;
+    background: var(--field-600);
+    border: 1px solid var(--stroke-2);
+    border-radius: var(--r-lg);
+    color: var(--ink);
+    align-items: flex-start;
+    justify-content: center;
+    box-sizing: border-box;
+    position: relative;
+}
+
+/* gold left accent on matchup */
+.matchup-card::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: linear-gradient(180deg, var(--gold), var(--crimson));
+    border-radius: var(--r-lg) 0 0 var(--r-lg);
+}
+
+.matchup-team {
+    flex: 1;
+    margin: 0 10px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.matchup-vs {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0 20px;
+    min-width: 60px;
+}
+
+.matchup-player-col {
+    min-width: 60px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.matchup-player-position {
+    margin: 2px 0;
+    font-family: var(--mono);
+    font-size: 0.8em;
+    font-weight: 600;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--gold);
+}
+
+.matchup-player-name {
+    margin: 2px 0;
+    font-size: 0.8em;
+    line-height: 1.1;
+    color: var(--ink);
+}
+
+.matchup-player-team {
+    margin: 2px 0;
+    font-family: var(--mono);
+    font-size: 0.72em;
+    color: var(--muted);
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+
+/* ── Matchups section heading ──────────────────────────────────── */
+.current-matchups-section {
     margin-top: 30px;
     width: 100%;
-  }
+}
 
-  .current-matchups-section h2 {
-    font-size: 2.5em;
-    color: #61dafb;
-    margin: 0 0 30px 0;
+.current-matchups-section h2 {
+    font-family: var(--display);
     font-weight: 700;
-    background: linear-gradient(45deg, #61dafb, #21a9d8);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
+    font-size: 1.6em;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--ink);
+    margin: 0 0 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
 
-  /* Team Standings Sidebar */
-  .league-standings-sidebar {
+.current-matchups-section h2::before {
+    content: "";
+    width: 4px;
+    height: 22px;
+    background: linear-gradient(180deg, var(--gold) 0%, var(--crimson) 100%);
+    border-radius: 1px;
+    flex-shrink: 0;
+}
+
+/* ── Standings sidebar ─────────────────────────────────────────── */
+.league-standings-sidebar {
     flex: 0 0 420px;
     width: 420px;
     max-width: 420px;
     position: static;
     padding: 0;
     height: auto;
-  }
+}
 
-  .standings-header {
+.standings-header {
     margin-bottom: 10px;
-  }
+}
 
-  .standings-header h2 {
-    font-size: 1.8em;
+.standings-header h2 {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 1.4em;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--ink);
     padding-top: 15px;
-    color: #e5e5e5;
     margin: 0;
-    font-weight: 600;
-    background: none;
-    -webkit-background-clip: unset;
-    -webkit-text-fill-color: unset;
-    background-clip: unset;
-  }
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
 
-  /* Sidebar Trending Players */
-  .sidebar-trending-players {
+.standings-header h2::before {
+    content: "";
+    width: 4px;
+    height: 20px;
+    background: linear-gradient(180deg, var(--gold) 0%, var(--crimson) 100%);
+    border-radius: 1px;
+    flex-shrink: 0;
+}
+
+/* ── Sidebar trending players ──────────────────────────────────── */
+.sidebar-trending-players {
     margin-top: 20px;
     width: 100%;
-  }
+}
 
-  .sidebar-trending-players .trending-players-container {
+.sidebar-trending-players .trending-players-container {
     padding: 20px;
-    background: rgb(43, 43, 43);
-    border-radius: 8px;
-    color: white;
-  }
+    background: var(--field-700);
+    border: 1px solid var(--stroke);
+    border-radius: var(--r-lg);
+    color: var(--ink);
+}
 
-  .sidebar-trending-players .trending-players-container h3 {
-    margin: 0 0 15px 0;
-    font-size: 1.4em;
-    font-weight: bold;
+.sidebar-trending-players .trending-players-container h3 {
+    margin: 0 0 15px;
+    font-family: var(--display);
+    font-size: 1.2em;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--ink);
     text-align: center;
-    color: white;
-  }
+}
 
-  .sidebar-trending-players .trending-players-embed {
+.sidebar-trending-players .trending-players-embed {
     width: 100%;
-    border-radius: 5px;
+    border-radius: var(--r-sm);
     overflow: hidden;
-    background: white;
-  }
+    background: var(--field-900);
+}
 
-  .sidebar-trending-players .trending-players-embed iframe {
+.sidebar-trending-players .trending-players-embed iframe {
     border: none;
-    border-radius: 5px;
+    border-radius: var(--r-sm);
     width: 100%;
     height: 650px;
     min-height: 650px;
-  }
+}
 
-
-
-  /* Responsive design for smaller screens */
-  @media (max-width: 1200px) {
+/* ── Responsive ────────────────────────────────────────────────── */
+@media (max-width: 1200px) {
     .league-main-container {
-      flex-direction: column;
-      gap: 30px;
+        flex-direction: column;
+        gap: 30px;
     }
-    
+
     .league-left-content {
-      max-width: 100%;
-      width: 100%;
+        max-width: 100%;
+        width: 100%;
     }
-    
+
     .league-standings-sidebar {
-      flex: none;
-      width: 100%;
-      max-width: 100%;
-      position: static;
-      order: 1;
+        flex: none;
+        width: 100%;
+        max-width: 100%;
+        position: static;
+        order: 1;
     }
-    
+
     .current-matchups-section {
-      order: 2;
+        order: 2;
     }
-  }
+}
 
-  @media (max-width: 768px) {
+@media (max-width: 768px) {
     .league-main-container {
-      padding: 0 10px;
-      gap: 30px;
+        padding: 0 10px;
+        gap: 30px;
     }
 
-    /* Mobile Section Headers */
     .standings-header h2 {
-      text-align: center;
-      margin-bottom: 20px;
-      padding: 15px 0;
-      border-bottom: 2px solid #61dafb;
-      color: #e5e5e5;
-      font-size: 1.6em;
-      font-weight: 600;
-    }
-    
-    .current-matchups-section h2 {
-      text-align: center;
-      margin-bottom: 20px;
-      padding: 15px 0;
-      border-bottom: 2px solid #61dafb;
-      color: #61dafb;
-      font-size: 1.8em;
+        text-align: left;
+        margin-bottom: 16px;
+        padding: 12px 0;
+        border-bottom: 1px solid var(--stroke);
+        font-size: 1.3em;
     }
 
-    /* Mobile Team List Styling */
+    .current-matchups-section h2 {
+        font-size: 1.3em;
+        margin-bottom: 16px;
+        padding: 12px 0;
+        border-bottom: 1px solid var(--stroke);
+    }
+
     .teamList ul {
-      grid-template-columns: 1fr;
-      gap: 10px;
+        grid-template-columns: 1fr;
+        gap: 8px;
     }
 
     .teamList ul li {
-      width: 100%;
-      min-width: unset;
-      margin: 0;
-      min-height: 60px;
+        width: 100%;
+        min-width: unset;
+        margin: 0;
+        min-height: 56px;
     }
 
     .team-link {
-      padding: 15px 18px;
-    }
-
-    .team-link p {
-      font-size: 1.1em;
+        padding: 14px 16px;
     }
 
     .team-info {
-      gap: 10px;
+        gap: 10px;
     }
 
     .team-stats {
-      min-width: 100px;
-      gap: 4px;
+        min-width: 100px;
+        gap: 4px;
     }
 
     .record {
-      font-size: 1rem;
+        font-size: 0.95rem;
     }
 
     .points {
-      font-size: 0.75rem;
-      gap: 8px;
+        font-size: 0.7rem;
+        gap: 6px;
     }
 
-
-
-    /* Mobile Matchup Card Styling */
     .matchup-card {
-      flex-direction: column;
-      padding: 1.2em;
-      margin: 1em 0;
-      gap: 15px;
+        flex-direction: column;
+        padding: 1.2em;
+        margin: 1em 0;
+        gap: 15px;
     }
 
     .matchup-team {
-      width: 100%;
-      margin: 0;
-      text-align: left;
+        width: 100%;
+        margin: 0;
+        text-align: left;
     }
 
     .matchup-team h3 {
-      font-size: 1.2em;
-      margin-bottom: 10px;
-      text-align: center;
+        font-size: 1.1em;
+        margin-bottom: 10px;
+        text-align: center;
     }
 
     .matchup-vs {
-      order: 2;
-      margin: 10px 0;
-      text-align: center;
-      min-width: unset;
+        order: 2;
+        margin: 8px 0;
+        min-width: unset;
     }
 
     .matchup-vs h2 {
-      font-size: 1.5em;
+        font-size: 1.4em;
     }
 
-    /* Mobile Player Columns */
     .matchup-player-col {
-      min-width: 80px;
-      text-align: center;
+        min-width: 80px;
     }
+}
 
-    .matchup-player-position {
-      font-size: 0.8em;
-      font-weight: bold;
-    }
-
-    .matchup-player-name {
-      font-size: 0.75em;
-      line-height: 1.2;
-    }
-
-    .matchup-player-team {
-      font-size: 0.7em;
-    }
-
-    /* Adjust player row for mobile */
-    .player-row {
-      flex-wrap: wrap;
-      gap: 5px;
-      justify-content: center;
-    }
-
-    .player-col {
-      width: 100%;
-      text-align: center;
-    }
-  }
-
-  /* Extra small screens */
-  @media (max-width: 480px) {
-    .league-content-split {
-      padding: 0 5px;
-      gap: 25px;
-    }
-
-    /* Smaller section headers on very small screens */
-    .league-left-section h2,
-    .league-right-section h2 {
-      font-size: 1.5em;
-      padding: 10px 0;
-    }
-
+@media (max-width: 480px) {
     .teamList ul li {
-      min-height: 65px;
+        min-height: 60px;
     }
 
     .team-link {
-      padding: 16px 18px;
-    }
-
-    .team-link p {
-      font-size: 1em;
+        padding: 14px 16px;
     }
 
     .team-info {
-      gap: 8px;
+        gap: 8px;
     }
 
     .team-stats {
-      min-width: 90px;
-      gap: 3px;
+        min-width: 90px;
+        gap: 3px;
     }
 
     .record {
-      font-size: 0.9rem;
+        font-size: 0.85rem;
     }
 
     .points {
-      font-size: 0.7rem;
-      gap: 6px;
+        font-size: 0.65rem;
+        gap: 5px;
     }
 
     .matchup-card {
-      padding: 1em;
+        padding: 1em;
     }
 
     .matchup-team h3 {
-      font-size: 1.1em;
+        font-size: 1em;
     }
 
     .matchup-vs h2 {
-      font-size: 1.3em;
+        font-size: 1.2em;
     }
 
     .matchup-player-col {
-      min-width: 70px;
+        min-width: 70px;
     }
 
     .matchup-player-name {
-      font-size: 0.7em;
+        font-size: 0.7em;
     }
-
-    .matchup-player-team {
-      font-size: 0.65em;
-    }
-  }
+}

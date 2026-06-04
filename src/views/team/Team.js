@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from "react-router-dom";
 import Starters from './../../components/team/Starters'
 import Bench from './../../components/team/Bench'
@@ -80,37 +80,22 @@ const Team = React.memo(() => {
         }
     }, [teamId])
 
-    // Memoize error display
-    const errorDisplay = useMemo(() => {
-        if (!fetchError) return null;
-        return (
-            <div style={{ 
-                color: '#f44336', 
-                background: '#2a2a2a', 
-                padding: '20px', 
-                borderRadius: '8px', 
-                margin: '20px',
-                textAlign: 'center' 
-            }}>
-                Error loading team data: {fetchError}
-            </div>
-        );
-    }, [fetchError]);
-
     // Loading state
     if (isLoading) {
         return (
-            <main style={{ textAlign: 'center', padding: '40px' }}>
-                <div style={{ color: '#61dafb', fontSize: '1.2em' }}>
-                    Loading team data...
-                </div>
+            <main>
+                <div className="team-loading">Loading team data...</div>
             </main>
         );
     }
 
     // Error state
     if (fetchError) {
-        return <main>{errorDisplay}</main>;
+        return (
+            <main>
+                <div className="team-error">Error loading team data: {fetchError}</div>
+            </main>
+        );
     }
 
     return (

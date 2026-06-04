@@ -1,25 +1,81 @@
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+
+:root {
+  /* Field — navy scale pulled from the crest background */
+  --field-900: #0a1322;
+  --field-800: #0e1a30;
+  --field-700: #142342;
+  --field-600: #1b2d52;
+  --field-500: #243a66;
+
+  /* Strokes & rules */
+  --stroke:   #25395f;
+  --stroke-2: #36507f;
+  --hairline: rgba(212, 162, 74, .28);
+
+  /* Brand */
+  --crimson:    #a8243a;
+  --crimson-dk: #7a1929;
+  --gold:       #d4a24a;
+  --gold-hi:    #ecc777;
+  --gold-dim:   #8e6e2d;
+
+  /* Type */
+  --silver:   #c9d2e2;
+  --ink:      #f1f4fa;
+  --muted:    #8696b3;
+  --mute-dim: #5a6a87;
+
+  /* System */
+  --green: #4ade80;
+  --red:   #f87171;
+
+  /* Geometry */
+  --r-sm: 4px;
+  --r-md: 6px;
+  --r-lg: 10px;
+
+  /* Font stacks */
+  --display: "Oswald", "Arial Narrow", system-ui, sans-serif;
+  --body:    "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --mono:    "JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 body {
-  background-color: black;
-  color: white;
+  background-color: var(--field-800);
+  color: var(--ink);
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: var(--body);
+  font-size: 16px;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-.header-menu button{
-  background-color: black;
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+code {
+  font-family: var(--mono);
+}
+
+.header-menu button {
+  background-color: var(--field-600);
   margin: 0;
   width: 150px;
   height: 40px;
   align-items: center;
   cursor: pointer;
-  background: rgb(43, 43, 43);
   position: relative;
-  color: white;
-  border-radius: 7px;
+  color: var(--ink);
+  border: 1px solid var(--stroke);
+  border-radius: var(--r-sm);
 }
 
 footer {
@@ -27,11 +83,13 @@ footer {
   left: 0;
   bottom: 0;
   width: 100%;
-  color: white;
+  color: var(--muted);
   text-align: center;
-}
-
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  background: linear-gradient(180deg, transparent, rgba(0, 0, 0, .4));
+  border-top: 1px solid var(--stroke);
+  padding: 12px 0;
 }
