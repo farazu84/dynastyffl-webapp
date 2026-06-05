@@ -10,6 +10,7 @@ import Archive from './views/archive/Archive';
 import TradeTree from './views/archive/TradeTree';
 import Admin from './views/admin/Admin';
 import UDFA from './views/udfa/UDFA';
+import Radar from './views/radar/Radar';
 import Footer from './Footer';
 import { BrowserRouter as Router, Route, Routes, Navigate, useParams } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
@@ -46,6 +47,7 @@ function App() {
             <Route path="/articles/:articleId" element={<Article />} />
             <Route path="/news" element={<News />} />
             <Route path="/rumors" element={<Rumor />} />
+            <Route path="/radar" element={<Radar />} />
             <Route path="/archive/trades/:transactionId" element={<TradeTree />} />
             <Route path="/archive" element={<Archive />} />
             <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
