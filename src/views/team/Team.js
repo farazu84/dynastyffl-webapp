@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from "react-router-dom";
-import Starters from './../../components/team/Starters'
-import Bench from './../../components/team/Bench'
-import Taxi from './../../components/team/Taxi'
+import RosterTabs from './../../components/team/RosterTabs'
 import TeamHeader from './../../components/team/TeamHeader'
 import CurrentMatchups from './../../components/team/CurrentMatchups'
 import NewsBar from './../../components/team/NewsBar'
@@ -104,9 +102,7 @@ const Team = React.memo(() => {
             <NewsBar articles={articles} />
             <div className="team-content-split">
                 <div className="team-left-section">
-                    <Starters starters={starters} />
-                    <Bench benchPlayers={bench} />
-                    <Taxi taxiSquad={taxi} />
+                    <RosterTabs starters={starters} bench={bench} taxi={taxi} />
                 </div>
                 <div className="team-right-section">
                     <CurrentMatchups matchups={matchups} />
