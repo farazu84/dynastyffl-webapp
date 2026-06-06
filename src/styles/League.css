@@ -17,24 +17,19 @@
 }
 
 /* ── Team list ─────────────────────────────────────────────────── */
-.teamList {
+ul.teamList {
     width: 100%;
-    max-width: 90%;
+    max-width: 100%;
     padding: 0;
     padding-top: 5px;
     margin: 0;
-}
-
-.teamList ul {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 10px;
-    padding: 0;
-    margin: 0;
     list-style: none;
 }
 
-.teamList ul li {
+ul.teamList > li {
     background: var(--field-700);
     border: 1px solid var(--stroke);
     border-radius: var(--r-md);
@@ -51,20 +46,19 @@
 }
 
 /* Compact sidebar list */
-.league-standings-sidebar .teamList ul {
+.league-standings-sidebar ul.teamList {
     grid-template-columns: 1fr;
     gap: 6px;
 }
 
-.league-standings-sidebar .teamList ul li {
-    min-height: 40px;
-    max-height: 40px;
-    height: 40px;
+.league-standings-sidebar ul.teamList > li {
+    min-height: 80px;
+    height: auto;
     border-radius: var(--r-sm);
 }
 
 /* gold-to-crimson top accent, hidden until hover */
-.teamList ul li::before {
+ul.teamList > li::before {
     content: "";
     position: absolute;
     top: 0; left: 0; right: 0;
@@ -74,14 +68,14 @@
     transition: opacity .2s;
 }
 
-.teamList ul li:hover {
+ul.teamList > li:hover {
     border-color: var(--gold);
     transform: translateY(-2px);
     box-shadow: 0 10px 28px rgba(0, 0, 0, .45);
     background: var(--field-600);
 }
 
-.teamList ul li:hover::before {
+ul.teamList > li:hover::before {
     opacity: 1;
 }
 
@@ -100,8 +94,8 @@
 }
 
 .league-standings-sidebar .team-link {
-    padding: 8px 12px;
-    height: 40px;
+    padding: 12px 16px;
+    height: auto;
     box-sizing: border-box;
 }
 
@@ -355,7 +349,7 @@
     letter-spacing: .1em;
     text-transform: uppercase;
     color: var(--ink);
-    padding-top: 55px;
+    padding-top: 65px;
     margin: 0;
     display: flex;
     align-items: center;
@@ -457,12 +451,12 @@
         border-bottom: 1px solid var(--stroke);
     }
 
-    .teamList ul {
+    ul.teamList {
         grid-template-columns: 1fr;
         gap: 8px;
     }
 
-    .teamList ul li {
+    ul.teamList > li {
         width: 100%;
         min-width: unset;
         margin: 0;
@@ -526,7 +520,7 @@
 }
 
 @media (max-width: 480px) {
-    .teamList ul li {
+    ul.teamList > li {
         min-height: 60px;
     }
 

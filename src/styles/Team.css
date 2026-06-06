@@ -19,7 +19,8 @@
 }
 
 /* ── Section headings ──────────────────────────────────────────── */
-h2, h3 {
+.team-page h2,
+.team-page h3 {
     margin: 0;
     font-family: var(--display);
     font-weight: 700;
@@ -28,7 +29,7 @@ h2, h3 {
     color: var(--ink);
 }
 
-h2 {
+.team-page h2 {
     font-size: 1.3rem;
     margin: 20px 0 4px;
     display: flex;
@@ -36,7 +37,7 @@ h2 {
     gap: 10px;
 }
 
-h2::before {
+.team-page h2::before {
     content: "";
     width: 4px;
     height: 18px;
@@ -46,25 +47,25 @@ h2::before {
     display: inline-block;
 }
 
-h3 {
+.team-page h3 {
     font-size: 1rem;
     color: var(--ink);
 }
 
-p {
+.team-page p {
     margin: 0;
     font-size: small;
     color: var(--muted);
 }
 
 /* ── Player list items ─────────────────────────────────────────── */
-ul {
+.team-page ul {
     margin: 0;
     padding: 0;
     list-style: none;
 }
 
-ul li {
+.team-page ul li {
     background: var(--field-700);
     border: 1px solid var(--stroke);
     border-radius: var(--r-md);
@@ -85,7 +86,7 @@ ul li {
 }
 
 /* gold→crimson top bar, hidden until hover */
-ul li::before {
+.team-page ul li::before {
     content: "";
     position: absolute;
     top: 0; left: 0; right: 0;
@@ -95,7 +96,7 @@ ul li::before {
     transition: opacity .2s;
 }
 
-ul li:hover {
+.team-page ul li:hover {
     border-color: var(--gold);
     transform: translateY(-2px);
     box-shadow: 0 10px 26px rgba(0, 0, 0, .45);
@@ -103,7 +104,7 @@ ul li:hover {
     color: var(--ink);
 }
 
-ul li:hover::before {
+.team-page ul li:hover::before {
     opacity: 1;
 }
 
@@ -355,7 +356,7 @@ ul li:hover::before {
         align-self: flex-start;
     }
 
-    ul li {
+    .team-page ul li {
         max-width: 100%;
         margin: 8px 0;
         padding: 14px 18px;
@@ -364,7 +365,7 @@ ul li:hover::before {
 }
 
 @media (max-width: 480px) {
-    ul li {
+    .team-page ul li {
         padding: 14px 16px;
         min-height: 60px;
         margin: 6px 0;
