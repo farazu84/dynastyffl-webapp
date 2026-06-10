@@ -82,7 +82,7 @@ const News = React.memo(() => {
     const truncateContent = useCallback((content, maxLength = 150) => {
         if (!content) return '';
         const plainText = content.replace(/[#*`]/g, '').replace(/\n/g, ' ');
-        return plainText.length > maxLength 
+        return plainText.length > maxLength
             ? plainText.substring(0, maxLength) + '...'
             : plainText;
     }, []);

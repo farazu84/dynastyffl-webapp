@@ -1,60 +1,88 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 
-const TeamHeader = ( {team} ) => {
+const TeamHeader = ({ team, starterCount, benchCount, taxiCount }) => {
     const { user } = useAuth();
 
     const isOwner = user && team?.owners?.some(o => o.user_id === user.user_id);
 
-    // Helper function to format names
-    const formatName = (user) => {
-        const hasFirstLast = user.first_name && user.last_name;
-        if (hasFirstLast) {
-            return `${user.user_name} (${user.first_name} ${user.last_name})`;
-        }
-        return user.user_name || 'Unknown User';
-    };
+    const record = team?.current_team_record;
+    const wins = record?.wins ?? 0;
+    const losses = record?.losses ?? 0;
+    const gamesPlayed = wins + losses;
+
+    const pointsFor = record?.points_for ?? 0;
+    const pointsAgainst = record?.points_against ?? 0;
+    const avgPerWk = gamesPlayed > 0 ? (pointsFor / gamesPlayed).toFixed(1) : '—';
+    const ptDiff = gamesPlayed > 0
+        ? `${pointsFor - pointsAgainst >= 0 ? '+' : ''}${(pointsFor - pointsAgainst).toFixed(1)} diff`
+        : '—';
+
+    const ownerName = team?.owners?.[0]?.user_name ?? team?.team_owners?.[0]?.user?.user_name ?? '—';
 
     return (
-        <div className="title-card">
-            <div className="title-card-identity">
-                <h2 className="title-card-name">{team.team_name}</h2>
-                <p className="title-card-owners">
-                    {team?.owners?.map((owner) => formatName(owner)).join(', ')}
-                </p>
-            </div>
-
-            <div className="title-card-stats">
-                {team.championships > 0 ? (
-                    <span className="title-stat-chip title-stat-chip--gold">
-                        {team.championships}× Champ
-                    </span>
-                ) : (
-                    <span className="title-stat-chip title-stat-chip--muted">
-                        No titles yet
-                    </span>
-                )}
-                <span className="title-stat-chip">
-                    <span className="title-stat-label">Roster</span>
-                    {team.roster_size}
-                </span>
-                <span className="title-stat-chip">
-                    <span className="title-stat-label">Avg Age</span>
-                    {team.average_age}
-                </span>
-                <span className="title-stat-chip">
-                    <span className="title-stat-label">Starter Age</span>
-                    {team.average_starter_age}
+        <div className="th-bar">
+            {/* Identity */}
+            <div className="th-identity">
+                <span className="th-team-name">{team?.team_name ?? '—'}</span>
+                <span className="th-owner-line">
+                    Owner <strong>{ownerName}</strong>
                 </span>
             </div>
 
+            {/* Stats */}
+            <div className="th-stats">
+                <div className="th-stat">
+                    <span className="th-stat-label">Record</span>
+                    <span className="th-stat-value">
+                        {wins} <span style={{ color: 'var(--stroke-2)', fontSize: '1rem' }}>·</span> {losses}
+                    </span>
+                    <span className="th-stat-sub">
+                        {gamesPlayed > 0 ? `${wins > losses ? 'W' : losses > wins ? 'L' : 'T'}${Math.abs(wins - losses)}` : 'No games'}
+                    </span>
+                </div>
+
+                <div className="th-stat">
+                    <span className="th-stat-label">Points For</span>
+                    <span className="th-stat-value">{pointsFor > 0 ? pointsFor.toFixed(1) : '—'}</span>
+                    <span className="th-stat-sub">{avgPerWk !== '—' ? `${avgPerWk} avg / wk` : '—'}</span>
+                </div>
+
+                <div className="th-stat">
+                    <span className="th-stat-label">Points Against</span>
+                    <span className="th-stat-value">{pointsAgainst > 0 ? pointsAgainst.toFixed(1) : '—'}</span>
+                    <span className="th-stat-sub">{ptDiff}</span>
+                </div>
+
+                <div className="th-stat">
+                    <span className="th-stat-label">Roster</span>
+                    <span className="th-stat-value">{team?.roster_size ?? '—'}</span>
+                    <span className="th-stat-sub">
+                        {starterCount} / {benchCount} / {taxiCount}
+                    </span>
+                </div>
+
+                <div className="th-stat">
+                    <span className="th-stat-label">Starter Age</span>
+                    <span className="th-stat-value th-stat-value--gold">
+                        {team?.average_starter_age?.toFixed(2) ?? '—'}
+                    </span>
+                    <span className="th-stat-sub">
+                        avg {team?.average_age?.toFixed(2) ?? '—'}
+                    </span>
+                </div>
+            </div>
+
+            {/* Actions */}
             {isOwner && (
-                <Link className="udfa-bid-link" to={`/udfa/${team.team_id}`}>
-                    UDFA Bidding
-                </Link>
+                <div className="th-actions">
+                    <Link className="th-action-btn" to={`/udfa/${team.team_id}`}>
+                        UDFA Bidding
+                    </Link>
+                </div>
             )}
         </div>
-    )
-}
+    );
+};
 
-export default TeamHeader
+export default TeamHeader;

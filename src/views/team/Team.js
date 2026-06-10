@@ -98,7 +98,12 @@ const Team = React.memo(() => {
 
     return (
         <main className="team-page">
-            <TeamHeader team={pickedTeam} />
+            <TeamHeader
+                team={pickedTeam}
+                starterCount={starters.length}
+                benchCount={bench.length}
+                taxiCount={taxi.length}
+            />
             <NewsBar articles={articles} />
             <div className="team-content-split">
                 <div className="team-left-section">
