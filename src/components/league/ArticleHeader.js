@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import fallbackImage from '../../studio-gib-1.png';
-import TrendingPlayers from './TrendingPlayers';
 import CompactArticleCard from '../articles/CompactArticleCard';
 import '../../styles/LatestNews.css';
 import config from '../../config';
@@ -196,9 +195,6 @@ const ArticleHeader = React.memo(() => {
                         Unable to load latest news. {fetchError}
                     </div>
                 )}
-            </div>
-            <div className="trending-players-wrapper">
-                <TrendingPlayers />
             </div>
         </div>
     );

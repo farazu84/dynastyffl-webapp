@@ -1,4 +1,7 @@
 /* ── League main layout ────────────────────────────────────────── */
+/* stretch so both columns share the same height — the standings list
+   distributes its rows to fill, keeping top and bottom edges aligned
+   with the article cards */
 .league-main-container {
     display: flex;
     flex-direction: row;
@@ -6,7 +9,7 @@
     padding: 0 20px;
     width: 100%;
     box-sizing: border-box;
-    align-items: flex-start;
+    align-items: stretch;
 }
 
 .league-left-content {
@@ -45,10 +48,13 @@ ul.teamList > li {
     box-shadow: 0 4px 12px rgba(0, 0, 0, .2);
 }
 
-/* Compact sidebar list */
+/* Compact sidebar list — flex:1 + 1fr rows fill the column height so
+   the list bottom lines up with the compact article cards */
 .league-standings-sidebar ul.teamList {
     grid-template-columns: 1fr;
+    grid-auto-rows: 1fr;
     gap: 6px;
+    flex: 1;
 }
 
 .league-standings-sidebar ul.teamList > li {
@@ -221,113 +227,6 @@ ul.teamList > li:hover::before {
     font-weight: 600;
 }
 
-/* ── Matchup card ──────────────────────────────────────────────── */
-.matchup-card {
-    display: flex;
-    width: 100%;
-    max-width: 100%;
-    margin: 1.5em 0;
-    padding: 1.2em 1.4em;
-    background: var(--field-600);
-    border: 1px solid var(--stroke-2);
-    border-radius: var(--r-lg);
-    color: var(--ink);
-    align-items: flex-start;
-    justify-content: center;
-    box-sizing: border-box;
-    position: relative;
-}
-
-/* gold left accent on matchup */
-.matchup-card::before {
-    content: "";
-    position: absolute;
-    left: 0; top: 0; bottom: 0;
-    width: 3px;
-    background: linear-gradient(180deg, var(--gold), var(--crimson));
-    border-radius: var(--r-lg) 0 0 var(--r-lg);
-}
-
-.matchup-team {
-    flex: 1;
-    margin: 0 10px;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.matchup-vs {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    margin: 0 20px;
-    min-width: 60px;
-}
-
-.matchup-player-col {
-    min-width: 60px;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.matchup-player-position {
-    margin: 2px 0;
-    font-family: var(--mono);
-    font-size: 0.8em;
-    font-weight: 600;
-    letter-spacing: .14em;
-    text-transform: uppercase;
-    color: var(--gold);
-}
-
-.matchup-player-name {
-    margin: 2px 0;
-    font-size: 0.8em;
-    line-height: 1.1;
-    color: var(--ink);
-}
-
-.matchup-player-team {
-    margin: 2px 0;
-    font-family: var(--mono);
-    font-size: 0.72em;
-    color: var(--muted);
-    letter-spacing: .08em;
-    text-transform: uppercase;
-}
-
-/* ── Matchups section heading ──────────────────────────────────── */
-.current-matchups-section {
-    margin-top: 30px;
-    width: 100%;
-}
-
-.current-matchups-section h2 {
-    font-family: var(--display);
-    font-weight: 700;
-    font-size: 1.6em;
-    letter-spacing: .1em;
-    text-transform: uppercase;
-    color: var(--ink);
-    margin: 0 0 24px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.current-matchups-section h2::before {
-    content: "";
-    width: 4px;
-    height: 22px;
-    background: linear-gradient(180deg, var(--gold) 0%, var(--crimson) 100%);
-    border-radius: 1px;
-    flex-shrink: 0;
-}
-
 /* ── Standings sidebar ─────────────────────────────────────────── */
 .league-standings-sidebar {
     flex: 0 0 420px;
@@ -336,10 +235,17 @@ ul.teamList > li:hover::before {
     position: static;
     padding: 0;
     height: auto;
+    display: flex;
+    flex-direction: column;
 }
 
+/* same fixed-height header box as .latest-news-header so the list
+   top lines up with the featured article card */
 .standings-header {
-    margin-bottom: 15px;
+    height: 72px;
+    display: flex;
+    align-items: flex-end;
+    margin-bottom: 24px;
 }
 
 .standings-header h2 {
@@ -349,7 +255,7 @@ ul.teamList > li:hover::before {
     letter-spacing: .1em;
     text-transform: uppercase;
     color: var(--ink);
-    padding-top: 65px;
+    padding: 0;
     margin: 0;
     display: flex;
     align-items: center;
@@ -363,46 +269,6 @@ ul.teamList > li:hover::before {
     background: linear-gradient(180deg, var(--gold) 0%, var(--crimson) 100%);
     border-radius: 1px;
     flex-shrink: 0;
-}
-
-/* ── Sidebar trending players ──────────────────────────────────── */
-.sidebar-trending-players {
-    margin-top: 20px;
-    width: 100%;
-}
-
-.sidebar-trending-players .trending-players-container {
-    padding: 20px;
-    background: var(--field-700);
-    border: 1px solid var(--stroke);
-    border-radius: var(--r-lg);
-    color: var(--ink);
-}
-
-.sidebar-trending-players .trending-players-container h3 {
-    margin: 0 0 15px;
-    font-family: var(--display);
-    font-size: 1.2em;
-    font-weight: 700;
-    letter-spacing: .12em;
-    text-transform: uppercase;
-    color: var(--ink);
-    text-align: center;
-}
-
-.sidebar-trending-players .trending-players-embed {
-    width: 100%;
-    border-radius: var(--r-sm);
-    overflow: hidden;
-    background: var(--field-900);
-}
-
-.sidebar-trending-players .trending-players-embed iframe {
-    border: none;
-    border-radius: var(--r-sm);
-    width: 100%;
-    height: 650px;
-    min-height: 650px;
 }
 
 /* ── Responsive ────────────────────────────────────────────────── */
@@ -424,10 +290,6 @@ ul.teamList > li:hover::before {
         position: static;
         order: 1;
     }
-
-    .current-matchups-section {
-        order: 2;
-    }
 }
 
 @media (max-width: 768px) {
@@ -442,13 +304,6 @@ ul.teamList > li:hover::before {
         padding: 12px 0;
         border-bottom: 1px solid var(--stroke);
         font-size: 1.3em;
-    }
-
-    .current-matchups-section h2 {
-        font-size: 1.3em;
-        margin-bottom: 16px;
-        padding: 12px 0;
-        border-bottom: 1px solid var(--stroke);
     }
 
     ul.teamList {
@@ -484,39 +339,6 @@ ul.teamList > li:hover::before {
         font-size: 0.7rem;
         gap: 6px;
     }
-
-    .matchup-card {
-        flex-direction: column;
-        padding: 1.2em;
-        margin: 1em 0;
-        gap: 15px;
-    }
-
-    .matchup-team {
-        width: 100%;
-        margin: 0;
-        text-align: left;
-    }
-
-    .matchup-team h3 {
-        font-size: 1.1em;
-        margin-bottom: 10px;
-        text-align: center;
-    }
-
-    .matchup-vs {
-        order: 2;
-        margin: 8px 0;
-        min-width: unset;
-    }
-
-    .matchup-vs h2 {
-        font-size: 1.4em;
-    }
-
-    .matchup-player-col {
-        min-width: 80px;
-    }
 }
 
 @media (max-width: 480px) {
@@ -544,25 +366,5 @@ ul.teamList > li:hover::before {
     .points {
         font-size: 0.65rem;
         gap: 5px;
-    }
-
-    .matchup-card {
-        padding: 1em;
-    }
-
-    .matchup-team h3 {
-        font-size: 1em;
-    }
-
-    .matchup-vs h2 {
-        font-size: 1.2em;
-    }
-
-    .matchup-player-col {
-        min-width: 70px;
-    }
-
-    .matchup-player-name {
-        font-size: 0.7em;
     }
 }

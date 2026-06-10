@@ -1,9 +1,8 @@
 import { useState, useEffect, useMemo } from 'react';
 import TeamItem from './../../components/league/TeamItem';
 import ArticleHeader from './../../components/league/ArticleHeader';
-import TrendingPlayers from './../../components/league/TrendingPlayers';
 import '../../styles/League.css';
-import MatchupItem from './../../components/league/MatchupItem';
+import ScoreboardStrip from './../../components/league/ScoreboardStrip';
 import config from '../../config';
 import { cachedFetch } from '../../utils/apiCache';
 
@@ -55,12 +54,6 @@ const League = () => {
         ));
     }, [teams]);
 
-    const memoizedMatchups = useMemo(() => {
-        return matchups.map((matchup) => (
-            <MatchupItem key={matchup.matchup_id} matchup={matchup} />
-        ));
-    }, [matchups]);
-
     const errorDisplay = useMemo(() => {
         if (!fetchError) return null;
         return (
@@ -90,14 +83,11 @@ const League = () => {
 
     return (
         <main>
+            <ScoreboardStrip matchups={matchups} />
             <div className="league-main-container">
                 <div className="league-left-content">
                     <ArticleHeader />
-                    <div className="current-matchups-section">
-                        <h2>Current Matchups</h2>
-                        {memoizedMatchups}
-                        {errorDisplay}
-                    </div>
+                    {errorDisplay}
                 </div>
                 <div className="league-standings-sidebar">
                     <div className="standings-header">
@@ -106,9 +96,6 @@ const League = () => {
                     <ul className="teamList">
                         {memoizedTeams}
                     </ul>
-                    <div className="sidebar-trending-players">
-                        <TrendingPlayers />
-                    </div>
                 </div>
             </div>
         </main>
