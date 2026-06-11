@@ -23,6 +23,7 @@ const RosterTabs = ({ starters, bench, taxi }) => {
             <div className="roster-tab-bar">
                 {TABS.map(({ key, label }) => (
                     <button
+                        type="button"
                         key={key}
                         className={`roster-tab${activeTab === key ? ' roster-tab--active' : ''}`}
                         onClick={() => setActiveTab(key)}

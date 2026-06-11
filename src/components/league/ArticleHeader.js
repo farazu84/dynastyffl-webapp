@@ -122,7 +122,7 @@ const ArticleHeader = React.memo(() => {
                     <h3 className="news-title">{article?.title || 'Latest League News'}</h3>
                     <div className="news-markdown-excerpt">
                         <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                            {article?.content || ''}
+                            {article?.excerpt || ''}
                         </ReactMarkdown>
                     </div>
                 </div>

@@ -100,7 +100,7 @@ const NextMatchup = ({ matchup }) => {
                             {player ? (
                                 <>
                                     <span className="nm-starter-name">
-                                        {player.first_name[0]}. {player.last_name}
+                                        {player.first_name?.[0] ?? '—'}. {player.last_name ?? ''}
                                     </span>
                                     <span className="nm-starter-team">{player.nfl_team}</span>
                                 </>

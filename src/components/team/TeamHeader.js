@@ -18,7 +18,11 @@ const TeamHeader = ({ team, starterCount, benchCount, taxiCount }) => {
         ? `${pointsFor - pointsAgainst >= 0 ? '+' : ''}${(pointsFor - pointsAgainst).toFixed(1)} diff`
         : '—';
 
-    const ownerName = team?.owners?.[0]?.user_name ?? team?.team_owners?.[0]?.user?.user_name ?? '—';
+    const ownerNames = (team?.owners?.length
+        ? team.owners.map(o => o.user_name).filter(Boolean)
+        : team?.team_owners?.map(o => o.user?.user_name).filter(Boolean) ?? []
+    );
+    const ownerDisplay = ownerNames.length ? ownerNames.join(', ') : '—';
 
     return (
         <div className="th-bar">
@@ -26,7 +30,7 @@ const TeamHeader = ({ team, starterCount, benchCount, taxiCount }) => {
             <div className="th-identity">
                 <span className="th-team-name">{team?.team_name ?? '—'}</span>
                 <span className="th-owner-line">
-                    Owner <strong>{ownerName}</strong>
+                    Owner <strong>{ownerDisplay}</strong>
                 </span>
             </div>
 
