@@ -82,3 +82,18 @@ class Players(db.Model):
 
     def serialize(self):
         return PlayersJSONSchema().dump(self)
+
+    def ai_serialize(self):
+        data = {
+            'name': f'{self.first_name} {self.last_name}',
+            'position': self.position,
+            'age': self.age,
+            'nfl_team': self.nfl_team,
+            'years_exp': self.years_exp,
+            'starter': self.starter,
+            'taxi': self.taxi,
+        }
+        if self.injury_status:
+            data['injury_status'] = self.injury_status
+            data['injury_body_part'] = self.injury_body_part
+        return data

@@ -10,6 +10,7 @@ from app.models.bidding_window import BiddingWindow
 from app.models.udfa_bids import UDFABids
 from app.models.players import Players
 from app.models.teams import Teams
+from app.models.matchups import Matchups
 from app import db
 from app.league_state_manager import get_current_year
 from app.logic.udfa import serialize_udfa_player, calculate_carryover, settle_bids
@@ -40,6 +41,103 @@ def publish_article(article_id):
 
     article.published = True
     db.session.commit()
+
+    return jsonify(success=True, article=article.serialize())
+
+
+@admin.route('/admin/articles/generate/power_ranking', methods=['POST'])
+@admin_required
+def generate_power_ranking():
+    article = Articles.generate_power_rankings()
+
+    if not article:
+        return jsonify(success=False, error='Failed to generate power rankings. Check server logs for details.'), 500
+
+    return jsonify(success=True, article=article.serialize())
+
+
+@admin.route('/admin/articles/generate/franchise_ranking', methods=['POST'])
+@admin_required
+def generate_franchise_ranking():
+    article = Articles.generate_franchise_rankings()
+
+    if not article:
+        return jsonify(success=False, error='Failed to generate franchise rankings. Check server logs for details.'), 500
+
+    return jsonify(success=True, article=article.serialize())
+
+
+@admin.route('/admin/articles/generate/pregame_report', methods=['POST'])
+@admin_required
+def generate_pregame_report():
+    data = request.get_json() or {}
+    sleeper_matchup_id = data.get('sleeper_matchup_id')
+    week = data.get('week')
+
+    if sleeper_matchup_id is None or week is None:
+        return jsonify(success=False, error='sleeper_matchup_id and week are required'), 400
+
+    matchup = Matchups.query.filter_by(
+        week=week,
+        year=get_current_year(),
+        sleeper_matchup_id=sleeper_matchup_id,
+    ).first()
+
+    if not matchup:
+        return jsonify(success=False, error='Matchup not found'), 404
+
+    article = Articles.generate_pregame_report(matchup)
+
+    if not article:
+        return jsonify(success=False, error='Failed to generate pregame report. Check server logs for details.'), 500
+
+    return jsonify(success=True, article=article.serialize())
+
+
+@admin.route('/admin/articles/generate/rumor', methods=['POST'])
+@admin_required
+def generate_rumor():
+    data = request.get_json() or {}
+    rumor = data.get('rumor')
+    team_ids = data.get('team_ids')
+
+    if not rumor or not team_ids:
+        return jsonify(success=False, error='rumor and team_ids are required'), 400
+
+    article = Articles.generate_rumor(rumor, team_ids)
+
+    if not article:
+        return jsonify(success=False, error='Failed to generate rumor. Check server logs for details.'), 500
+
+    return jsonify(success=True, article=article.serialize())
+
+
+@admin.route('/admin/articles/generate/weekly_recap', methods=['POST'])
+@admin_required
+def generate_weekly_recap():
+    data = request.get_json() or {}
+
+    article = Articles.generate_weekly_recap(week=data.get('week'), year=data.get('year'))
+
+    if not article:
+        return jsonify(success=False, error='Failed to generate recap. There may be no completed matchups for that week.'), 400
+
+    return jsonify(success=True, article=article.serialize())
+
+
+@admin.route('/admin/articles/generate/team_analysis', methods=['POST'])
+@admin_required
+def generate_team_analysis():
+    data = request.get_json() or {}
+    team_id = data.get('team_id')
+
+    if team_id is None:
+        return jsonify(success=False, error='team_id is required'), 400
+
+    article = Articles.generate_team_analysis(team_id)
+
+    if not article:
+        return jsonify(success=False, error='Failed to generate team analysis. Check server logs for details.'), 500
 
     return jsonify(success=True, article=article.serialize())
 

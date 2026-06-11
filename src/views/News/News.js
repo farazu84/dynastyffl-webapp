@@ -69,12 +69,14 @@ const News = React.memo(() => {
     const getArticleTypeLabel = useCallback((type) => {
         const typeLabels = {
             'power_ranking': 'Power Rankings',
+            'franchise_ranking': 'Franchise Rankings',
             'team_analysis': 'Team Analysis',
             'rumors': 'Rumors',
             'trade_analysis': 'Trade Analysis',
             'injury': 'Injury Report',
             'matchup_analysis': 'Matchup Analysis',
-            'matchup_breakdown': 'Matchup Breakdown'
+            'matchup_breakdown': 'Matchup Breakdown',
+            'weekly_recap': 'Weekly Recap'
         };
         return typeLabels[type] || 'News';
     }, []);

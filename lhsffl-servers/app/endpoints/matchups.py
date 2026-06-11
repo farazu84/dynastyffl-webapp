@@ -1,6 +1,5 @@
 from flask import Blueprint, jsonify
 from app.models.matchups import Matchups
-from app.models.articles import Articles
 from app.models.league_state import LeagueState
 from app import db
 from app.league_state_manager import get_current_year, get_current_week
@@ -25,8 +24,8 @@ def get_current_matchup():
     Get the current matchups for the league - optimized version.
     '''
     current_year = get_current_year()
-    current_week = get_current_week()
-    
+    current_week = get_current_week() or 1
+
     # Single optimized query with proper indexing
     current_matchups = Matchups.query \
         .filter_by(week=current_week, year=current_year) \
@@ -46,8 +45,8 @@ def get_current_matchups_fast():
     '''
     # Get current year and week from global state manager (no DB query!)
     current_year = get_current_year()
-    current_week = get_current_week()
-    
+    current_week = get_current_week() or 1
+
     sql = """
     SELECT DISTINCT
         m.matchup_id,
@@ -90,22 +89,3 @@ def get_current_matchups_fast():
             seen_matchup_ids.add(row[3])
     
     return jsonify(success=True, matchups=matchups_data)
-
-
-@matchups.route('/matchups/<int:matchup_id>/week/<int:week_number>/generate_pregame_report', methods=['GET', 'OPTIONS'])
-def get_matchup_articles(matchup_id, week_number):
-    '''
-    Generate a pregame report, probably best to do this as a bulk job in the future.
-    '''
-
-    matchup = Matchups.query.filter_by(week=week_number, sleeper_matchup_id=matchup_id).first()
-    
-    if not matchup:
-        return jsonify(success=False, error="Matchup not found"), 404
-
-    article = Articles.generate_pregame_report(matchup)
-    
-    if not article:
-        return jsonify(success=False, error="Failed to generate pregame report. Check server logs for details."), 500
-
-    return jsonify(success=True, article=article.serialize())

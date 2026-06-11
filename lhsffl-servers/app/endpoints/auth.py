@@ -47,7 +47,7 @@ def google_login():
         return jsonify(error='Google OAuth is not configured'), 500
 
     try:
-        id_info = id_token.verify_oauth2_token(credential, google_requests.Request(), client_id)
+        id_info = id_token.verify_oauth2_token(credential, google_requests.Request(), client_id, clock_skew_in_seconds=10)
     except ValueError:
         return jsonify(error='Invalid Google token'), 401
 

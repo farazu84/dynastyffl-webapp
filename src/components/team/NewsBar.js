@@ -15,12 +15,14 @@ const NewsBar = ({ articles }) => {
     const getArticleTypeLabel = (type) => {
         const typeLabels = {
             'power_ranking': 'Rankings',
+            'franchise_ranking': 'Franchise',
             'team_analysis': 'Analysis',
             'rumors': 'Rumors',
             'trade_analysis': 'Trades',
             'injury': 'Injury',
             'matchup_analysis': 'Matchup',
-            'matchup_breakdown': 'Preview'
+            'matchup_breakdown': 'Preview',
+            'weekly_recap': 'Recap'
         };
         return typeLabels[type] || 'News';
     };
