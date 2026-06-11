@@ -6,7 +6,7 @@
     display: flex;
     flex-direction: row;
     gap: 20px;
-    padding: 0 20px;
+    padding: 20px 20px 0;
     width: 100%;
     box-sizing: border-box;
     align-items: stretch;
@@ -121,14 +121,31 @@ ul.teamList > li:hover::before {
 /* ── Team info ─────────────────────────────────────────────────── */
 .team-info {
     width: 100%;
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 2.8rem 1fr auto;
     align-items: center;
-    gap: 14px;
+    column-gap: 12px;
 }
 
-.league-standings-sidebar .team-info {
-    gap: 8px;
+.team-rank {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 1.4rem;
+    letter-spacing: .08em;
+    line-height: 1;
+    text-align: center;
+}
+
+.league-standings-sidebar .team-rank {
+    font-size: 1.1rem;
+}
+
+.team-left {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    min-width: 0;
 }
 
 .team-name {
@@ -139,12 +156,10 @@ ul.teamList > li:hover::before {
     font-weight: 600;
     letter-spacing: .01em;
     color: var(--ink);
-    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     transition: color .2s;
-}
-
-.team-link:hover .team-name {
-    color: var(--ink);
 }
 
 .league-standings-sidebar .team-name {
@@ -152,62 +167,65 @@ ul.teamList > li:hover::before {
     line-height: 1.2;
 }
 
-/* ── Record ────────────────────────────────────────────────────── */
+.team-owner {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ── Stats (right column) ──────────────────────────────────────── */
 .team-stats {
     display: flex;
     flex-direction: column;
-    align-items: flex-end;
-    gap: 5px;
-    min-width: 120px;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
 }
 
-.league-standings-sidebar .team-stats {
-    gap: 2px;
-    min-width: 80px;
-}
-
-.record {
+.team-record {
     display: flex;
     align-items: center;
-    gap: 3px;
+    gap: 4px;
     font-family: var(--display);
     font-weight: 700;
-    font-size: 1.05rem;
+    font-size: 1rem;
     letter-spacing: .04em;
 }
 
-.league-standings-sidebar .record {
+.league-standings-sidebar .team-record {
     font-size: 0.8rem;
-    line-height: 1;
 }
 
-.record .wins {
+.team-record .wins {
     color: var(--green);
 }
 
-.record .separator {
+.team-record .separator {
     color: var(--stroke-2);
     font-weight: 500;
 }
 
-.record .losses {
+.team-record .losses {
     color: var(--red);
 }
 
-/* ── Points ────────────────────────────────────────────────────── */
 .points {
     display: flex;
-    gap: 10px;
+    align-items: center;
+    gap: 5px;
     font-family: var(--mono);
-    font-size: 0.75rem;
-    letter-spacing: .1em;
+    font-size: 0.62rem;
+    letter-spacing: .08em;
     text-transform: uppercase;
 }
 
-.league-standings-sidebar .points {
-    gap: 6px;
-    font-size: 0.62rem;
-    line-height: 1;
+.points-sep {
+    color: var(--stroke-2);
 }
 
 .points-for,

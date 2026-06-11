@@ -16,28 +16,56 @@
 }
 
 .scoreboard-strip-inner {
-    max-width: 1600px;
-    margin: 0 auto;
     padding: 12px 32px;
+    display: flex;
+    align-items: stretch;
+    gap: 16px;
+}
+
+.scoreboard-strip-meta {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+    padding-right: 16px;
+    flex-shrink: 0;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    border-right: 1px solid var(--stroke);
+}
+
+.scoreboard-strip-week {
+    color: var(--gold);
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.scoreboard-strip-year {
+    color: var(--mute-dim);
+    white-space: nowrap;
 }
 
 .scoreboard-strip-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
     gap: 1px;
     background: var(--stroke);
     border: 1px solid var(--stroke);
     border-radius: 3px;
     overflow: hidden;
+    flex: 1;
+    min-width: 0;
 }
 
 .scoreboard-strip-card {
     background: var(--field-800);
-    padding: 8px 12px;
+    padding: 8px 10px;
     display: flex;
     flex-direction: column;
     gap: 4px;
     transition: background .15s;
+    min-width: 0;
 }
 
 .scoreboard-strip-card:hover {
@@ -60,6 +88,16 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    text-align: left;
+}
+
+.scoreboard-strip .strip-record {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 400;
+    letter-spacing: 0;
+    color: var(--mute-dim);
+    margin-left: 3px;
 }
 
 .scoreboard-strip .strip-row.live .strip-name {
@@ -98,6 +136,11 @@
 
 .scoreboard-strip .strip-live {
     color: var(--crimson);
+    font-weight: 600;
+}
+
+.scoreboard-strip .strip-preview {
+    color: var(--mute-dim);
     font-weight: 600;
 }
 

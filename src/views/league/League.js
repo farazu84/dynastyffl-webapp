@@ -12,6 +12,7 @@ const League = () => {
     const [fetchError, setFetchError] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [matchups, setMatchups] = useState([]);
+    const [leagueState, setLeagueState] = useState(null);
     
     useEffect(() => {
         const fetchData = async () => {
@@ -19,22 +20,24 @@ const League = () => {
                 setIsLoading(true);
                 setFetchError(null);
                 
-                const [teamsResponse, matchupsResponse] = await Promise.all([
+                const [teamsResponse, matchupsResponse, leagueStateResponse] = await Promise.all([
                     cachedFetch(`${config.API_BASE_URL}/teams`),
-                    cachedFetch(`${config.API_BASE_URL}/matchups/current_matchups`)
+                    cachedFetch(`${config.API_BASE_URL}/matchups/current_matchups`),
+                    cachedFetch(`${config.API_BASE_URL}/league/state`)
                 ]);
-                
+
                 if (!teamsResponse.ok) throw new Error(`Teams API error: ${teamsResponse.status}`);
                 if (!matchupsResponse.ok) throw new Error(`Matchups API error: ${matchupsResponse.status}`);
-                
-                // Parse responses in parallel
-                const [teamsData, matchupsData] = await Promise.all([
+
+                const [teamsData, matchupsData, leagueStateData] = await Promise.all([
                     teamsResponse.json(),
-                    matchupsResponse.json()
+                    matchupsResponse.json(),
+                    leagueStateResponse.ok ? leagueStateResponse.json() : Promise.resolve(null)
                 ]);
-                
+
                 setTeams(teamsData.teams || []);
                 setMatchups(matchupsData.matchups || []);
+                setLeagueState(leagueStateData?.success ? leagueStateData : null);
                 
             } catch (error) {
                 setFetchError(error.message);
@@ -49,8 +52,8 @@ const League = () => {
     }, [])
 
     const memoizedTeams = useMemo(() => {
-        return teams.map((team) => (
-            <TeamItem key={team.team_id} team={team} />
+        return teams.map((team, index) => (
+            <TeamItem key={team.team_id} team={team} rank={index + 1} />
         ));
     }, [teams]);
 
@@ -83,7 +86,7 @@ const League = () => {
 
     return (
         <main>
-            <ScoreboardStrip matchups={matchups} />
+            <ScoreboardStrip matchups={matchups} leagueState={leagueState} />
             <div className="league-main-container">
                 <div className="league-left-content">
                     <ArticleHeader />
