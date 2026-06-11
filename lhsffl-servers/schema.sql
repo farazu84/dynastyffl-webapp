@@ -71,7 +71,7 @@ CREATE TABLE Players (
 
 CREATE TABLE Articles (
     article_id INT unsigned NOT NULL AUTO_INCREMENT,
-    article_type ENUM('power_ranking', 'team_analysis', 'rumors', 'trade_analysis', 'injury', 'matchup_analysis', 'matchup_breakdown') DEFAULT NULL,
+    article_type ENUM('power_ranking', 'franchise_ranking', 'team_analysis', 'rumors', 'trade_analysis', 'injury', 'matchup_analysis', 'matchup_breakdown', 'weekly_recap') DEFAULT NULL,
     author VARCHAR(128) DEFAULT NULL,
     title TEXT NOT NULL,
     content TEXT NOT NULL,

@@ -18,17 +18,17 @@ def get_latest_articles():
 
 @articles.route('/articles/generate_rumor', methods=['POST'])
 def generate_rumor():
-    rumor = request.get_json()['rumor']
-    team_ids = request.get_json()['team_ids']
+    data = request.get_json() or {}
+    rumor = data.get('rumor')
+    team_ids = data.get('team_ids')
+
+    if not rumor or not team_ids:
+        return jsonify(success=False, error='rumor and team_ids are required'), 400
 
     article = Articles.generate_rumor(rumor, team_ids)
 
-    return jsonify(success=True, article=article.serialize())
-
-
-@articles.route('/articles/generate_power_ranking', methods=['GET', 'OPTIONS'])
-def generate_power_ranking():
-    article = Articles.generate_power_rankings()
+    if not article:
+        return jsonify(success=False, error='Failed to generate rumor. Check server logs for details.'), 500
 
     return jsonify(success=True, article=article.serialize())
 
