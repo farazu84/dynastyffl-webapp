@@ -32,6 +32,11 @@ const TeamHeader = ({ team, starterCount, benchCount, taxiCount }) => {
                 <span className="th-owner-line">
                     Owner <strong>{ownerDisplay}</strong>
                 </span>
+                {team?.championships > 0 && (
+                    <span className="th-champ-badge">
+                        <span className="th-champ-count">{team.championships}× CHAMP</span>
+                    </span>
+                )}
             </div>
 
             {/* Stats */}
