@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Link } from 'react-router-dom';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import fallbackImage from '../../studio-gib-1.png';
-import TrendingPlayers from './TrendingPlayers';
 import CompactArticleCard from '../articles/CompactArticleCard';
 import '../../styles/LatestNews.css';
 import config from '../../config';
@@ -119,7 +120,11 @@ const ArticleHeader = React.memo(() => {
                         <span className="news-date">{article.formattedDate}</span>
                     </div>
                     <h3 className="news-title">{article?.title || 'Latest League News'}</h3>
-                    <p className="news-excerpt">{article.excerpt}</p>
+                    <div className="news-markdown-excerpt">
+                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                            {article?.excerpt || ''}
+                        </ReactMarkdown>
+                    </div>
                 </div>
             </div>
         </Link>
@@ -129,18 +134,36 @@ const ArticleHeader = React.memo(() => {
     if (isLoading) {
         return (
             <div className="latest-news-container">
-                <h2 className="latest-news-title">Latest News</h2>
+                <div className="latest-news-header">
+                    <div className="latest-news-eyebrow">
+                        <span className="eyebrow-line"></span>
+                        <span className="eyebrow-text">League Wire · Live</span>
+                    </div>
+                    <h2 className="latest-news-title">
+                        <span className="title-solid">Latest</span>
+                        <span className="title-outline">News</span>
+                    </h2>
+                </div>
                 <div className="news-card loading">
                     <div className="loading-text">Loading latest news...</div>
                 </div>
             </div>
         );
     }
-    
+
     return (
         <div className="news-and-trending-container">
             <div className="latest-news-container">
-                <h2 className="latest-news-title">Latest News</h2>
+                <div className="latest-news-header">
+                    <div className="latest-news-eyebrow">
+                        <span className="eyebrow-line"></span>
+                        <span className="eyebrow-text">League Wire · Live</span>
+                    </div>
+                    <h2 className="latest-news-title">
+                        <span className="title-solid">Latest</span>
+                        <span className="title-outline">News</span>
+                    </h2>
+                </div>
                 <div className="news-feed">
                     {processedArticles.length > 0 ? (
                         <>
@@ -172,9 +195,6 @@ const ArticleHeader = React.memo(() => {
                         Unable to load latest news. {fetchError}
                     </div>
                 )}
-            </div>
-            <div className="trending-players-wrapper">
-                <TrendingPlayers />
             </div>
         </div>
     );

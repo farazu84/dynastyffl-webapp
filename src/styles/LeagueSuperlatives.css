@@ -1,4 +1,4 @@
-/* League Superlatives Section */
+/* ── League Superlatives section ───────────────────────────────── */
 .league-superlatives-section {
     width: 100%;
     margin-top: 40px;
@@ -18,80 +18,160 @@
 }
 
 .league-superlatives-header h2 {
-    font-size: 1.8em;
+    font-family: var(--display);
     font-weight: 700;
+    font-size: 1.5em;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--ink);
     margin: 0;
-    color: white;
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 
+
 .league-superlatives-icon {
-    font-size: 1.4em;
-    color: #61dafb;
+    font-size: 1.3em;
+    color: var(--gold);
 }
 
 .league-superlatives-view-all {
-    color: #61dafb;
-    font-size: 0.9em;
+    font-family: var(--mono);
+    font-size: 11px;
     font-weight: 600;
+    letter-spacing: .2em;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    color: var(--gold);
     text-decoration: none;
     cursor: pointer;
-    transition: opacity 0.2s ease;
+    transition: color .15s;
 }
 
 .league-superlatives-view-all:hover {
-    opacity: 0.8;
+    color: var(--gold-hi);
 }
 
+/* ── Loading / error states ────────────────────────────────────── */
 .league-superlatives-loading,
 .league-superlatives-error {
     text-align: center;
     padding: 2rem;
-    font-size: 1rem;
-    color: rgba(255, 255, 255, 0.6);
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--muted);
 }
 
 .league-superlatives-error {
-    color: #f44336;
+    color: var(--red);
 }
 
-/* Superlatives Cards Grid */
+/* ── Cards grid ────────────────────────────────────────────────── */
 .league-superlatives-cards {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 12px;
 }
 
-/* Individual Superlative Card */
+/* ── Individual superlative card ───────────────────────────────── */
 .superlative-card {
-    background: linear-gradient(135deg, #1e1e1e 0%, #2d2d2d 100%);
-    border: 1px solid #333;
-    border-radius: 10px;
-    padding: 18px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: var(--field-700);
+    border: 1px solid var(--stroke);
+    border-radius: var(--r-md);
+    padding: 16px;
+    transition: border-color .2s, box-shadow .2s;
     display: flex;
     flex-direction: column;
     gap: 10px;
+    position: relative;
+}
+
+/* subtle gold top bar */
+.superlative-card::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--gold-dim), var(--gold), var(--gold-dim));
+    border-radius: var(--r-md) var(--r-md) 0 0;
+    opacity: .6;
 }
 
 
-/* Card Icon */
+/* ── Card icon ─────────────────────────────────────────────────── */
 .superlative-card-icon {
-    font-size: 1.3em;
-    color: #61dafb;
+    font-size: 1.2em;
+    color: var(--gold);
 }
 
-/* Card Title */
+/* ── Card title row ────────────────────────────────────────────── */
+.superlative-card-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
 .superlative-card-title {
-    font-size: 0.7em;
-    font-weight: 700;
-    color: rgba(255, 255, 255, 0.9);
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .18em;
     text-transform: uppercase;
-    letter-spacing: 1.5px;
+    color: var(--muted);
 }
 
-/* Card List */
+/* ── Tooltip ───────────────────────────────────────────────────── */
+.superlative-card-tooltip {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 1px solid var(--stroke-2);
+    font-size: 0.55em;
+    color: var(--mute-dim);
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.superlative-card-tooltip::after {
+    content: attr(data-tip);
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--field-900);
+    border: 1px solid var(--stroke-2);
+    color: var(--silver);
+    font-size: 1.6em;
+    font-weight: 400;
+    letter-spacing: 0;
+    text-transform: none;
+    padding: 6px 10px;
+    border-radius: var(--r-sm);
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .2s;
+    z-index: 10;
+}
+
+.superlative-card-tooltip:hover::after,
+.superlative-card-tooltip:focus::after {
+    opacity: 1;
+}
+
+.superlative-card-tooltip:focus {
+    outline: 1px solid rgba(212, 162, 74, .5);
+    outline-offset: 2px;
+}
+
+/* ── Card list entries ─────────────────────────────────────────── */
 .superlative-card-list {
     display: flex;
     flex-direction: column;
@@ -104,61 +184,7 @@
     justify-content: space-between;
     align-items: center;
     gap: 8px;
-}
-
-/* Title row with tooltip */
-.superlative-card-title-row {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-}
-
-.superlative-card-tooltip {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    font-size: 0.55em;
-    color: rgba(255, 255, 255, 0.4);
-    cursor: pointer;
-    flex-shrink: 0;
-}
-
-.superlative-card-tooltip::after {
-    content: attr(data-tip);
-    position: absolute;
-    bottom: calc(100% + 6px);
-    left: 50%;
-    transform: translateX(-50%);
-    background: #1a1a1a;
-    border: 1px solid #444;
-    color: rgba(255, 255, 255, 0.85);
-    font-size: 1.6em;
-    font-weight: 400;
-    letter-spacing: 0;
-    text-transform: none;
-    padding: 6px 10px;
-    border-radius: 6px;
-    white-space: nowrap;
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.2s ease;
-    z-index: 10;
-}
-
-.superlative-card-tooltip:hover::after,
-.superlative-card-tooltip:focus::after {
-    opacity: 1;
-}
-
-.superlative-card-tooltip:focus {
-    outline: 1px solid rgba(97, 218, 251, 0.5);
-    outline-offset: 2px;
+    padding: 3px 0;
 }
 
 .superlative-entry-name-col {
@@ -170,23 +196,27 @@
 }
 
 .superlative-entry-subtitle {
-    font-size: 0.7em;
-    color: rgba(255, 255, 255, 0.4);
+    font-family: var(--mono);
+    font-size: 0.65em;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--mute-dim);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
+/* top entry — slightly larger */
 .superlative-card-entry-top .superlative-entry-name {
     font-size: 0.95em;
     font-weight: 600;
-    color: white;
+    color: var(--ink);
 }
 
 .superlative-entry-name {
     font-size: 0.82em;
     font-weight: 500;
-    color: rgba(255, 255, 255, 0.8);
+    color: var(--silver);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -194,13 +224,17 @@
     text-align: left;
 }
 
+/* ── Stat badge ────────────────────────────────────────────────── */
 .superlative-entry-stat {
+    font-family: var(--mono);
     font-size: 0.7em;
     font-weight: 600;
-    color: #61dafb;
-    background: rgba(97, 218, 251, 0.1);
+    letter-spacing: .08em;
+    color: var(--gold-hi);
+    background: rgba(212, 162, 74, .1);
+    border: 1px solid var(--hairline);
     padding: 2px 8px;
-    border-radius: 10px;
+    border-radius: var(--r-sm);
     white-space: nowrap;
     flex-shrink: 0;
     text-align: right;
@@ -209,9 +243,11 @@
 .superlative-card-entry-top .superlative-entry-stat {
     font-size: 0.75em;
     padding: 3px 10px;
+    color: var(--gold);
+    background: rgba(212, 162, 74, .14);
 }
 
-/* Responsive */
+/* ── Responsive ────────────────────────────────────────────────── */
 @media (max-width: 1200px) {
     .league-superlatives-cards {
         grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -225,7 +261,7 @@
     }
 
     .league-superlatives-header h2 {
-        font-size: 1.4em;
+        font-size: 1.2em;
     }
 }
 
@@ -236,6 +272,6 @@
     }
 
     .superlative-card {
-        padding: 14px;
+        padding: 12px;
     }
 }

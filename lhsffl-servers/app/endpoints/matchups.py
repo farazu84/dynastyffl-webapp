@@ -25,8 +25,8 @@ def get_current_matchup():
     Get the current matchups for the league - optimized version.
     '''
     current_year = get_current_year()
-    current_week = get_current_week()
-    
+    current_week = get_current_week() or 1
+
     # Single optimized query with proper indexing
     current_matchups = Matchups.query \
         .filter_by(week=current_week, year=current_year) \

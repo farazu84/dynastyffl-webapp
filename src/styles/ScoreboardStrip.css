@@ -1,0 +1,165 @@
+/* ── Scoreboard strip — live matchup ticker docked under the header ── */
+.scoreboard-strip {
+    background: linear-gradient(180deg, var(--field-900), var(--field-800));
+    border-top: 1px solid var(--stroke);
+    border-bottom: 1px solid var(--stroke);
+    position: relative;
+}
+
+.scoreboard-strip::before {
+    content: "";
+    position: absolute;
+    left: 0; right: 0; top: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold) 50%, transparent);
+    opacity: .4;
+}
+
+.scoreboard-strip-inner {
+    padding: 12px 32px;
+    display: flex;
+    align-items: stretch;
+    gap: 16px;
+}
+
+.scoreboard-strip-meta {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+    padding-right: 16px;
+    flex-shrink: 0;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    border-right: 1px solid var(--stroke);
+}
+
+.scoreboard-strip-week {
+    color: var(--gold);
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.scoreboard-strip-year {
+    color: var(--mute-dim);
+    white-space: nowrap;
+}
+
+.scoreboard-strip-grid {
+    display: grid;
+    gap: 1px;
+    background: var(--stroke);
+    border: 1px solid var(--stroke);
+    border-radius: 3px;
+    overflow: hidden;
+    flex: 1;
+    min-width: 0;
+}
+
+.scoreboard-strip-card {
+    background: var(--field-800);
+    padding: 8px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    transition: background .15s;
+    min-width: 0;
+}
+
+.scoreboard-strip-card:hover {
+    background: var(--field-700);
+}
+
+.scoreboard-strip .strip-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 8px;
+}
+
+.scoreboard-strip .strip-name {
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: .02em;
+    color: var(--silver);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: left;
+}
+
+.scoreboard-strip .strip-record {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 400;
+    letter-spacing: 0;
+    color: var(--mute-dim);
+    margin-left: 3px;
+}
+
+.scoreboard-strip .strip-row.live .strip-name {
+    color: var(--ink);
+}
+
+.scoreboard-strip .strip-score {
+    font-family: var(--mono);
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--ink);
+    min-width: 38px;
+    text-align: right;
+}
+
+.scoreboard-strip .strip-score.win {
+    color: var(--ink);
+}
+
+.scoreboard-strip .strip-score.lose {
+    color: var(--mute-dim);
+}
+
+.scoreboard-strip .strip-status {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding-top: 2px;
+    border-top: 1px solid rgba(54, 80, 127, .25);
+    margin-top: 2px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.scoreboard-strip .strip-live {
+    color: var(--crimson);
+    font-weight: 600;
+}
+
+.scoreboard-strip .strip-preview {
+    color: var(--mute-dim);
+    font-weight: 600;
+}
+
+.scoreboard-strip .strip-dot {
+    display: inline-block;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--crimson);
+    margin-right: 5px;
+    vertical-align: middle;
+}
+
+@media (max-width: 768px) {
+    .scoreboard-strip-inner {
+        padding: 10px 10px;
+    }
+
+    .scoreboard-strip-grid {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    }
+}

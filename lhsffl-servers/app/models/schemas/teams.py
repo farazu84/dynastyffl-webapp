@@ -29,3 +29,4 @@ class TeamsListJSONSchema(Schema):
     championships = fields.Int()
     sleeper_roster_id = fields.Int()
     current_team_record = fields.Nested(TeamRecordsJSONSchema, many=False)
+    owners = fields.Nested(UsersJSONSchema, many=True)

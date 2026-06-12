@@ -1,3 +1,4 @@
+/* ── Trade Tree page ───────────────────────────────────────────── */
 .trade-tree-page {
     padding: 20px 20px 100px 20px;
     max-width: min(95%, 1400px);
@@ -9,25 +10,54 @@
 }
 
 .trade-tree-title {
-    font-size: 2em;
+    font-family: var(--display);
     font-weight: 700;
-    color: white;
+    font-size: 2em;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--ink);
     margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.trade-tree-title::before {
+    content: "";
+    width: 4px;
+    height: 28px;
+    background: linear-gradient(180deg, var(--gold) 0%, var(--crimson) 100%);
+    border-radius: 1px;
+    flex-shrink: 0;
 }
 
 .trade-tree-subtitle {
-    font-size: 0.95em;
-    color: rgba(255, 255, 255, 0.5);
-    margin: 4px 0 0 0;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 8px 0 0 16px;
 }
 
-/* Origin Card */
+/* ── Origin Card ───────────────────────────────────────────────── */
 .origin-card {
-    background: linear-gradient(135deg, #1e1e1e 0%, #2d2d2d 100%);
-    border: 2px solid #61dafb;
-    border-radius: 12px;
+    background: var(--field-700);
+    border: 1px solid var(--stroke-2);
+    border-radius: var(--r-lg);
     padding: 24px;
     margin-bottom: 40px;
+    position: relative;
+}
+
+/* gold top accent */
+.origin-card::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--crimson) 0%, var(--gold) 50%, var(--crimson) 100%);
+    border-radius: var(--r-lg) var(--r-lg) 0 0;
 }
 
 .origin-card-header {
@@ -38,22 +68,25 @@
 }
 
 .origin-card-badge {
-    font-size: 0.7em;
-    font-weight: 700;
-    color: #61dafb;
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .2em;
     text-transform: uppercase;
-    letter-spacing: 1.5px;
-    border: 1px solid #61dafb;
-    border-radius: 20px;
+    color: var(--gold);
+    border: 1px solid var(--hairline);
+    border-radius: var(--r-sm);
     padding: 4px 12px;
+    background: rgba(212, 162, 74, .08);
 }
 
 .origin-card-date {
-    font-size: 0.85em;
+    font-family: var(--mono);
+    font-size: 11px;
     font-weight: 600;
-    color: rgba(255, 255, 255, 0.5);
+    letter-spacing: .12em;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    color: var(--muted);
 }
 
 .origin-card-teams {
@@ -68,23 +101,27 @@
     gap: 8px;
 }
 
-.origin-card-team+.origin-card-team {
-    border-left: 1px solid #444;
+.origin-card-team + .origin-card-team {
+    border-left: 1px solid var(--stroke);
     padding-left: 30px;
 }
 
 .origin-card-team-label {
-    font-size: 0.65em;
+    font-family: var(--mono);
+    font-size: 10px;
     font-weight: 600;
-    color: rgba(255, 255, 255, 0.4);
+    letter-spacing: .14em;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    color: var(--mute-dim);
 }
 
 .origin-card-team-name {
-    font-size: 1.1em;
+    font-family: var(--display);
     font-weight: 700;
-    color: white;
+    font-size: 1.1em;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: var(--ink);
 }
 
 .origin-card-assets {
@@ -96,40 +133,44 @@
 
 .origin-card-pick {
     display: inline-block;
+    font-family: var(--mono);
     font-size: 0.75em;
     font-weight: 500;
-    color: rgba(255, 255, 255, 0.7);
-    background: rgba(97, 218, 251, 0.1);
-    border: 1px solid rgba(97, 218, 251, 0.3);
-    border-radius: 16px;
+    letter-spacing: .08em;
+    color: var(--silver);
+    background: rgba(255, 255, 255, .05);
+    border: 1px solid var(--stroke-2);
+    border-radius: var(--r-sm);
     padding: 4px 10px;
 }
 
-/* Player Chip */
+/* ── Player chip — container chrome only ───────────────────────── */
+/* Position colors (QB/RB/WR/TE/K/DEF) are PRESERVED below */
 .player-chip {
     display: inline-flex;
     align-items: center;
     gap: 5px;
-    background: rgba(97, 218, 251, 0.12);
-    border: 1px solid rgba(97, 218, 251, 0.3);
-    border-radius: 16px;
+    background: rgba(255, 255, 255, .06);
+    border: 1px solid var(--stroke-2);
+    border-radius: var(--r-sm);
     padding: 4px 10px;
     font-size: 0.8em;
 }
 
 .player-chip-name {
     font-weight: 600;
-    color: white;
+    color: var(--ink);
 }
 
 .player-chip-pos {
     font-size: 0.7em;
     font-weight: 700;
     padding: 1px 5px;
-    border-radius: 4px;
+    border-radius: var(--r-sm);
     text-transform: uppercase;
 }
 
+/* ── PRESERVED: position-specific colors ───────────────────────── */
 .player-chip-pos-qb {
     background: rgba(255, 107, 107, 0.3);
     color: #ff6b6b;
@@ -160,20 +201,19 @@
     color: #95a5a6;
 }
 
-/* Branch Layout */
+/* ── Branch layout ─────────────────────────────────────────────── */
 .trade-tree-branches {
     display: flex;
     gap: 20px;
     align-items: flex-start;
 }
 
-/* Team Branch */
 .team-branch {
     flex: 1;
     min-width: 280px;
-    background: linear-gradient(135deg, #1e1e1e 0%, #2d2d2d 100%);
-    border: 1px solid #333;
-    border-radius: 10px;
+    background: var(--field-700);
+    border: 1px solid var(--stroke);
+    border-radius: var(--r-lg);
     padding: 20px;
 }
 
@@ -183,34 +223,39 @@
 
 .team-branch-label {
     display: block;
-    font-size: 0.65em;
+    font-family: var(--mono);
+    font-size: 10px;
     font-weight: 700;
-    color: #61dafb;
+    letter-spacing: .2em;
     text-transform: uppercase;
-    letter-spacing: 2px;
+    color: var(--gold);
     margin-bottom: 4px;
 }
 
 .team-branch-team-name {
-    font-size: 1em;
+    font-family: var(--display);
     font-weight: 700;
-    color: white;
+    font-size: 1em;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: var(--ink);
 }
 
-/* Acquired section */
+/* ── Acquired section ──────────────────────────────────────────── */
 .team-branch-acquired {
     margin-bottom: 16px;
     padding-bottom: 16px;
-    border-bottom: 1px solid #333;
+    border-bottom: 1px solid var(--stroke);
 }
 
 .team-branch-acquired-label {
     display: block;
-    font-size: 0.65em;
+    font-family: var(--mono);
+    font-size: 10px;
     font-weight: 600;
-    color: rgba(255, 255, 255, 0.4);
+    letter-spacing: .14em;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    color: var(--mute-dim);
     margin-bottom: 8px;
 }
 
@@ -233,32 +278,35 @@
 }
 
 .team-branch-pick-label {
+    font-family: var(--body);
     font-size: 0.8em;
     font-weight: 500;
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--silver);
 }
 
 .team-branch-pick-result {
     display: flex;
     align-items: center;
     gap: 6px;
-    font-size: 0.75em;
-    color: rgba(255, 255, 255, 0.5);
+    font-family: var(--mono);
+    font-size: 0.72em;
+    letter-spacing: .08em;
+    color: var(--muted);
 }
 
 .team-branch-pick-pending {
-    font-size: 0.75em;
-    color: rgba(255, 255, 255, 0.3);
+    font-family: var(--mono);
+    font-size: 0.72em;
+    color: var(--mute-dim);
     font-style: italic;
 }
 
-/* Player Columns */
+/* ── Player columns ────────────────────────────────────────────── */
 .team-branch-player-columns {
     display: flex;
     gap: 16px;
     overflow-x: auto;
     padding-bottom: 12px;
-    /* Space for scrollbar */
 }
 
 .player-branch {
@@ -266,18 +314,18 @@
     min-width: 300px;
     display: flex;
     flex-direction: column;
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 8px;
+    background: var(--field-600);
+    border-radius: var(--r-md);
     padding: 12px;
 }
 
 .player-branch-header {
     margin-bottom: 12px;
     padding-bottom: 12px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid var(--stroke);
 }
 
-/* Timeline */
+/* ── Timeline ──────────────────────────────────────────────────── */
 .team-branch-timeline {
     position: relative;
     padding-left: 20px;
@@ -285,16 +333,14 @@
 }
 
 .team-branch-timeline::before {
-    content: '';
+    content: "";
     position: absolute;
-    left: 5px;
-    top: 0;
-    bottom: 0;
+    left: 5px; top: 0; bottom: 0;
     width: 2px;
-    background: #444;
+    background: var(--stroke-2);
 }
 
-/* Branch Card */
+/* ── Branch card ───────────────────────────────────────────────── */
 .branch-card {
     position: relative;
     padding: 12px 0;
@@ -307,32 +353,33 @@
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    background: #61dafb;
-    border: 2px solid #2d2d2d;
+    background: var(--gold);
+    border: 2px solid var(--field-700);
     z-index: 1;
 }
 
 .branch-card-content {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid #3a3a3a;
-    border-radius: 8px;
+    background: var(--field-600);
+    border: 1px solid var(--stroke);
+    border-radius: var(--r-md);
     padding: 12px;
 }
 
 .branch-card-date {
     display: block;
-    font-size: 0.7em;
+    font-family: var(--mono);
+    font-size: 10px;
     font-weight: 600;
-    color: rgba(255, 255, 255, 0.4);
+    letter-spacing: .12em;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    color: var(--mute-dim);
     margin-bottom: 6px;
 }
 
 .branch-card-icon {
     font-size: 0.85em;
     margin-right: 6px;
-    color: #61dafb;
+    color: var(--gold);
 }
 
 .branch-card-description {
@@ -343,14 +390,17 @@
 }
 
 .branch-card-label {
+    font-family: var(--body);
     font-size: 0.85em;
     font-weight: 600;
-    color: white;
+    color: var(--ink);
 }
 
 .branch-card-subtitle {
-    font-size: 0.75em;
-    color: rgba(255, 255, 255, 0.4);
+    font-family: var(--mono);
+    font-size: 0.72em;
+    letter-spacing: .08em;
+    color: var(--muted);
 }
 
 .branch-card-players {
@@ -360,11 +410,11 @@
     margin-top: 8px;
 }
 
-/* Exchange Details */
+/* ── Exchange details ──────────────────────────────────────────── */
 .branch-card-exchange {
     margin-top: 10px;
     padding-top: 10px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 1px solid var(--stroke);
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -377,10 +427,12 @@
 }
 
 .branch-card-exchange-label {
-    font-size: 0.7em;
+    font-family: var(--mono);
+    font-size: 10px;
     font-weight: 600;
-    color: rgba(255, 255, 255, 0.4);
+    letter-spacing: .14em;
     text-transform: uppercase;
+    color: var(--mute-dim);
 }
 
 .branch-card-exchange-items {
@@ -391,50 +443,37 @@
 
 .branch-card-pick {
     display: inline-block;
+    font-family: var(--mono);
     font-size: 0.7em;
     font-weight: 500;
-    color: rgba(255, 255, 255, 0.7);
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 4px;
+    letter-spacing: .06em;
+    color: var(--silver);
+    background: rgba(255, 255, 255, .05);
+    border: 1px solid var(--stroke-2);
+    border-radius: var(--r-sm);
     padding: 2px 6px;
 }
 
-/* Terminal Badge */
+/* ── PRESERVED: terminal badge semantic colors ─────────────────── */
+/* held = green, traded = yellow, released = red, drafted = teal   */
 .terminal-badge {
     margin-top: 16px;
     padding: 12px;
-    border-radius: 8px;
+    border-radius: var(--r-md);
     text-align: center;
 }
 
-.terminal-badge-held {
-    background: rgba(97, 218, 251, 0.08);
-    border: 1px solid rgba(97, 218, 251, 0.3);
-}
-
-.terminal-badge-label {
-    display: block;
-    font-size: 0.8em;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.terminal-badge-held .terminal-badge-label {
-    color: #4ecdc4;
-    /* Green-ish */
-}
-
-/* Specific Badge Colors */
 .terminal-badge-held {
     background: rgba(78, 205, 196, 0.1);
     border: 1px solid rgba(78, 205, 196, 0.3);
 }
 
+.terminal-badge-held .terminal-badge-label {
+    color: #4ecdc4;
+}
+
 .terminal-badge-traded {
     background: rgba(255, 217, 61, 0.08);
-    /* Yellow-ish */
     border: 1px solid rgba(255, 217, 61, 0.3);
 }
 
@@ -444,7 +483,6 @@
 
 .terminal-badge-released {
     background: rgba(255, 107, 107, 0.08);
-    /* Red-ish */
     border: 1px solid rgba(255, 107, 107, 0.3);
 }
 
@@ -461,34 +499,48 @@
     color: #4ecdc4;
 }
 
-/* Subtitles */
-.terminal-badge-subtitle {
+.terminal-badge-label {
     display: block;
-    font-size: 0.7em;
-    color: rgba(255, 255, 255, 0.4);
-    margin-top: 2px;
+    font-family: var(--mono);
+    font-size: 0.8em;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
 }
 
-/* Loading & Error */
+.terminal-badge-subtitle {
+    display: block;
+    font-family: var(--mono);
+    font-size: 0.7em;
+    letter-spacing: .08em;
+    color: var(--muted);
+    margin-top: 4px;
+}
+
+/* ── Loading & error ───────────────────────────────────────────── */
 .trade-tree-loading,
 .trade-tree-error {
     text-align: center;
     padding: 60px 20px;
-    font-size: 1rem;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
 }
 
 .trade-tree-loading {
-    color: #61dafb;
+    color: var(--gold);
 }
 
 .trade-tree-error {
-    color: #f44336;
-    background: #2a2a2a;
-    border-radius: 8px;
+    color: var(--red);
+    background: var(--field-700);
+    border: 1px solid rgba(248, 113, 113, .3);
+    border-radius: var(--r-lg);
     margin: 20px;
 }
 
-/* Responsive */
+/* ── Responsive ────────────────────────────────────────────────── */
 @media (max-width: 768px) {
     .trade-tree-branches {
         flex-direction: column;
@@ -503,10 +555,10 @@
         gap: 16px;
     }
 
-    .origin-card-team+.origin-card-team {
+    .origin-card-team + .origin-card-team {
         border-left: none;
         padding-left: 0;
-        border-top: 1px solid #444;
+        border-top: 1px solid var(--stroke);
         padding-top: 16px;
     }
 
