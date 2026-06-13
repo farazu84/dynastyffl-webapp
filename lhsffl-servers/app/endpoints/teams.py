@@ -1,11 +1,46 @@
 from flask import Blueprint, jsonify
+from sqlalchemy import func
 from app.models.teams import Teams
 from app.models.matchups import Matchups
 from app.models.team_records import TeamRecords
+from app.models.schemas.users import UsersJSONSchema
 from app import db
 from app.league_state_manager import get_current_year, get_current_week
 
 teams = Blueprint('teams', __name__)
+
+@teams.route('/teams/all_time', methods=['GET', 'OPTIONS'])
+def get_all_time_records():
+    """All-time aggregate records (W-L, PF, PA) per team across every season."""
+    rows = db.session.query(
+        Teams,
+        func.sum(TeamRecords.wins),
+        func.sum(TeamRecords.losses),
+        func.sum(TeamRecords.points_for),
+        func.sum(TeamRecords.points_against),
+    ).join(TeamRecords, Teams.team_id == TeamRecords.team_id) \
+     .group_by(Teams.team_id) \
+     .order_by(
+        func.sum(TeamRecords.wins).desc(),
+        func.sum(TeamRecords.points_for).desc()
+     ).all()
+
+    teams_data = []
+    for team, wins, losses, points_for, points_against in rows:
+        teams_data.append({
+            'team_id': team.team_id,
+            'team_name': team.team_name,
+            'championships': team.championships,
+            'owners': UsersJSONSchema(many=True).dump(team.owners),
+            'all_time_record': {
+                'wins': int(wins or 0),
+                'losses': int(losses or 0),
+                'points_for': float(points_for or 0),
+                'points_against': float(points_against or 0),
+            },
+        })
+
+    return jsonify(success=True, teams=teams_data)
 
 @teams.route('/teams', methods=['GET', 'OPTIONS'])
 def get_teams():

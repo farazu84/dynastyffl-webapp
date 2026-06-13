@@ -1,0 +1,64 @@
+/* ── All-Time Records section ──────────────────────────────────── */
+.all-time-records-section {
+    width: 100%;
+    margin-top: 30px;
+}
+
+.all-time-records-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.all-time-records-header h2 {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 1.5em;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--ink);
+    margin: 0;
+}
+
+.all-time-records-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    /* Cap the block width so each pill is ~560px instead of stretching
+       the full page — this pulls the record in next to the name and
+       removes the large horizontal dead space. Left-aligned to match
+       the section header. */
+    max-width: 1180px;
+}
+
+.all-time-records-columns .teamList {
+    margin: 0;
+    /* Force a single vertical stack per column (override the base
+       auto-fit multi-column grid) so each column is 5 rows, one pill
+       per row. */
+    grid-template-columns: 1fr;
+    gap: 8px;
+}
+
+/* Compact pill treatment, scoped to this section only (standings
+   pills are untouched): tighter rows + a lighter shadow. */
+.all-time-records-columns .team-link {
+    padding: 12px 18px;
+}
+
+.all-time-records-columns ul.teamList > li {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .18);
+}
+
+@media (max-width: 1024px) {
+    .all-time-records-columns {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .all-time-records-columns {
+        grid-template-columns: 1fr;
+    }
+}

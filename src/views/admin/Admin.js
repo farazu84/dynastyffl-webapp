@@ -40,6 +40,16 @@ const Admin = () => {
     const [processError, setProcessError] = useState(null);
     const [processing, setProcessing] = useState(false);
 
+    // Data Sync & Backfill
+    const [syncBusy, setSyncBusy] = useState(null); // which sync type is running
+    const [syncMessage, setSyncMessage] = useState(null);
+    const [syncError, setSyncError] = useState(null);
+    const [backfillDataset, setBackfillDataset] = useState('playoffs');
+    const [backfillYear, setBackfillYear] = useState('');
+    const [backfillMessage, setBackfillMessage] = useState(null);
+    const [backfillError, setBackfillError] = useState(null);
+    const [syncStatus, setSyncStatus] = useState(null);
+
     useEffect(() => {
         const fetchUnpublished = async () => {
             try {
@@ -127,6 +137,63 @@ const Admin = () => {
             setProcessing(false);
         }
     }, [authFetch]);
+
+    const fetchSyncStatus = useCallback(async () => {
+        try {
+            const res = await authFetch('/admin/sync/status');
+            if (!res.ok) return;
+            const data = await res.json();
+            setSyncStatus(data);
+        } catch {
+            /* transient; ignore */
+        }
+    }, [authFetch]);
+
+    useEffect(() => {
+        fetchSyncStatus();
+        const id = setInterval(fetchSyncStatus, 5000);
+        return () => clearInterval(id);
+    }, [fetchSyncStatus]);
+
+    const handleManualSync = useCallback(async (type) => {
+        setSyncBusy(type);
+        setSyncMessage(null);
+        setSyncError(null);
+        try {
+            const res = await authFetch('/admin/sync', {
+                method: 'POST',
+                body: JSON.stringify({ type }),
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Sync failed');
+            setSyncMessage(`${type} sync completed.`);
+            fetchSyncStatus();
+        } catch (err) {
+            setSyncError(err.message);
+        } finally {
+            setSyncBusy(null);
+        }
+    }, [authFetch, fetchSyncStatus]);
+
+    const handleBackfill = useCallback(async () => {
+        if (!window.confirm(`Start "${backfillDataset}" backfill${backfillYear ? ` for ${backfillYear}` : ' (all seasons)'}? This hits the Sleeper API and can take minutes.`)) return;
+        setBackfillMessage(null);
+        setBackfillError(null);
+        try {
+            const body = { dataset: backfillDataset };
+            if (backfillYear) body.year = Number(backfillYear);
+            const res = await authFetch('/admin/backfill', {
+                method: 'POST',
+                body: JSON.stringify(body),
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Backfill failed to start');
+            setBackfillMessage(data.message || 'Backfill started. Watch the status panel below.');
+            fetchSyncStatus();
+        } catch (err) {
+            setBackfillError(err.message);
+        }
+    }, [authFetch, backfillDataset, backfillYear, fetchSyncStatus]);
 
     const handleImpersonate = useCallback(async () => {
         if (!selectedUserId) return;
@@ -243,6 +310,99 @@ const Admin = () => {
                                 ))}
                             </div>
                         </div>
+                    )}
+                </div>
+            </section>
+
+            <section className="admin-section">
+                <h2 className="admin-section-title">Data Sync &amp; Backfill</h2>
+
+                {/* Manual (current-week) syncs */}
+                <div className="admin-udfa-block">
+                    <h3 className="admin-udfa-block-title">Manual Sync</h3>
+                    <p className="admin-udfa-block-desc">Pulls the current week from Sleeper. Fast; runs immediately.</p>
+                    <div className="admin-udfa-row">
+                        {['full', 'teams', 'matchups', 'players', 'transactions', 'player_stats', 'league_state'].map(t => (
+                            <button
+                                key={t}
+                                className="admin-action-btn"
+                                onClick={() => handleManualSync(t)}
+                                disabled={syncBusy !== null}
+                            >
+                                {syncBusy === t ? 'Running…' : t.replace('_', ' ')}
+                            </button>
+                        ))}
+                    </div>
+                    {syncMessage && <p className="admin-udfa-success">{syncMessage}</p>}
+                    {syncError && <p className="admin-error">{syncError}</p>}
+                </div>
+
+                {/* Historical backfill */}
+                <div className="admin-udfa-block admin-udfa-block--danger">
+                    <h3 className="admin-udfa-block-title">Historical Backfill</h3>
+                    <p className="admin-udfa-block-desc">
+                        Walks all seasons (or one) from Sleeper. Runs in the background and is safe to re-run.
+                        Leave year blank for all seasons.
+                    </p>
+                    <div className="admin-udfa-row">
+                        <select
+                            className="admin-select"
+                            value={backfillDataset}
+                            onChange={e => setBackfillDataset(e.target.value)}
+                        >
+                            <option value="playoffs">Playoffs (brackets + championships)</option>
+                            <option value="matchups">Matchups</option>
+                            <option value="player_stats">Player stats</option>
+                            <option value="draft_picks">Draft picks</option>
+                            <option value="transactions">Transactions</option>
+                            <option value="all">All datasets</option>
+                        </select>
+                        <input
+                            type="number"
+                            className="admin-input"
+                            placeholder="Year (optional)"
+                            value={backfillYear}
+                            onChange={e => setBackfillYear(e.target.value)}
+                        />
+                        <button
+                            className="admin-action-btn admin-action-btn--danger"
+                            onClick={handleBackfill}
+                            disabled={syncStatus?.backfill?.running}
+                        >
+                            {syncStatus?.backfill?.running ? 'Backfill running…' : 'Run Backfill'}
+                        </button>
+                    </div>
+                    {backfillMessage && <p className="admin-udfa-success">{backfillMessage}</p>}
+                    {backfillError && <p className="admin-error">{backfillError}</p>}
+                </div>
+
+                {/* Status panel */}
+                <div className="admin-udfa-block">
+                    <h3 className="admin-udfa-block-title">Status</h3>
+                    {syncStatus?.backfill?.running && (
+                        <p className="admin-status">
+                            Backfill in progress: <strong>{syncStatus.backfill.dataset}</strong>
+                            {syncStatus.backfill.started_at ? ` (started ${new Date(syncStatus.backfill.started_at).toLocaleTimeString()})` : ''}
+                        </p>
+                    )}
+                    {syncStatus?.scheduler?.jobs?.[0]?.next_run_time && (
+                        <p className="admin-status">Next scheduled sync: {new Date(syncStatus.scheduler.jobs[0].next_run_time).toLocaleString()}</p>
+                    )}
+                    {syncStatus?.recent?.length > 0 ? (
+                        <div className="admin-process-results-list">
+                            {syncStatus.recent.map(s => (
+                                <div key={s.sync_status_id} className="admin-process-result-row">
+                                    <span className="admin-process-result-team">
+                                        {s.success ? '✓' : '✗'} {s.sync_item}
+                                    </span>
+                                    <span className="admin-process-result-amount">
+                                        {s.timestamp ? new Date(s.timestamp + 'Z').toLocaleString() : ''}
+                                    </span>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <p className="admin-status">No sync activity recorded yet.</p>
                     )}
                 </div>
             </section>

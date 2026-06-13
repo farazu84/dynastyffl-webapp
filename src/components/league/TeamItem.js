@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom';
 
 const RANK_COLORS = ['var(--gold)', 'var(--silver)', 'var(--bronze)'];
 
-const TeamItem = React.memo(({ team, rank }) => {
-    const currentRecord = team.current_team_record;
+const TeamItem = React.memo(({ team, rank, record }) => {
+    const currentRecord = record ?? team.current_team_record;
     const rankColor = rank <= 3 ? RANK_COLORS[rank - 1] : 'var(--muted)';
 
     const ownerName = team?.owners?.map(o => o.user_name).filter(Boolean).join(', ')
