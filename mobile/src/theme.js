@@ -39,7 +39,33 @@ export const radii = {
 export const fontFamily = {
   display: 'Oswald_600SemiBold',
   displayMedium: 'Oswald_500Medium',
+  displayBold: 'Oswald_700Bold',
   body: 'Inter_400Regular',
+  bodyMedium: 'Inter_500Medium',
   bodySemiBold: 'Inter_600SemiBold',
   mono: 'JetBrainsMono_400Regular',
+  monoMedium: 'JetBrainsMono_500Medium',
 };
+
+// Rank accent: 1 gold, 2 silver, 3 bronze, rest dim
+export const rankColor = (r) =>
+  r === 1 ? colors.gold : r === 2 ? colors.silver : r === 3 ? colors.bronze : colors.muteDim;
+
+// Article type → pill accent (from design)
+export const articleTypeColor = (type) => ({
+  power_ranking: '#a8243a',
+  trade_analysis: '#2563eb',
+  matchup_breakdown: '#7c3aed',
+  matchup_analysis: '#7c3aed',
+  injury: '#d97706',
+}[type] ?? '#059669');
+
+export const articleTypeLabel = (type) => ({
+  power_ranking: 'Power Rankings',
+  trade_analysis: 'Trade Analysis',
+  matchup_breakdown: 'Matchup Breakdown',
+  matchup_analysis: 'Matchup Analysis',
+  injury: 'Injury Report',
+  rumors: 'Rumor Mill',
+  team_analysis: 'Team Analysis',
+}[type] ?? 'League News');
