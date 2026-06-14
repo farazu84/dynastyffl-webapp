@@ -12,14 +12,16 @@ teams = Blueprint('teams', __name__)
 @teams.route('/teams/all_time', methods=['GET', 'OPTIONS'])
 def get_all_time_records():
     """All-time aggregate records (W-L, PF, PA) per team across every season."""
+    # Group by all non-aggregated columns so ONLY_FULL_GROUP_BY (MySQL default)
+    # doesn't reject the query. outerjoin keeps teams that have no records yet.
     rows = db.session.query(
         Teams,
         func.sum(TeamRecords.wins),
         func.sum(TeamRecords.losses),
         func.sum(TeamRecords.points_for),
         func.sum(TeamRecords.points_against),
-    ).join(TeamRecords, Teams.team_id == TeamRecords.team_id) \
-     .group_by(Teams.team_id) \
+    ).outerjoin(TeamRecords, Teams.team_id == TeamRecords.team_id) \
+     .group_by(Teams.team_id, Teams.team_name, Teams.championships, Teams.sleeper_roster_id) \
      .order_by(
         func.sum(TeamRecords.wins).desc(),
         func.sum(TeamRecords.points_for).desc()

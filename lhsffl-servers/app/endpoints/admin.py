@@ -209,6 +209,13 @@ def admin_sync():
         'player_stats': SyncService.sync_player_stats,
     }
     result = dispatch[sync_type]()
+    ok = result.get('success', result.get('overall_success', True))
+    if not ok:
+        return jsonify(
+            success=False,
+            error=result.get('message') or f'{sync_type} sync failed',
+            result=result,
+        ), 500
     return jsonify(success=True, message=f'Manual {sync_type} sync completed', result=result)
 
 

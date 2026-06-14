@@ -173,8 +173,9 @@ const Admin = () => {
                 body: JSON.stringify({ type }),
             });
             const data = await res.json();
-            if (!res.ok) throw new Error(data.error || 'Sync failed');
-            setSyncMessage(`${type} sync completed.`);
+            const resultOk = data?.result?.success ?? data?.result?.overall_success ?? true;
+            if (!res.ok || !resultOk) throw new Error(data.error || data?.result?.message || 'Sync failed');
+            setSyncMessage(data.message || `${type} sync completed.`);
             fetchSyncStatus();
         } catch (err) {
             setSyncError(err.message);
