@@ -180,3 +180,93 @@ def process_udfa_bids():
         return jsonify(success=False, error=str(e)), 400
 
     return jsonify(success=True, results=results)
+
+
+# ── Data sync & backfill ───────────────────────────────────────────────
+
+VALID_SYNC_TYPES = ('full', 'teams', 'league_state', 'matchups', 'players', 'transactions', 'player_stats')
+
+
+@admin.route('/admin/sync', methods=['POST'])
+@admin_required
+def admin_sync():
+    """Run a manual (current-week) sync synchronously. Fast operations only."""
+    from app.services.sync_service import SyncService
+
+    data = request.get_json() if request.is_json else {}
+    sync_type = data.get('type', 'full')
+
+    if sync_type not in VALID_SYNC_TYPES:
+        return jsonify(success=False, error=f'Invalid type. Use: {", ".join(VALID_SYNC_TYPES)}'), 400
+
+    dispatch = {
+        'full': SyncService.full_sync,
+        'teams': SyncService.sync_teams,
+        'league_state': SyncService.sync_league_state,
+        'matchups': SyncService.sync_matchups,
+        'players': SyncService.sync_players,
+        'transactions': SyncService.sync_transactions,
+        'player_stats': SyncService.sync_player_stats,
+    }
+    result = dispatch[sync_type]()
+    ok = result.get('success', result.get('overall_success', True))
+    if not ok:
+        return jsonify(
+            success=False,
+            error=result.get('message') or f'{sync_type} sync failed',
+            result=result,
+        ), 500
+    return jsonify(success=True, message=f'Manual {sync_type} sync completed', result=result)
+
+
+@admin.route('/admin/backfill', methods=['POST'])
+@admin_required
+def admin_backfill():
+    """Start a long-running historical backfill in the background. Returns 202."""
+    from flask import current_app
+    from app.services.sync_service import SyncService
+
+    data = request.get_json() if request.is_json else {}
+    dataset = data.get('dataset')
+    year = data.get('year')
+
+    result = SyncService.start_backfill(current_app._get_current_object(), dataset, year)
+    if not result.get('success'):
+        return jsonify(result), 409
+    return jsonify(result), 202
+
+
+@admin.route('/admin/sync/status', methods=['GET'])
+@admin_required
+def admin_sync_status():
+    """Latest sync/backfill activity for the admin dashboard — one row per sync type."""
+    from sqlalchemy import func
+    from app.models.sync_status import SyncStatus
+    from app.scheduler import sync_scheduler
+    from app.services.sync_service import SyncService
+
+    # Most recent SyncStatus row for each sync_item.
+    latest_per_item = (db.session.query(
+                            SyncStatus.sync_item,
+                            func.max(SyncStatus.timestamp).label('mx'))
+                       .group_by(SyncStatus.sync_item)
+                       .subquery())
+
+    recent = (SyncStatus.query
+              .join(latest_per_item,
+                    (SyncStatus.sync_item == latest_per_item.c.sync_item) &
+                    (SyncStatus.timestamp == latest_per_item.c.mx))
+              .order_by(SyncStatus.timestamp.desc())
+              .all())
+
+    try:
+        scheduler = sync_scheduler.get_job_status()
+    except Exception:
+        scheduler = None
+
+    return jsonify(
+        success=True,
+        recent=[s.serialize() for s in recent],
+        scheduler=scheduler,
+        backfill=SyncService.backfill_status(),
+    )

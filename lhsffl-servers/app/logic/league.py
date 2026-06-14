@@ -53,14 +53,15 @@ def synchronize_players():
         source = "players.json" if use_local_file else "Sleeper API"
         print(f"Loaded {len(sleeper_players)} players from {source}")
         
-        # Filter for active players in relevant positions
+        # Filter for relevant positions, regardless of status, so non-Active
+        # players (Injured Reserve, PUP, Practice Squad, etc.) still sync and
+        # carry their real status/injury_status instead of being dropped.
         relevant_players = {}
         for player_id, player in sleeper_players.items():
-            if (player.get('position') in ['QB', 'RB', 'WR', 'TE', 'K'] and 
-                player.get('status') == 'Active'):
+            if player.get('position') in ['QB', 'RB', 'WR', 'TE', 'K']:
                 relevant_players[player_id] = player
-        
-        print(f"Processing {len(relevant_players)} relevant active players")
+
+        print(f"Processing {len(relevant_players)} relevant players")
         
         updated_count = 0
         added_count = 0
@@ -409,7 +410,13 @@ def synchronize_teams():
         
         if not rosters:
             raise ValueError("No roster data received from Sleeper API")
-        
+
+        # Fetch league users to sync team names. The custom team name lives on the
+        # user (metadata.team_name), joined to a roster via roster['owner_id'].
+        users_resp = requests.get(f'https://api.sleeper.app/v1/league/{league_id}/users')
+        users_resp.raise_for_status()
+        users_by_id = {u['user_id']: u for u in users_resp.json()}
+
         # Get current league state to determine the year
         current_league_state = LeagueState.query.filter_by(current=True).first()
         if not current_league_state:
@@ -428,7 +435,14 @@ def synchronize_teams():
             team = Teams.query.filter_by(sleeper_roster_id=roster['roster_id']).first()
             if not team:
                 continue
-            
+
+            # Sync the team name only when Sleeper has a non-empty custom name,
+            # so a team without one (e.g. gizmart) keeps its existing DB name.
+            owner = users_by_id.get(roster.get('owner_id'))
+            sleeper_name = (owner.get('metadata') or {}).get('team_name') if owner else None
+            if sleeper_name and sleeper_name.strip():
+                team.team_name = sleeper_name.strip()
+
             all_player_ids = roster.get('players', [])
             starter_ids = roster.get('starters', [])
             taxi_ids = roster.get('taxi', [])

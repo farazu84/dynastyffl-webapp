@@ -1,11 +1,13 @@
 from flask import Blueprint, jsonify, request
 from app.services.sync_service import SyncService
 from app.scheduler import sync_scheduler
+from app.decorators import admin_required
 
 sync = Blueprint('sync', __name__)
 
 
 @sync.route('/sync/manual', methods=['POST', 'OPTIONS'])
+@admin_required
 def trigger_manual_sync():
     """
     Trigger a manual full synchronization.
@@ -48,6 +50,7 @@ def trigger_manual_sync():
 
 
 @sync.route('/sync/scheduler/status', methods=['GET', 'OPTIONS'])
+@admin_required
 def get_scheduler_status():
     """
     Get detailed scheduler status and job information.
@@ -66,6 +69,7 @@ def get_scheduler_status():
 
 
 @sync.route('/sync/scheduler/trigger', methods=['POST', 'OPTIONS'])
+@admin_required
 def trigger_scheduled_sync():
     """
     Trigger the same sync that the scheduler would run.

@@ -54,18 +54,18 @@ CREATE TABLE Players (
     injury_body_part VARCHAR(64) DEFAULT NULL,
     injury_start_date DATE DEFAULT NULL,
     practice_participation VARCHAR(32) DEFAULT NULL,
-    espn_id INT DEFAULT NULL,
-    yahoo_id INT DEFAULT NULL,
-    fantasy_data_id INT DEFAULT NULL,
-    rotowire_id INT DEFAULT NULL,
-    rotoworld_id INT DEFAULT NULL,
+    espn_id BIGINT DEFAULT NULL,
+    yahoo_id BIGINT DEFAULT NULL,
+    fantasy_data_id BIGINT DEFAULT NULL,
+    rotowire_id BIGINT DEFAULT NULL,
+    rotoworld_id BIGINT DEFAULT NULL,
     sportradar_id VARCHAR(64) DEFAULT NULL,
-    stats_id INT DEFAULT NULL,
+    stats_id BIGINT DEFAULT NULL,
     gsis_id VARCHAR(32) DEFAULT NULL,
-    oddsjam_id INT DEFAULT NULL,
-    pandascore_id INT DEFAULT NULL,
-    opta_id INT DEFAULT NULL,
-    swish_id INT DEFAULT NULL,
+    oddsjam_id BIGINT DEFAULT NULL,
+    pandascore_id BIGINT DEFAULT NULL,
+    opta_id BIGINT DEFAULT NULL,
+    swish_id BIGINT DEFAULT NULL,
     PRIMARY KEY (player_id)
 )
 
@@ -98,7 +98,8 @@ CREATE TABLE Matchups (
     points_for FLOAT NOT NULL DEFAULT 0,
     points_against FLOAT NOT NULL DEFAULT 0,
     completed BOOLEAN DEFAULT FALSE,
-    PRIMARY KEY (matchup_id)
+    PRIMARY KEY (matchup_id),
+    UNIQUE KEY uq_matchup (year, week, sleeper_roster_id)
 )
 
 CREATE TABLE LeagueState (
@@ -122,7 +123,7 @@ CREATE TABLE TeamRecords (
 
 CREATE TABLE SyncStatus (
     sync_status_id INT unsigned NOT NULL AUTO_INCREMENT,
-    sync_item ENUM('teams', 'league_state', 'players', 'matchups', 'transactions') NOT NULL,
+    sync_item ENUM('teams', 'league_state', 'players', 'matchups', 'transactions', 'playoffs', 'player_stats', 'draft_picks', 'backfill') NOT NULL,
     timestamp DATETIME NOT NULL,
     success BOOLEAN NOT NULL,
     error TEXT DEFAULT NULL,
@@ -238,4 +239,34 @@ CREATE TABLE DraftPicks (
     type ENUM('startup', 'rookie', 'expansion') NOT NULL,
     PRIMARY KEY (draft_pick_id),
     INDEX ix_draft_picks_lookup (season, round, original_roster_id, type)
+)
+
+CREATE TABLE PlayoffMatchups (
+    playoff_matchup_id INT unsigned NOT NULL AUTO_INCREMENT,
+    year INT NOT NULL,
+    round INT NOT NULL,
+    bracket ENUM('winners', 'losers') NOT NULL,
+    sleeper_matchup_id INT NOT NULL,
+    sleeper_roster_id INT DEFAULT NULL,
+    opponent_sleeper_roster_id INT DEFAULT NULL,
+    winner_sleeper_roster_id INT DEFAULT NULL,
+    loser_sleeper_roster_id INT DEFAULT NULL,
+    placement INT DEFAULT NULL,
+    PRIMARY KEY (playoff_matchup_id),
+    UNIQUE KEY uq_playoff_matchup (year, bracket, sleeper_matchup_id),
+    INDEX idx_playoff_matchups_year_bracket (year, bracket)
+)
+
+CREATE TABLE PlayerWeeklyStats (
+    player_weekly_stat_id INT unsigned NOT NULL AUTO_INCREMENT,
+    year INT NOT NULL,
+    week INT NOT NULL,
+    sleeper_roster_id INT NOT NULL,
+    player_sleeper_id INT NOT NULL,
+    points FLOAT NOT NULL DEFAULT 0,
+    is_starter BOOLEAN NOT NULL DEFAULT FALSE,
+    PRIMARY KEY (player_weekly_stat_id),
+    UNIQUE KEY uq_player_week (year, week, sleeper_roster_id, player_sleeper_id),
+    INDEX idx_player_weekly_player (player_sleeper_id),
+    INDEX idx_player_weekly_roster_year_week (sleeper_roster_id, year, week)
 )
