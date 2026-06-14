@@ -149,11 +149,19 @@ const Admin = () => {
         }
     }, [authFetch]);
 
+    // Fetch once on mount (and page refresh). The sync/backfill actions below
+    // refetch after they run, so the panel stays current without polling.
     useEffect(() => {
         fetchSyncStatus();
+    }, [fetchSyncStatus]);
+
+    // Poll only while a backfill is running, so its progress advances live;
+    // the interval clears as soon as it finishes (running flips to false).
+    useEffect(() => {
+        if (!syncStatus?.backfill?.running) return;
         const id = setInterval(fetchSyncStatus, 5000);
         return () => clearInterval(id);
-    }, [fetchSyncStatus]);
+    }, [syncStatus?.backfill?.running, fetchSyncStatus]);
 
     const handleManualSync = useCallback(async (type) => {
         setSyncBusy(type);

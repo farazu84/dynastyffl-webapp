@@ -232,14 +232,24 @@ def admin_backfill():
 @admin.route('/admin/sync/status', methods=['GET'])
 @admin_required
 def admin_sync_status():
-    """Recent sync/backfill activity for the admin dashboard."""
+    """Latest sync/backfill activity for the admin dashboard — one row per sync type."""
+    from sqlalchemy import func
     from app.models.sync_status import SyncStatus
     from app.scheduler import sync_scheduler
     from app.services.sync_service import SyncService
 
+    # Most recent SyncStatus row for each sync_item.
+    latest_per_item = (db.session.query(
+                            SyncStatus.sync_item,
+                            func.max(SyncStatus.timestamp).label('mx'))
+                       .group_by(SyncStatus.sync_item)
+                       .subquery())
+
     recent = (SyncStatus.query
+              .join(latest_per_item,
+                    (SyncStatus.sync_item == latest_per_item.c.sync_item) &
+                    (SyncStatus.timestamp == latest_per_item.c.mx))
               .order_by(SyncStatus.timestamp.desc())
-              .limit(20)
               .all())
 
     try:
