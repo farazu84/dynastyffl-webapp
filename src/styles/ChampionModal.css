@@ -1,0 +1,337 @@
+/* ── Championship modal ─────────────────────────────────────────── */
+.modal.modal-wide {
+    max-width: 760px;
+    max-height: 88vh;
+    overflow-y: auto;
+}
+
+.champion-modal-status {
+    color: var(--muted);
+    font-family: var(--body);
+    text-align: center;
+    padding: 24px 0;
+    margin: 0;
+}
+
+/* ── Header ──────────────────────────────────────────────────────── */
+.champion-modal-header {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.champion-modal-year {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: .2em;
+    color: var(--gold);
+}
+
+.champion-modal-header h2 {
+    margin: 4px 0 6px;
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 26px;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--ink);
+}
+
+.champion-modal-owner {
+    margin: 0;
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    color: var(--muted);
+}
+
+.champion-modal-meta {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 12px;
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: .08em;
+    color: var(--ink-2, var(--ink));
+}
+
+.champion-modal-rings {
+    color: var(--gold);
+}
+
+/* ── Sections ────────────────────────────────────────────────────── */
+.champion-section {
+    margin-top: 24px;
+    border-top: 1px solid var(--stroke);
+    padding-top: 18px;
+}
+
+/* Two sections side by side (Notable Starters + Biggest Performances). */
+.champion-section-row {
+    display: flex;
+    gap: 24px;
+}
+
+.champion-section-row .champion-section {
+    flex: 1 1 0;
+    min-width: 0;
+}
+
+@media (max-width: 600px) {
+    .champion-section-row {
+        flex-direction: column;
+        gap: 0;
+    }
+}
+
+.champion-section h3 {
+    margin: 0 0 14px;
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+/* ── Bracket ─────────────────────────────────────────────────────── */
+.champion-bracket {
+    display: flex;
+    gap: 16px;
+    align-items: stretch;
+    overflow-x: auto;
+    padding-bottom: 4px;
+}
+
+.champion-bracket-round {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    gap: 12px;
+    min-width: 180px;
+    flex: 1;
+}
+
+.champion-bracket-round-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-align: center;
+    margin-bottom: 2px;
+}
+
+.champion-bracket-game {
+    background: var(--field-900);
+    border: 1px solid var(--stroke);
+    border-radius: var(--r-sm);
+    overflow: hidden;
+}
+
+.champion-bracket-game.is-championship {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 1px var(--gold);
+}
+
+/* Caption marking what a game decides (Championship / 3rd Place / …). */
+.champion-bracket-game-label {
+    display: block;
+    padding: 3px 8px;
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    background: var(--field-700);
+    border-bottom: 1px solid var(--stroke);
+}
+
+.champion-bracket-game-label.is-championship {
+    color: var(--field-900);
+    background: var(--gold);
+    font-weight: 700;
+}
+
+/* Playoff seed shown before each team name. */
+.champion-bracket-seed {
+    flex-shrink: 0;
+    min-width: 15px;
+    text-align: center;
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--muted);
+    background: var(--field-700);
+    border-radius: var(--r-sm);
+    padding: 1px 3px;
+}
+
+.champion-bracket-side.won .champion-bracket-seed {
+    color: var(--ink);
+}
+
+.champion-bracket-side {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 10px;
+    font-family: var(--body);
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.champion-bracket-side + .champion-bracket-side {
+    border-top: 1px solid var(--stroke);
+}
+
+.champion-bracket-side.won {
+    color: var(--ink);
+    font-weight: 600;
+}
+
+.champion-bracket-side.is-champ .champion-bracket-name {
+    color: var(--gold);
+}
+
+.champion-bracket-name {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.champion-bracket-pts {
+    font-family: var(--mono);
+    font-size: 12px;
+    flex-shrink: 0;
+}
+
+/* ── Lists (starters / performances / box score) ─────────────────── */
+.champion-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.champion-list-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: var(--r-sm);
+    font-family: var(--body);
+    font-size: 13px;
+    color: var(--ink);
+}
+
+.champion-list-row:nth-child(odd) {
+    background: var(--field-900);
+}
+
+.champion-list-rank {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    width: 14px;
+    flex-shrink: 0;
+}
+
+.champion-list-name {
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.champion-list-sub {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.champion-list-pts {
+    margin-left: auto;
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink);
+    flex-shrink: 0;
+}
+
+.champion-list-pts-label {
+    font-weight: 400;
+    font-size: 10px;
+    color: var(--muted);
+}
+
+.champion-list-pts-hot {
+    color: var(--gold);
+}
+
+/* Position chips (self-contained copy so the modal styles them on the
+   Archive page, where TradeTree.css isn't loaded). */
+.champion-modal .player-chip-pos {
+    font-size: 0.7em;
+    font-weight: 700;
+    padding: 1px 5px;
+    border-radius: var(--r-sm);
+    text-transform: uppercase;
+    flex-shrink: 0;
+}
+.champion-modal .player-chip-pos-qb { background: rgba(255, 107, 107, 0.3); color: #ff6b6b; }
+.champion-modal .player-chip-pos-rb { background: rgba(78, 205, 196, 0.3); color: #4ecdc4; }
+.champion-modal .player-chip-pos-wr { background: rgba(97, 218, 251, 0.3); color: #61dafb; }
+.champion-modal .player-chip-pos-te { background: rgba(255, 217, 61, 0.3); color: #ffd93d; }
+.champion-modal .player-chip-pos-k  { background: rgba(149, 165, 166, 0.3); color: #95a5a6; }
+
+/* ── Title-game box score ────────────────────────────────────────── */
+.champion-boxscore-final {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    margin-bottom: 14px;
+    font-family: var(--display);
+}
+
+.champion-boxscore-team {
+    font-size: 13px;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: var(--ink);
+    max-width: 40%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.champion-boxscore-opp {
+    color: var(--muted);
+    text-align: right;
+}
+
+.champion-boxscore-score {
+    font-family: var(--mono);
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--gold);
+    flex-shrink: 0;
+}
+
+@media (max-width: 600px) {
+    .modal.modal-wide {
+        padding: 24px 18px;
+    }
+    .champion-bracket {
+        flex-direction: column;
+    }
+}

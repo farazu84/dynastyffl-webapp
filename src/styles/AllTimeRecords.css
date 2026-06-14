@@ -1,3 +1,72 @@
+/* ── Archive history row: All-Time Records + Recent Champions ──── */
+.archive-history-row {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+}
+
+/* All-Time Records takes two-thirds of the row, Recent Champions one-third. */
+.archive-history-row .all-time-records-section {
+    flex: 2 1 0;
+    min-width: 0;
+}
+
+.recent-champions-section {
+    flex: 1 1 0;
+    min-width: 280px;
+    margin-top: 30px;
+}
+
+.recent-champions-header {
+    margin-bottom: 20px;
+}
+
+.recent-champions-header h2 {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 1.5em;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--ink);
+    margin: 0;
+}
+
+/* Single vertical stack of compact pills, matching the all-time treatment. */
+.recent-champions-section .teamList {
+    margin: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+}
+
+.recent-champions-section .team-link {
+    padding: 12px 18px;
+}
+
+/* The badge holds a 4-digit season year, not a 2-digit rank — widen the
+   first column and shrink the type so "2024" fits without overflow. */
+.recent-champions-section .team-info {
+    grid-template-columns: 3.4rem 1fr auto;
+}
+
+.recent-champions-section .team-rank {
+    font-size: 1rem;
+}
+
+.recent-champions-section ul.teamList > li {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .18);
+}
+
+@media (max-width: 1024px) {
+    .archive-history-row {
+        flex-direction: column;
+    }
+
+    .recent-champions-section {
+        width: 100%;
+    }
+}
+
 /* ── All-Time Records section ──────────────────────────────────── */
 .all-time-records-section {
     width: 100%;

@@ -131,12 +131,14 @@ def backfill_playoffs(year=None):
     return {'success': True, 'matches_upserted': total, 'championship_seasons': len(champs)}
 
 
-def recompute_championships():
-    """Derive Teams.championships from PlayoffMatchups winners brackets (overwrites prior counts)."""
+def champion_roster_by_year():
+    """Return {season: champion_sleeper_roster_id} derived from PlayoffMatchups winners brackets.
+
+    Champion per season: the championship game (placement == 1) winner; if a season's
+    bracket has no placement marker, fall back to the winner of its highest round.
+    """
     from app.models.playoff_matchups import PlayoffMatchups
 
-    # Champion per season: the championship game (placement == 1) winner; if a season's
-    # bracket has no placement marker, fall back to the winner of its highest round.
     champ_roster_by_year = {}
     winners = (PlayoffMatchups.query
                .filter_by(bracket='winners')
@@ -152,6 +154,13 @@ def recompute_championships():
         if champ_game is None:
             champ_game = max(matches, key=lambda m: m.round or 0)
         champ_roster_by_year[season] = champ_game.winner_sleeper_roster_id
+
+    return champ_roster_by_year
+
+
+def recompute_championships():
+    """Derive Teams.championships from PlayoffMatchups winners brackets (overwrites prior counts)."""
+    champ_roster_by_year = champion_roster_by_year()
 
     # Tally per roster, map to teams, write counts.
     counts = {}
