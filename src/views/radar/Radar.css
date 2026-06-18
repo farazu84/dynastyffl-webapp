@@ -1,0 +1,275 @@
+.radar-page {
+  color-scheme: dark;
+  --bg: #071018;
+  --bg-2: #0d1b2a;
+  --panel: #111f2f;
+  --panel-2: #0f2734;
+  --text: #e7eef8;
+  --muted: #a7b4c5;
+  --border: #24384a;
+  --accent: #13b5a7;
+  --accent-2: #2d6cdf;
+  --accent-hover: #0ea395;
+  --danger: #ef476f;
+  margin: 0;
+  padding: 0;
+  background:
+    radial-gradient(circle at 12% 6%, rgba(45, 108, 223, 0.22) 0%, transparent 40%),
+    radial-gradient(circle at 88% 20%, rgba(19, 181, 167, 0.16) 0%, transparent 38%),
+    linear-gradient(160deg, var(--bg) 0%, var(--bg-2) 100%);
+  color: var(--text);
+  font-family: "Sora", "Manrope", "Avenir Next", "Segoe UI", sans-serif;
+}
+
+.radar-page * {
+  box-sizing: border-box;
+}
+
+.radar-page h1,
+.radar-page h2,
+.radar-page h3,
+.radar-page h4,
+.radar-page h5 {
+  margin: 0;
+  letter-spacing: 0.01em;
+}
+
+.radar-page p {
+  margin: 0;
+}
+
+.radar-page .shell {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 1.25rem 1rem 3rem;
+}
+
+.radar-page .dark-shell {
+  min-height: 100vh;
+}
+
+.radar-page .muted {
+  color: var(--muted);
+}
+
+.radar-page .topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.radar-page .status-chip {
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 999px;
+  padding: 0.35rem 0.7rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.radar-page .stack {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 0.9rem;
+}
+
+.radar-page .row {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  align-items: end;
+}
+
+.radar-page .between {
+  justify-content: space-between;
+}
+
+.radar-page .grow {
+  flex: 1 1 260px;
+}
+
+.radar-page .panel {
+  background: linear-gradient(160deg, rgba(17, 31, 47, 0.98), rgba(15, 39, 52, 0.95));
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 0.95rem;
+  box-shadow: 0 14px 26px rgba(0, 0, 0, 0.24);
+}
+
+.radar-page .label {
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+
+.radar-page .input,
+.radar-page .textarea,
+.radar-page select {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.62rem 0.72rem;
+  background: rgba(8, 16, 26, 0.78);
+  color: var(--text);
+  font: inherit;
+}
+
+.radar-page .input:focus,
+.radar-page .textarea:focus,
+.radar-page select:focus {
+  outline: 2px solid rgba(19, 181, 167, 0.45);
+  outline-offset: 1px;
+}
+
+.radar-page .button {
+  border: 0;
+  border-radius: 999px;
+  padding: 0.6rem 0.95rem;
+  background: linear-gradient(120deg, var(--accent), var(--accent-2));
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(45, 108, 223, 0.24);
+  transition: transform 120ms ease, box-shadow 120ms ease;
+}
+
+.radar-page .button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(45, 108, 223, 0.34);
+}
+
+.radar-page .button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.radar-page .pre {
+  margin: 0;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: rgba(6, 12, 20, 0.85);
+  padding: 0.82rem;
+  overflow-x: auto;
+  font-size: 0.84rem;
+  line-height: 1.36;
+}
+
+.radar-page .tabbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 0.95rem;
+}
+
+.radar-page .tab {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--muted);
+  font-weight: 700;
+  padding: 0.5rem 0.86rem;
+  cursor: pointer;
+}
+
+.radar-page .tab.active {
+  color: #fff;
+  border-color: rgba(19, 181, 167, 0.5);
+  background: linear-gradient(120deg, rgba(19, 181, 167, 0.24), rgba(45, 108, 223, 0.28));
+}
+
+.radar-page .table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  background: rgba(8, 16, 26, 0.82);
+}
+
+.radar-page .table th,
+.radar-page .table td {
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  font-size: 0.84rem;
+  padding: 0.44rem 0.55rem;
+  white-space: nowrap;
+}
+
+.radar-page .table th {
+  background: rgba(18, 38, 56, 0.96);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.radar-page .table tr:hover td {
+  background: rgba(45, 108, 223, 0.08);
+}
+
+.radar-page .pick-col {
+  flex: 1 1 320px;
+  max-height: 300px;
+  overflow: auto;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0.7rem;
+  background: rgba(8, 16, 26, 0.76);
+}
+
+.radar-page .pick-item {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.9rem;
+  padding: 0.14rem 0;
+}
+
+.radar-page .stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 0.7rem;
+}
+
+.radar-page .stat-card {
+  background: rgba(10, 20, 32, 0.92);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0.75rem;
+}
+
+.radar-page .stat-label {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.radar-page .stat-value {
+  color: #fff;
+  font-weight: 800;
+  font-size: 1.22rem;
+  margin-top: 0.18rem;
+}
+
+.radar-page .card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.radar-page .card {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  background: linear-gradient(165deg, rgba(17, 31, 47, 0.98), rgba(12, 38, 52, 0.94));
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1rem;
+  transition: transform 140ms ease, box-shadow 140ms ease;
+}
+
+.radar-page .card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.28);
+}
