@@ -7,6 +7,7 @@ import Article from './views/article/Article';
 import Rumor from './views/Rumor.js/Rumor';
 import News from './views/News/News';
 import Archive from './views/archive/Archive';
+import TradeArchive from './views/archive/TradeArchive';
 import TradeTree from './views/archive/TradeTree';
 import Admin from './views/admin/Admin';
 import UDFA from './views/udfa/UDFA';
@@ -47,6 +48,7 @@ function App() {
             <Route path="/news" element={<News />} />
             <Route path="/rumors" element={<Rumor />} />
             <Route path="/archive/trades/:transactionId" element={<TradeTree />} />
+            <Route path="/archive/trades" element={<TradeArchive />} />
             <Route path="/archive" element={<Archive />} />
             <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
             <Route path="/udfa/:teamId" element={<TeamOwnerRoute><UDFA /></TeamOwnerRoute>} />

@@ -156,14 +156,29 @@
     border-radius: var(--r-sm);
     white-space: nowrap;
     pointer-events: none;
+    /* Hide via `display: none`, NOT `opacity: 0` — an opacity:0 element is
+       still laid out, so these wide tooltips would occupy space and push
+       the page width out (a phantom horizontal scrollbar). `display: none`
+       removes them from layout entirely. The opacity fade is preserved
+       with allow-discrete + @starting-style on supporting browsers and
+       simply no-ops elsewhere. */
+    display: none;
     opacity: 0;
-    transition: opacity .2s;
+    transition: opacity .2s, display .2s allow-discrete;
     z-index: 10;
 }
 
 .superlative-card-tooltip:hover::after,
 .superlative-card-tooltip:focus::after {
+    display: block;
     opacity: 1;
+}
+
+@starting-style {
+    .superlative-card-tooltip:hover::after,
+    .superlative-card-tooltip:focus::after {
+        opacity: 0;
+    }
 }
 
 .superlative-card-tooltip:focus {

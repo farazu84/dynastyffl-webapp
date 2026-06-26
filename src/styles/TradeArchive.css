@@ -1,0 +1,175 @@
+/* ── Trade Archive page ────────────────────────────────────────── */
+.trade-archive-page {
+    padding: 20px 20px 100px 20px;
+}
+
+/* Match the archive dashboard: 5 cards per row (its auto-fit grid only
+   ever shows 5 because it loads 5 trades — we have many, so pin to 5). */
+.trade-archive-page .trade-history-cards {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+@media (max-width: 768px) {
+    .trade-archive-page .trade-history-cards {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 480px) {
+    .trade-archive-page .trade-history-cards {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+/* ── Heading + count ───────────────────────────────────────────── */
+.trade-archive-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    /* Full-bleed divider: break out of the page padding, pad back in. */
+    margin: 0 -20px;
+    padding: 0 20px 18px 20px;
+    border-bottom: 1px solid var(--stroke);
+}
+
+.trade-archive-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.trade-archive-title h1 {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 1.5em;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--ink);
+    margin: 0;
+}
+
+.trade-archive-icon {
+    font-size: 1.15em;
+    color: var(--gold);
+}
+
+.trade-archive-count {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+.trade-archive-count-sep {
+    color: var(--stroke);
+}
+
+/* ── Sticky filter bar ─────────────────────────────────────────── */
+.trade-archive-filters {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    /* Full-bleed: break out of the page's 20px side padding, then pad
+       back in so the dropdowns stay aligned with the cards. */
+    margin: 0 -20px 8px -20px;
+    padding: 12px 20px;
+    background: var(--field-900, var(--field-700));
+    border-bottom: 1px solid var(--stroke);
+}
+
+.trade-archive-select {
+    -webkit-appearance: none;
+    appearance: none;
+    background-color: var(--field-700);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23d4a24a'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    color: var(--ink);
+    border: 1px solid var(--stroke);
+    border-radius: var(--r-sm);
+    padding: 8px 30px 8px 12px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: border-color .15s;
+}
+
+.trade-archive-select.is-active {
+    border-color: var(--gold);
+}
+
+.trade-archive-clear {
+    background: transparent;
+    border: 1px solid var(--gold);
+    border-radius: var(--r-sm);
+    padding: 8px 14px;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--gold);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background .15s;
+}
+
+.trade-archive-clear:hover {
+    background: rgba(212, 162, 74, .12);
+}
+
+/* ── Content / status states ───────────────────────────────────── */
+.trade-archive-content {
+    padding-top: 12px;
+}
+
+.trade-archive-status {
+    text-align: center;
+    padding: 2rem;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+.trade-archive-error {
+    color: var(--red);
+}
+
+.trade-archive-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding: 100px 20px;
+    text-align: center;
+}
+
+.trade-archive-empty-icon {
+    font-size: 2.4em;
+    color: var(--stroke);
+}
+
+.trade-archive-empty p {
+    margin: 0;
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+@media (max-width: 768px) {
+    .trade-archive-title h1 {
+        font-size: 1.2em;
+    }
+}
