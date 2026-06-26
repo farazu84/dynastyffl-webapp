@@ -499,6 +499,15 @@
     color: #4ecdc4;
 }
 
+.terminal-badge-expansion {
+    background: rgba(155, 109, 255, 0.1);
+    border: 1px solid rgba(155, 109, 255, 0.35);
+}
+
+.terminal-badge-expansion .terminal-badge-label {
+    color: #b794ff;
+}
+
 .terminal-badge-label {
     display: block;
     font-family: var(--mono);

@@ -1,6 +1,7 @@
 import logging
 from collections import defaultdict
 from sqlalchemy import or_, and_
+from app import db
 from app.models.transactions import Transactions
 from app.models.transaction_players import TransactionPlayers
 from app.models.transaction_rosters import TransactionRosters
@@ -47,10 +48,88 @@ def get_trade_tree(player_sleeper_id):
     return player_info, txns
 
 
+def _build_expansion_selections():
+    """
+    Map "<feeding_drop_transaction_id>:<player_sleeper_id>" -> {team_name, round, pick_no}
+    for every expansion draft selection.
+
+    The "feeding drop" is the latest drop of that player at or before the expansion selection
+    date — i.e. the move that sent the player into the expansion pool (the expansion txn's own
+    drop for 'atomic' picks, or the prior free_agent drop for 'pre-dropped' picks). Keying on
+    that specific transaction lets the trade tree relabel exactly that drop as the selection while
+    leaving any later (post-expansion) drop of the same player untouched.
+    """
+    exp_picks = DraftPicks.query.filter_by(type='expansion').all()
+    if not exp_picks:
+        return {}
+
+    roster_ids = {p.drafting_roster_id for p in exp_picks}
+    team_names = {
+        t.sleeper_roster_id: t.team_name
+        for t in Teams.query.filter(Teams.sleeper_roster_id.in_(roster_ids)).all()
+    }
+    player_ids = {p.player_sleeper_id for p in exp_picks}
+
+    # Selection date per player = created_at of the expansion transaction that added them.
+    selection_date = {}
+    add_rows = db.session.query(
+        TransactionPlayers.player_sleeper_id, Transactions.created_at
+    ).join(
+        Transactions, Transactions.transaction_id == TransactionPlayers.transaction_id
+    ).filter(
+        Transactions.type == 'expansion',
+        TransactionPlayers.action == 'add',
+        TransactionPlayers.player_sleeper_id.in_(player_ids),
+    ).all()
+    for pid, created_at in add_rows:
+        selection_date[pid] = created_at
+
+    # All drops of those players; pick the latest one at/before the selection date per player.
+    drop_rows = db.session.query(
+        TransactionPlayers.player_sleeper_id,
+        TransactionPlayers.transaction_id,
+        Transactions.created_at,
+    ).join(
+        Transactions, Transactions.transaction_id == TransactionPlayers.transaction_id
+    ).filter(
+        TransactionPlayers.action == 'drop',
+        TransactionPlayers.player_sleeper_id.in_(player_ids),
+    ).all()
+
+    feeding_txn = {}  # player -> (created_at, transaction_id)
+    for pid, txn_id, created_at in drop_rows:
+        sel = selection_date.get(pid)
+        if sel is None or created_at is None:
+            continue
+        # Feeding drop = the latest drop on or before the selection DAY. Compare by date, not exact
+        # timestamp: the synthetic expansion txn is stamped at midnight, while a same-day free_agent
+        # drop (the pre-dropped case) happens later that day and must still count as the feeding drop.
+        # A genuine post-expansion drop (a later day) is still correctly excluded.
+        if created_at.date() > sel.date():
+            continue
+        best = feeding_txn.get(pid)
+        if best is None or created_at >= best[0]:
+            feeding_txn[pid] = (created_at, txn_id)
+
+    selections = {}
+    for p in exp_picks:
+        feeding = feeding_txn.get(p.player_sleeper_id)
+        if not feeding:
+            continue
+        key = f"{feeding[1]}:{p.player_sleeper_id}"
+        selections[key] = {
+            'team_name': team_names.get(p.drafting_roster_id, f'Roster {p.drafting_roster_id}'),
+            'round': p.round,
+            'pick_no': p.pick_no,
+        }
+    return selections
+
+
 def get_full_trade_tree(transaction_id):
     """
     Given a transaction, build a trade tree showing the ripple effect for each
-    team involved. Returns (origin, teams_data, pick_metadata) or (None, None, None) if not found.
+    team involved. Returns (origin, teams_data, pick_metadata, expansion_selections) or
+    (None, None, None, None) if not found.
 
     Response structure for teams_data:
     {
@@ -67,7 +146,9 @@ def get_full_trade_tree(transaction_id):
     """
     origin = Transactions.query.get(transaction_id)
     if not origin:
-        return None, None, None
+        return None, None, None, None
+
+    expansion_selections = _build_expansion_selections()
 
     # 1. Get origin transaction details
     origin_player_moves = TransactionPlayers.query.filter_by(transaction_id=transaction_id).all()
@@ -75,7 +156,7 @@ def get_full_trade_tree(transaction_id):
     origin_rosters = TransactionRosters.query.filter_by(transaction_id=transaction_id).all()
     
     if not origin_player_moves and not origin_pick_moves:
-        return origin, {}, {}
+        return origin, {}, {}, expansion_selections
 
     # 2. Initialize Branch Data
     teams_data = {}
@@ -163,7 +244,7 @@ def get_full_trade_tree(transaction_id):
 
     # 4. Fetch ALL future transactions for these rosters
     if not branch_roster_ids:
-        return origin, teams_data, {}
+        return origin, teams_data, {}, expansion_selections
 
     # We fetch potentially relevant transactions: those created after origin, involving our rosters
     future_txns = Transactions.query \
@@ -316,4 +397,4 @@ def get_full_trade_tree(transaction_id):
                 }
             pick_metadata[key] = meta
 
-    return origin, teams_data, pick_metadata
+    return origin, teams_data, pick_metadata, expansion_selections

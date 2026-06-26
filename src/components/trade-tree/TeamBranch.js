@@ -1,9 +1,9 @@
 import React, { useMemo } from 'react';
 import BranchCard from './BranchCard';
 import PlayerChip from './PlayerChip';
-import { formatPickLong } from '../../utils/formatters';
+import { formatPickLong, ordinal } from '../../utils/formatters';
 
-const getPlayerTerminalState = (player, transactions, rosterId, teamName) => {
+const getPlayerTerminalState = (player, transactions, rosterId, teamName, expansionSelections = {}) => {
     const playerTxns = transactions.filter(txn =>
         (txn.player_moves || []).some(m => m.player_sleeper_id === player.sleeper_id)
     );
@@ -21,6 +21,19 @@ const getPlayerTerminalState = (player, transactions, rosterId, teamName) => {
     const wasAdded = playerMoves.some(m => m.action === 'add' && m.sleeper_roster_id === rosterId);
 
     if (wasDropped && !wasAdded) {
+        // If this drop is the one that fed the expansion draft, the branch terminates at the
+        // selection — show where the player was drafted instead of a plain release.
+        const sel = expansionSelections[`${lastTxn.transaction_id}:${player.sleeper_id}`];
+        if (sel) {
+            return {
+                type: 'expansion',
+                label: 'Selected in 2020 Expansion Draft',
+                lines: [
+                    sel.team_name,
+                    `${ordinal(sel.round)} Round, ${ordinal(sel.pick_no)} Overall`,
+                ],
+            };
+        }
         if (lastTxn.type === 'trade') {
             const receivingTeam = (lastTxn.roster_moves || [])
                 .find(rm => rm.sleeper_roster_id !== rosterId);
@@ -66,7 +79,7 @@ const calculateDuration = (startDateStr, endDateStr) => {
     return parts.join(', ');
 };
 
-const TeamBranch = ({ team, pickMetadata = {}, originDate }) => {
+const TeamBranch = ({ team, pickMetadata = {}, expansionSelections = {}, originDate }) => {
     const transactions = useMemo(() => team.transactions || [], [team.transactions]);
 
     // 1. Aggregate all assets (initial + subsequent) in order
@@ -206,6 +219,7 @@ const TeamBranch = ({ team, pickMetadata = {}, originDate }) => {
                                                 key={txn.transaction_id}
                                                 transaction={txn}
                                                 branchRosterId={team.sleeper_roster_id}
+                                                expansionSelections={expansionSelections}
                                             />
                                         ))}
                                     </div>
@@ -226,7 +240,7 @@ const TeamBranch = ({ team, pickMetadata = {}, originDate }) => {
                             (txn.player_moves || []).some(m => m.player_sleeper_id === player.sleeper_id)
                         );
 
-                        let terminal = getPlayerTerminalState(player, transactions, team.sleeper_roster_id, team.team_name);
+                        let terminal = getPlayerTerminalState(player, transactions, team.sleeper_roster_id, team.team_name, expansionSelections);
 
                         // Calculate Duration based on terminal state
                         let durationStr = '';
@@ -234,11 +248,14 @@ const TeamBranch = ({ team, pickMetadata = {}, originDate }) => {
                             durationStr = calculateDuration(asset.acquiredDate, null); // null = now
                             terminal = { ...terminal, subtitle: `On roster for ${durationStr}` };
                         } else {
-                            // Find the transaction where they left
+                            // Find the transaction where they left and show how long they were rostered.
                             const lastTxn = playerTxns[playerTxns.length - 1];
                             if (lastTxn) {
                                 durationStr = calculateDuration(asset.acquiredDate, lastTxn.created_at);
-                                terminal = { ...terminal, subtitle: `Rostered for ${durationStr}` };
+                                // Expansion keeps its selection rows and appends the roster-time row.
+                                terminal = terminal.type === 'expansion'
+                                    ? { ...terminal, lines: [...(terminal.lines || []), `Rostered for ${durationStr}`] }
+                                    : { ...terminal, subtitle: `Rostered for ${durationStr}` };
                             }
                         }
 
@@ -255,6 +272,7 @@ const TeamBranch = ({ team, pickMetadata = {}, originDate }) => {
                                                 key={txn.transaction_id}
                                                 transaction={txn}
                                                 branchRosterId={team.sleeper_roster_id}
+                                                expansionSelections={expansionSelections}
                                             />
                                         ))}
                                     </div>
@@ -262,9 +280,13 @@ const TeamBranch = ({ team, pickMetadata = {}, originDate }) => {
 
                                 <div className={`terminal-badge terminal-badge-${terminal.type}`}>
                                     <span className="terminal-badge-label">{terminal.label}</span>
-                                    {terminal.subtitle && (
-                                        <span className="terminal-badge-subtitle">{terminal.subtitle}</span>
-                                    )}
+                                    {terminal.lines
+                                        ? terminal.lines.map((line, li) => (
+                                            <span className="terminal-badge-subtitle" key={li}>{line}</span>
+                                        ))
+                                        : terminal.subtitle && (
+                                            <span className="terminal-badge-subtitle">{terminal.subtitle}</span>
+                                        )}
                                 </div>
                             </div>
                         );

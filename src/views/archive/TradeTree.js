@@ -43,6 +43,7 @@ const TradeTree = () => {
                 key={rosterId}
                 team={teamData}
                 pickMetadata={treeData.pick_metadata || {}}
+                expansionSelections={treeData.expansion_selections || {}}
                 originDate={treeData.origin.created_at}
             />
         ));
