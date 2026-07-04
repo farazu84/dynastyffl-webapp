@@ -1,6 +1,6 @@
 import logging
 from collections import defaultdict
-from sqlalchemy import or_, and_
+from sqlalchemy import or_, and_, func, case
 from app import db
 from app.models.transactions import Transactions
 from app.models.transaction_players import TransactionPlayers
@@ -9,6 +9,8 @@ from app.models.transaction_draft_picks import TransactionDraftPicks
 from app.models.teams import Teams
 from app.models.players import Players
 from app.models.draft_picks import DraftPicks
+from app.models.player_weekly_stats import PlayerWeeklyStats
+from app.models.league_state import LeagueState
 
 
 def get_trade_tree(player_sleeper_id):
@@ -123,6 +125,117 @@ def _build_expansion_selections():
             'pick_no': p.pick_no,
         }
     return selections
+
+
+def _attach_production(teams_data, pick_metadata):
+    """
+    Attach starter-points production analytics to each branch in teams_data (in place).
+
+    Per asset:  teams_data[rid]['production'][player_sleeper_id] =
+                  {starter_points, games_started, total_points, ppg}
+                — how much that player produced while rostered by this side (branch).
+    Per side:   teams_data[rid]['production_totals'] = the rollup across the side's assets.
+
+    Sourced from PlayerWeeklyStats, where sleeper_roster_id is the team that held the player that
+    week, so tenure is handled automatically. Only weeks the player started count toward
+    starter_points / games_started / ppg; total_points includes bench weeks.
+    """
+    for rid in teams_data:
+        teams_data[rid]['production'] = {}
+        teams_data[rid]['production_totals'] = {
+            'starter_points': 0.0, 'games_started': 0, 'total_points': 0.0, 'ppg': 0.0,
+        }
+
+    # The asset player ids that belong to EACH branch — i.e. exactly the assets that branch displays
+    # (initial acquisitions, downstream acquisitions made BY this branch, and the players its picks
+    # were used to draft). Crucially this is per-branch: a player from another side's lineage is
+    # never counted here just because they happened to be rostered by this team in some unrelated
+    # week, which is what was inflating the per-side totals.
+    branch_players = {rid: set() for rid in teams_data}
+    for rid, data in teams_data.items():
+        bp = branch_players[rid]
+        for p in data['acquired_players']:
+            if p.get('sleeper_id'):
+                bp.add(p['sleeper_id'])
+        for pk in data['acquired_picks']:
+            dp = pk.get('drafted_player')
+            if dp and dp.get('sleeper_id'):
+                bp.add(dp['sleeper_id'])
+        for txn in data['transactions']:
+            for pm in (txn.get('player_moves') or []):
+                if (pm.get('action') == 'add' and pm.get('sleeper_roster_id') == rid
+                        and pm.get('player_sleeper_id')):
+                    bp.add(pm['player_sleeper_id'])
+            for dpm in (txn.get('draft_pick_moves') or []):
+                if dpm.get('owner_id') == rid:
+                    meta = pick_metadata.get(
+                        f"{dpm.get('season')}:{dpm.get('round')}:{dpm.get('roster_id')}")
+                    drafted = meta.get('drafted_player') if meta else None
+                    if drafted and drafted.get('sleeper_id'):
+                        bp.add(drafted['sleeper_id'])
+
+    all_player_ids = set()
+    for bp in branch_players.values():
+        all_player_ids |= bp
+    roster_ids = list(teams_data.keys())
+    if not all_player_ids or not roster_ids:
+        return
+
+    filters = [
+        PlayerWeeklyStats.player_sleeper_id.in_(all_player_ids),
+        PlayerWeeklyStats.sleeper_roster_id.in_(roster_ids),
+    ]
+    # Only count weeks that have actually been PLAYED. Sleeper pre-populates the upcoming season's
+    # weeks with the set lineup and 0 points, so without this bound those unplayed weeks would be
+    # counted as games started (e.g. an upcoming season inflating GS by ~18 and tanking PPG).
+    league_state = LeagueState.query.filter_by(current=True).first()
+    if league_state:
+        filters.append(or_(
+            PlayerWeeklyStats.year < league_state.year,
+            and_(PlayerWeeklyStats.year == league_state.year,
+                 PlayerWeeklyStats.week < league_state.week),
+        ))
+
+    rows = db.session.query(
+        PlayerWeeklyStats.player_sleeper_id,
+        PlayerWeeklyStats.sleeper_roster_id,
+        func.sum(case((PlayerWeeklyStats.is_starter.is_(True), PlayerWeeklyStats.points), else_=0)),
+        func.sum(case((PlayerWeeklyStats.is_starter.is_(True), 1), else_=0)),
+        func.sum(PlayerWeeklyStats.points),
+    ).filter(
+        *filters
+    ).group_by(
+        PlayerWeeklyStats.player_sleeper_id,
+        PlayerWeeklyStats.sleeper_roster_id,
+    ).all()
+
+    prod_by_pair = {}
+    for player_id, rid, starter_points, games_started, total_points in rows:
+        sp = round(float(starter_points or 0), 1)
+        gs = int(games_started or 0)
+        tp = round(float(total_points or 0), 1)
+        prod_by_pair[(player_id, rid)] = {
+            'starter_points': sp,
+            'games_started': gs,
+            'total_points': tp,
+            'ppg': round(sp / gs, 1) if gs else 0.0,
+        }
+
+    # Attribute production to a branch ONLY for that branch's own asset players, on that roster.
+    for rid in teams_data:
+        totals = teams_data[rid]['production_totals']
+        for player_id in branch_players[rid]:
+            entry = prod_by_pair.get((player_id, rid))
+            if not entry:
+                continue
+            teams_data[rid]['production'][player_id] = entry
+            totals['starter_points'] += entry['starter_points']
+            totals['games_started'] += entry['games_started']
+            totals['total_points'] += entry['total_points']
+        totals['starter_points'] = round(totals['starter_points'], 1)
+        totals['total_points'] = round(totals['total_points'], 1)
+        totals['ppg'] = (round(totals['starter_points'] / totals['games_started'], 1)
+                         if totals['games_started'] else 0.0)
 
 
 def get_full_trade_tree(transaction_id):
@@ -396,5 +509,7 @@ def get_full_trade_tree(transaction_id):
                     'position': player.position
                 }
             pick_metadata[key] = meta
+
+    _attach_production(teams_data, pick_metadata)
 
     return origin, teams_data, pick_metadata, expansion_selections

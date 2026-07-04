@@ -8,6 +8,7 @@ import Rumor from './views/Rumor.js/Rumor';
 import News from './views/News/News';
 import Archive from './views/archive/Archive';
 import TradeArchive from './views/archive/TradeArchive';
+import SuperlativesArchive from './views/archive/SuperlativesArchive';
 import TradeTree from './views/archive/TradeTree';
 import Admin from './views/admin/Admin';
 import UDFA from './views/udfa/UDFA';
@@ -41,18 +42,21 @@ function App() {
       <Router>
         <div className="App">
           <Header />
-          <Routes>
-            <Route exact path="/" element={<League />} />
-            <Route path="/teams/:teamId" element={<Team />} />
-            <Route path="/articles/:articleId" element={<Article />} />
-            <Route path="/news" element={<News />} />
-            <Route path="/rumors" element={<Rumor />} />
-            <Route path="/archive/trades/:transactionId" element={<TradeTree />} />
-            <Route path="/archive/trades" element={<TradeArchive />} />
-            <Route path="/archive" element={<Archive />} />
-            <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
-            <Route path="/udfa/:teamId" element={<TeamOwnerRoute><UDFA /></TeamOwnerRoute>} />
-          </Routes>
+          <div className="app-content">
+            <Routes>
+              <Route exact path="/" element={<League />} />
+              <Route path="/teams/:teamId" element={<Team />} />
+              <Route path="/articles/:articleId" element={<Article />} />
+              <Route path="/news" element={<News />} />
+              <Route path="/rumors" element={<Rumor />} />
+              <Route path="/archive/trades/:transactionId" element={<TradeTree />} />
+              <Route path="/archive/trades" element={<TradeArchive />} />
+              <Route path="/archive/superlatives" element={<SuperlativesArchive />} />
+              <Route path="/archive" element={<Archive />} />
+              <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
+              <Route path="/udfa/:teamId" element={<TeamOwnerRoute><UDFA /></TeamOwnerRoute>} />
+            </Routes>
+          </div>
           <Footer />
         </div>
       </Router>

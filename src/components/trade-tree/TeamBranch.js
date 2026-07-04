@@ -79,7 +79,18 @@ const calculateDuration = (startDateStr, endDateStr) => {
     return parts.join(', ');
 };
 
+// Per-asset production line on a terminal badge: "142.5 pts · 14 GS · 10.2 PPG" (starter-based).
+const ProductionStat = ({ prod }) => {
+    if (!prod || !prod.games_started) return null;
+    return (
+        <span className="terminal-badge-stat">
+            {prod.starter_points} pts · {prod.games_started} GS · {prod.ppg} PPG
+        </span>
+    );
+};
+
 const TeamBranch = ({ team, pickMetadata = {}, expansionSelections = {}, originDate }) => {
+    const production = team.production || {};
     const transactions = useMemo(() => team.transactions || [], [team.transactions]);
 
     // 1. Aggregate all assets (initial + subsequent) in order
@@ -230,6 +241,7 @@ const TeamBranch = ({ team, pickMetadata = {}, expansionSelections = {}, originD
                                     {terminal.subtitle && (
                                         <span className="terminal-badge-subtitle">{terminal.subtitle}</span>
                                     )}
+                                    {draftedPlayer && <ProductionStat prod={production[draftedPlayer.sleeper_id]} />}
                                 </div>
                             </div>
                         );
@@ -287,6 +299,7 @@ const TeamBranch = ({ team, pickMetadata = {}, expansionSelections = {}, originD
                                         : terminal.subtitle && (
                                             <span className="terminal-badge-subtitle">{terminal.subtitle}</span>
                                         )}
+                                    <ProductionStat prod={production[player.sleeper_id]} />
                                 </div>
                             </div>
                         );

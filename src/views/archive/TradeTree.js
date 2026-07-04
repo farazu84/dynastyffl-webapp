@@ -79,7 +79,7 @@ const TradeTree = () => {
                 <h1 className="trade-tree-title">Trade Tree</h1>
                 <p className="trade-tree-subtitle">{teamNames} — {formatDate(treeData.origin.created_at)}</p>
             </div>
-            <OriginCard origin={treeData.origin} />
+            <OriginCard origin={treeData.origin} teams={treeData.teams} />
             <div className="trade-tree-branches">
                 {teamBranches}
             </div>

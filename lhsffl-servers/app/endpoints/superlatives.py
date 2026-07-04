@@ -4,6 +4,10 @@ from app.logic.superlatives import (
     get_player_superlatives,
     get_team_superlatives,
     get_draft_superlatives,
+    get_scoring_superlatives,
+    get_starter_superlatives,
+    get_rivalry_superlatives,
+    get_playoff_superlatives,
 )
 
 logger = logging.getLogger(__name__)
@@ -38,4 +42,44 @@ def draft_superlatives():
         return jsonify(success=True, superlatives=get_draft_superlatives())
     except Exception as e:
         logger.exception('Error computing draft superlatives')
+        return jsonify(success=False, error=str(e)), 500
+
+
+@superlatives.route('/superlatives/scoring', methods=['GET', 'OPTIONS'])
+def scoring_superlatives():
+    """Scoring superlatives: nuke, robbed, the_franchise"""
+    try:
+        return jsonify(success=True, superlatives=get_scoring_superlatives())
+    except Exception as e:
+        logger.exception('Error computing scoring superlatives')
+        return jsonify(success=False, error=str(e)), 500
+
+
+@superlatives.route('/superlatives/starters', methods=['GET', 'OPTIONS'])
+def starter_superlatives():
+    """Starter superlatives: workhorse, tenured, the_anchor, bench_warmers_revenge"""
+    try:
+        return jsonify(success=True, superlatives=get_starter_superlatives())
+    except Exception as e:
+        logger.exception('Error computing starter superlatives')
+        return jsonify(success=False, error=str(e)), 500
+
+
+@superlatives.route('/superlatives/rivalries', methods=['GET', 'OPTIONS'])
+def rivalry_superlatives():
+    """Rivalry superlatives: bad_blood, kryptonite, free_square"""
+    try:
+        return jsonify(success=True, superlatives=get_rivalry_superlatives())
+    except Exception as e:
+        logger.exception('Error computing rivalry superlatives')
+        return jsonify(success=False, error=str(e)), 500
+
+
+@superlatives.route('/superlatives/playoffs', methods=['GET', 'OPTIONS'])
+def playoff_superlatives():
+    """Playoff superlatives: frequent_flyer, mr_january"""
+    try:
+        return jsonify(success=True, superlatives=get_playoff_superlatives())
+    except Exception as e:
+        logger.exception('Error computing playoff superlatives')
         return jsonify(success=False, error=str(e)), 500
