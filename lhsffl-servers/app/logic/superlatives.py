@@ -612,26 +612,31 @@ def get_rivalry_superlatives():
     """
     completed = Matchups.query.filter(Matchups.completed.is_(True)).all()
 
-    # Bad Blood — count each meeting once via the canonical (low < high) row.
+    # Single pass: accumulate bad_blood, kryptonite, and free_square together.
     pair_stats = {}
+    nemesis = {}
+    allowed = {}
     for m in completed:
         a, b = m.sleeper_roster_id, m.opponent_sleeper_roster_id
-        if a is None or b is None or a >= b:
-            continue
-        st = pair_stats.setdefault((a, b), {'meetings': 0, 'low_wins': 0, 'high_wins': 0})
-        st['meetings'] += 1
-        if m.points_for > m.points_against:
-            st['low_wins'] += 1
-        elif m.points_against > m.points_for:
-            st['high_wins'] += 1
-    bad_blood_pairs = sorted(pair_stats.items(), key=lambda x: x[1]['meetings'], reverse=True)[:5]
-
-    # Kryptonite — for each team, the opponent that has beaten them the most.
-    nemesis = {}
-    for m in completed:
-        if m.points_against > m.points_for:  # this team lost to its opponent
+        # Bad Blood — count each meeting once via the canonical (low < high) row.
+        if a is not None and b is not None and a < b:
+            st = pair_stats.setdefault((a, b), {'meetings': 0, 'low_wins': 0, 'high_wins': 0})
+            st['meetings'] += 1
+            if m.points_for > m.points_against:
+                st['low_wins'] += 1
+            elif m.points_against > m.points_for:
+                st['high_wins'] += 1
+        # Kryptonite — track losses per opponent.
+        if m.points_against > m.points_for:
             opps = nemesis.setdefault(m.sleeper_roster_id, {})
             opps[m.opponent_sleeper_roster_id] = opps.get(m.opponent_sleeper_roster_id, 0) + 1
+        # Free Square — total points allowed.
+        agg = allowed.setdefault(m.sleeper_roster_id, [0.0, 0])
+        agg[0] += m.points_against or 0
+        agg[1] += 1
+
+    bad_blood_pairs = sorted(pair_stats.items(), key=lambda x: x[1]['meetings'], reverse=True)[:5]
+
     kryptonite_raw = []
     for roster, opps in nemesis.items():
         opp, losses = max(opps.items(), key=lambda x: x[1])
@@ -639,12 +644,6 @@ def get_rivalry_superlatives():
     kryptonite_raw.sort(key=lambda x: x[2], reverse=True)
     kryptonite_raw = kryptonite_raw[:5]
 
-    # Free Square — most total points allowed.
-    allowed = {}
-    for m in completed:
-        agg = allowed.setdefault(m.sleeper_roster_id, [0.0, 0])
-        agg[0] += m.points_against or 0
-        agg[1] += 1
     free_square_raw = sorted(allowed.items(), key=lambda x: x[1][0], reverse=True)[:5]
 
     roster_ids = set()

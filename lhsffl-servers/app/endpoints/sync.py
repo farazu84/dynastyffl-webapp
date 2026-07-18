@@ -6,7 +6,7 @@ from app.decorators import admin_required
 sync = Blueprint('sync', __name__)
 
 
-@sync.route('/sync/manual', methods=['POST', 'OPTIONS'])
+@sync.route('/sync/manual', methods=['POST'])
 @admin_required
 def trigger_manual_sync():
     """
@@ -49,7 +49,7 @@ def trigger_manual_sync():
         }), 500
 
 
-@sync.route('/sync/scheduler/status', methods=['GET', 'OPTIONS'])
+@sync.route('/sync/scheduler/status', methods=['GET'])
 @admin_required
 def get_scheduler_status():
     """
@@ -68,7 +68,7 @@ def get_scheduler_status():
         }), 500
 
 
-@sync.route('/sync/scheduler/trigger', methods=['POST', 'OPTIONS'])
+@sync.route('/sync/scheduler/trigger', methods=['POST'])
 @admin_required
 def trigger_scheduled_sync():
     """

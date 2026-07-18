@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify
-from sqlalchemy import func
+from sqlalchemy import func, tuple_
 from app.models.teams import Teams
 from app.models.matchups import Matchups
 from app.models.team_records import TeamRecords
@@ -55,13 +55,32 @@ def get_recent_champions():
     champ_by_year = champion_roster_by_year()
     recent_years = sorted(champ_by_year.keys(), reverse=True)[:5]
 
+    roster_ids = [champ_by_year[y] for y in recent_years]
+    teams_by_roster = {
+        t.sleeper_roster_id: t
+        for t in Teams.query.filter(Teams.sleeper_roster_id.in_(roster_ids)).all()
+    }
+
+    team_year_pairs = [
+        (teams_by_roster[champ_by_year[y]].team_id, y)
+        for y in recent_years
+        if champ_by_year[y] in teams_by_roster
+    ]
+    records_by_key = {}
+    if team_year_pairs:
+        records_by_key = {
+            (r.team_id, r.year): r
+            for r in TeamRecords.query.filter(
+                tuple_(TeamRecords.team_id, TeamRecords.year).in_(team_year_pairs)
+            ).all()
+        }
+
     champions = []
     for year in recent_years:
-        roster_id = champ_by_year[year]
-        team = Teams.query.filter_by(sleeper_roster_id=roster_id).first()
+        team = teams_by_roster.get(champ_by_year[year])
         if not team:
             continue
-        record = TeamRecords.query.filter_by(team_id=team.team_id, year=year).first()
+        record = records_by_key.get((team.team_id, year))
         champions.append({
             'year': year,
             'team_id': team.team_id,
@@ -87,12 +106,15 @@ def get_championship_run(year):
     if champ_roster_id is None:
         return jsonify(success=False, error=f'No champion recorded for {year}'), 404
 
-    # roster_id -> {team_id, team_name}
+    # roster_id -> {team_id, team_name}; also pull the champion's full ORM object.
+    all_teams = Teams.query.all()
     team_by_roster = {
         t.sleeper_roster_id: {'team_id': t.team_id, 'team_name': t.team_name}
-        for t in Teams.query.all()
+        for t in all_teams
     }
-    champ_team = Teams.query.filter_by(sleeper_roster_id=champ_roster_id).first()
+    champ_team = next((t for t in all_teams if t.sleeper_roster_id == champ_roster_id), None)
+    if champ_team is None:
+        return jsonify(success=False, error=f'No team found for champion roster {champ_roster_id}'), 404
 
     # Playoff seed = rank in that season's standings (wins desc, points_for desc).
     standings = (TeamRecords.query.filter_by(year=year)

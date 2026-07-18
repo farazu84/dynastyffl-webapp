@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import config from '../../config';
 import { cachedFetch } from '../../utils/apiCache';
+import { ordinal } from '../../utils/formatters';
 import '../../styles/ChampionModal.css';
 
 const fmt = (n) => (n == null ? '—' : Number(n).toFixed(1));
@@ -205,12 +206,6 @@ const placementLabel = (game) => {
     if (game.is_championship || game.placement === 1) return 'Championship';
     if (game.placement == null) return null;
     return `${ordinal(game.placement)} Place`;
-};
-
-const ordinal = (n) => {
-    const s = ['th', 'st', 'nd', 'rd'];
-    const v = n % 100;
-    return n + (s[(v - 20) % 10] || s[v] || s[0]);
 };
 
 // Last round is the final; second-to-last the semis; otherwise "Round N".
