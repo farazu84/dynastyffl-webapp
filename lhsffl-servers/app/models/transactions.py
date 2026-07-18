@@ -18,7 +18,7 @@ class Transactions(db.Model):
 
     week = db.Column(db.Integer(), nullable=False)
 
-    type = db.Column(db.Enum('trade', 'waiver', 'free_agent'), nullable=False)
+    type = db.Column(db.Enum('trade', 'waiver', 'free_agent', 'expansion'), nullable=False)
 
     status = db.Column(db.String(32), nullable=False)
 

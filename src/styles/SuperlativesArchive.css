@@ -1,0 +1,157 @@
+/* ── Superlatives Archive page ─────────────────────────────────── */
+.superlatives-archive-page {
+    padding: 20px 20px 100px 20px;
+}
+
+/* ── Heading + count ───────────────────────────────────────────── */
+.superlatives-archive-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    /* Full-bleed divider: break out of the page padding, pad back in. */
+    margin: 0 -20px;
+    padding: 0 20px 18px 20px;
+    border-bottom: 1px solid var(--stroke);
+}
+
+.superlatives-archive-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.superlatives-archive-title h1 {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 1.5em;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--ink);
+    margin: 0;
+}
+
+.superlatives-archive-icon {
+    font-size: 1.15em;
+    color: var(--gold);
+}
+
+.superlatives-archive-count {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+.superlatives-archive-count-sep {
+    color: var(--stroke);
+}
+
+/* ── Sticky filter pills ───────────────────────────────────────── */
+.superlatives-archive-filters {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    /* Full-bleed: break out of the page's 20px side padding, then pad back. */
+    margin: 0 -20px 8px -20px;
+    padding: 12px 20px;
+    background: var(--field-900, var(--field-700));
+    border-bottom: 1px solid var(--stroke);
+}
+
+.superlatives-archive-pill {
+    background: var(--field-700);
+    border: 1px solid var(--stroke);
+    border-radius: var(--r-sm);
+    padding: 8px 16px;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    cursor: pointer;
+    transition: border-color .15s, color .15s, background .15s;
+}
+
+.superlatives-archive-pill:hover {
+    color: var(--ink);
+    border-color: var(--stroke-2);
+}
+
+.superlatives-archive-pill.is-active {
+    border-color: var(--gold);
+    color: var(--gold);
+    background: rgba(212, 162, 74, .12);
+}
+
+/* ── Content / cards grid ──────────────────────────────────────── */
+.superlatives-archive-content {
+    padding-top: 12px;
+}
+
+.superlatives-archive-cards {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+}
+
+@media (max-width: 768px) {
+    .superlatives-archive-cards {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+    }
+
+    .superlatives-archive-title h1 {
+        font-size: 1.2em;
+    }
+}
+
+@media (max-width: 480px) {
+    .superlatives-archive-cards {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ── Status / empty states ─────────────────────────────────────── */
+.superlatives-archive-status {
+    text-align: center;
+    padding: 2rem;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+.superlatives-archive-error {
+    color: var(--red);
+}
+
+.superlatives-archive-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding: 100px 20px;
+    text-align: center;
+}
+
+.superlatives-archive-empty-icon {
+    font-size: 2.4em;
+    color: var(--stroke);
+}
+
+.superlatives-archive-empty p {
+    margin: 0;
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--muted);
+}

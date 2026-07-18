@@ -1,0 +1,44 @@
+/* ── Shared Pagination ─────────────────────────────────────────── */
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.pagination-btn {
+    background: var(--field-700);
+    border: 1px solid var(--stroke);
+    color: var(--silver);
+    width: 32px;
+    height: 32px;
+    border-radius: var(--r-sm);
+    font-size: 1.1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color .15s, background .15s;
+}
+
+.pagination-btn:hover:not(:disabled) {
+    background: var(--field-600);
+    border-color: var(--gold);
+    color: var(--ink);
+}
+
+.pagination-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.pagination-info {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    min-width: 48px;
+    text-align: center;
+}

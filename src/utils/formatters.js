@@ -5,6 +5,13 @@
 const ordinalSuffix = (n) =>
     n === 1 ? 'st' : n === 2 ? 'nd' : n === 3 ? 'rd' : 'th';
 
+// "1st", "2nd", "3rd", "11th", "21st", "23rd" — correct English ordinal (handles the teens)
+export const ordinal = (n) => {
+    const v = n % 100;
+    const suffix = v >= 11 && v <= 13 ? 'th' : (['th', 'st', 'nd', 'rd'][n % 10] || 'th');
+    return `${n}${suffix}`;
+};
+
 // "MAR 5, 2024" — used in trade cards and trade tree timeline
 export const formatDate = (dateStr) => {
     if (!dateStr) return '';

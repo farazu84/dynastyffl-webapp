@@ -1,5 +1,14 @@
 .App {
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Grow the routed content so the footer is pushed to the bottom of the
+   viewport on short pages (e.g. Trade History) instead of floating mid-page. */
+.app-content {
+  flex: 1 0 auto;
 }
 
 .App-logo {

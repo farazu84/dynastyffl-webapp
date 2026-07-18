@@ -87,6 +87,14 @@ ul.teamList > li:hover::before {
 
 /* ── Team link ─────────────────────────────────────────────────── */
 .team-link {
+    /* reset so the pill looks identical whether it renders as an <a> or a
+       <button> (the champion pills are buttons that open the title modal) */
+    appearance: none;
+    background: none;
+    border: none;
+    font: inherit;
+    text-align: left;
+
     text-decoration: none;
     color: var(--ink);
     display: flex;
@@ -206,8 +214,10 @@ ul.teamList > li:hover::before {
 }
 
 .team-record .separator {
-    color: var(--stroke-2);
-    font-weight: 500;
+    color: var(--muted);
+    font-weight: 700;
+    font-size: 1.8em;
+    line-height: 0;
 }
 
 .team-record .losses {

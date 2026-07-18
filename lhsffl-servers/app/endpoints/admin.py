@@ -184,9 +184,6 @@ def process_udfa_bids():
 
 # ── Data sync & backfill ───────────────────────────────────────────────
 
-VALID_SYNC_TYPES = ('full', 'teams', 'league_state', 'matchups', 'players', 'transactions', 'player_stats')
-
-
 @admin.route('/admin/sync', methods=['POST'])
 @admin_required
 def admin_sync():
@@ -195,9 +192,6 @@ def admin_sync():
 
     data = request.get_json() if request.is_json else {}
     sync_type = data.get('type', 'full')
-
-    if sync_type not in VALID_SYNC_TYPES:
-        return jsonify(success=False, error=f'Invalid type. Use: {", ".join(VALID_SYNC_TYPES)}'), 400
 
     dispatch = {
         'full': SyncService.full_sync,
@@ -208,6 +202,9 @@ def admin_sync():
         'transactions': SyncService.sync_transactions,
         'player_stats': SyncService.sync_player_stats,
     }
+    if sync_type not in dispatch:
+        return jsonify(success=False, error=f'Invalid type. Use: {", ".join(dispatch)}'), 400
+
     result = dispatch[sync_type]()
     ok = result.get('success', result.get('overall_success', True))
     if not ok:

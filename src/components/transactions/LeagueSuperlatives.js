@@ -53,6 +53,7 @@ const LeagueSuperlatives = () => {
 
         return [
             {
+                category: 'Players',
                 icon: '\u21BA',
                 title: "Should I Call My Ex?",
                 tooltip: 'Players re-added to the same team the most times',
@@ -63,6 +64,7 @@ const LeagueSuperlatives = () => {
                 })),
             },
             {
+                category: 'Players',
                 icon: '\u2197',
                 title: 'Ghosted',
                 tooltip: 'Players dropped the most times across the league',
@@ -72,6 +74,7 @@ const LeagueSuperlatives = () => {
                 })),
             },
             {
+                category: 'Players',
                 icon: '\u21BB',
                 title: 'Making The Rounds',
                 tooltip: 'Players rostered by the most different teams',
@@ -81,6 +84,7 @@ const LeagueSuperlatives = () => {
                 })),
             },
             {
+                category: 'Teams',
                 icon: '\u21C4',
                 title: 'Eskimo Brothers',
                 tooltip: 'Team pairs that have traded with each other the most',
@@ -90,13 +94,14 @@ const LeagueSuperlatives = () => {
                 })),
             },
             {
+                category: 'Draft',
                 icon: '\u2605',
                 title: "'Til Death Do Us Part",
                 tooltip: 'Players still on the team that drafted them in the startup',
                 entries: (draftData.startup_loyalists || []).slice(0, 5).map((p) => ({
                     name: `${p.first_name} ${p.last_name}`,
                     subtitle: p.team_name,
-                    stat: `2019-${new Date().getFullYear()}`,
+                    stat: `R${p.round} \u00B7 P${p.pick_no}`,
                 })),
             },
         ];
@@ -133,7 +138,7 @@ const LeagueSuperlatives = () => {
                     <span className="league-superlatives-icon">&#9734;</span>
                     <h2>League Superlatives</h2>
                 </div>
-                <Link to="/archive" className="league-superlatives-view-all">
+                <Link to="/archive/superlatives" className="league-superlatives-view-all">
                     View All
                 </Link>
             </div>
@@ -141,6 +146,7 @@ const LeagueSuperlatives = () => {
                 {cards.map((card) => (
                     <SuperlativeCard
                         key={card.title}
+                        category={card.category}
                         icon={card.icon}
                         title={card.title}
                         tooltip={card.tooltip}

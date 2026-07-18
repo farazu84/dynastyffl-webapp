@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import PlayerChip from './PlayerChip';
-import { formatDate, formatPickShort } from '../../utils/formatters';
+import { formatDate, formatPickShort, ordinal } from '../../utils/formatters';
 
 const getAcquisitions = (txn) => {
     const teamMap = new Map();
@@ -40,7 +40,7 @@ const getAcquisitions = (txn) => {
     return Array.from(teamMap.values()).filter(t => t.players.length > 0 || t.picks.length > 0 || t.droppedPlayers.length > 0);
 };
 
-const BranchCard = ({ transaction, branchRosterId }) => {
+const BranchCard = ({ transaction, branchRosterId, expansionSelections = {} }) => {
     const acquisitions = useMemo(() => {
         const list = getAcquisitions(transaction);
         // Sort so the branch owner (current team) is last
@@ -57,6 +57,7 @@ const BranchCard = ({ transaction, branchRosterId }) => {
         if (transaction.type === 'trade') return 'Trade';
         if (transaction.type === 'waiver') return 'Waiver Claim';
         if (transaction.type === 'free_agent') return 'Free Agent Move';
+        if (transaction.type === 'expansion') return 'Expansion Draft';
         return 'Transaction';
     }, [transaction.type]);
 
@@ -94,21 +95,58 @@ const BranchCard = ({ transaction, branchRosterId }) => {
                                     </div>
                                 </>
                             )}
-                            {transaction.type !== 'trade' && team.droppedPlayers.length > 0 && (
-                                <>
-                                    <span className="branch-card-exchange-label" style={{
-                                        color: '#ff6b6b',
-                                        fontSize: '0.75em'
-                                    }}>
-                                        Released:
-                                    </span>
-                                    <div className="branch-card-exchange-items">
-                                        {team.droppedPlayers.map((player, i) => (
-                                            <PlayerChip key={`d-${i}`} player={player} />
-                                        ))}
-                                    </div>
-                                </>
-                            )}
+                            {transaction.type !== 'trade' && team.droppedPlayers.length > 0 && (() => {
+                                const selFor = (p) =>
+                                    expansionSelections[`${transaction.transaction_id}:${p.sleeper_id}`];
+                                const expansionDrops = team.droppedPlayers.filter(p => selFor(p));
+                                const releasedDrops = team.droppedPlayers.filter(p => !selFor(p));
+                                return (
+                                    <>
+                                        {expansionDrops.length > 0 && (
+                                            <>
+                                                <span className="branch-card-exchange-label" style={{
+                                                    color: '#b794ff',
+                                                    fontSize: '0.75em'
+                                                }}>
+                                                    Selected in Expansion Draft:
+                                                </span>
+                                                <div className="branch-card-exchange-items">
+                                                    {expansionDrops.map((player, i) => {
+                                                        const sel = selFor(player);
+                                                        return (
+                                                            <span className="branch-card-expansion-pick" key={`x-${i}`}>
+                                                                <PlayerChip player={player} />
+                                                                <span className="branch-card-expansion-meta" style={{
+                                                                    color: '#b794ff',
+                                                                    fontSize: '0.7em',
+                                                                    marginLeft: '6px'
+                                                                }}>
+                                                                    {sel.team_name} · {ordinal(sel.round)} Round · {ordinal(sel.pick_no)} Overall
+                                                                </span>
+                                                            </span>
+                                                        );
+                                                    })}
+                                                </div>
+                                            </>
+                                        )}
+                                        {releasedDrops.length > 0 && (
+                                            <>
+                                                <span className="branch-card-exchange-label" style={{
+                                                    color: '#ff6b6b',
+                                                    fontSize: '0.75em'
+                                                }}>
+                                                    Released:
+                                                </span>
+                                                <div className="branch-card-exchange-items">
+                                                    {releasedDrops.map((player, i) => (
+                                                        <PlayerChip key={`d-${i}`} player={player} />
+                                                    ))}
+                                                </div>
+                                            </>
+                                        )}
+                                    </>
+                                );
+                            })()}
                         </div>
                     ))}
                 </div>

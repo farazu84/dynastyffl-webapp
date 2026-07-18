@@ -135,7 +135,7 @@ CREATE TABLE Transactions (
     sleeper_transaction_id BIGINT unsigned NOT NULL UNIQUE,
     year INT NOT NULL,
     week INT NOT NULL,
-    type ENUM('trade', 'waiver', 'free_agent') NOT NULL,
+    type ENUM('trade', 'waiver', 'free_agent', 'expansion') NOT NULL,
     status VARCHAR(32) NOT NULL,
     creator_sleeper_user_id BIGINT unsigned DEFAULT NULL,
     sleeper_league_id BIGINT unsigned NOT NULL,

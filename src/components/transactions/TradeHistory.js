@@ -73,7 +73,7 @@ const TradeHistory = () => {
                     <span className="trade-history-icon">&#8644;</span>
                     <h2>Trade History</h2>
                 </div>
-                <Link to="/archive" className="trade-history-view-all">
+                <Link to="/archive/trades" className="trade-history-view-all">
                     View All
                 </Link>
             </div>
