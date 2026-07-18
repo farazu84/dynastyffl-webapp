@@ -198,15 +198,15 @@ class TestRecentChampions:
             'wins': 11, 'losses': 2, 'points_for': 1600.0, 'points_against': 1200.0,
         }
 
-    def test_limited_to_five_most_recent(self, client, db):
-        for offset, year in enumerate(range(2020, 2026)):  # six champion seasons
+    def test_returns_all_seasons_newest_first(self, client, db):
+        for year in range(2020, 2026):  # six champion seasons
             make_team(db, team_id=year, sleeper_roster_id=year, team_name=f'Champ {year}')
             seed_champion_season(db, year, roster=year, team_id=year,
                                  wins=10, losses=3, pf=1500, pa=1300, matchup_id=year)
         db.session.commit()
 
         years = [c['year'] for c in client.get('/v1/teams/recent_champions').get_json()['champions']]
-        assert years == [2025, 2024, 2023, 2022, 2021]  # newest five, 2020 dropped
+        assert years == [2025, 2024, 2023, 2022, 2021, 2020]  # all seasons, no cap
 
 
 # ═══════════════════════════════════════════════════════════════════════════
