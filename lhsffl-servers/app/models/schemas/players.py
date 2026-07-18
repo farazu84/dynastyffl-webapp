@@ -12,7 +12,7 @@ class PlayersJSONSchema(Schema):
     years_exp = fields.Int()
     position = fields.Str()
     age = fields.Int()
-    #player_number = fields.Int()
+    player_number = fields.Int()
     taxi = fields.Bool()
     starter = fields.Bool()
     depth_chart_order = fields.Int()

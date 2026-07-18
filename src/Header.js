@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import './styles/Header.css';
 import { useAuth } from './hooks/useAuth';
 import LoginModal from './components/LoginModal';
+import crestLogo from './logo-408-gridiron.png';
 
 const UserIcon = () => (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
@@ -35,7 +36,14 @@ const Header = () => {
         <>
             <header>
                 <div className="header-container">
-                    <h1>LHS Fantasy Football League</h1>
+                    <div className="header-brand">
+                        <img className="header-crest" src={crestLogo} alt="408 Gridiron crest" />
+                        <div className="header-wordmark">
+                            <span className="wordmark-pre">Est. 2018 · San Jose</span>
+                            <h1>408 Gridiron</h1>
+                            <span className="wordmark-sub">Fantasy Football League</span>
+                        </div>
+                    </div>
                     <nav className='header-menu'>
                         <Link to="/">Home</Link>
                         <Link to="/news">News</Link>

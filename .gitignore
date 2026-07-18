@@ -6,6 +6,10 @@
 .pnp.js
 venv
 
+# Expo / mobile app (ignored for now)
+/mobile
+.expo/
+
 # testing
 /coverage
 

@@ -28,19 +28,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-LEAGUE_HISTORY = {
-    2019: '419666295387082752',
-    2020: '516385651688570880',
-    2021: '650601235019292672',
-    2022: '785954136989769728',
-    2023: '932976884349030400',
-    2024: '1063040492125937664',
-    2025: '1195252934627844096',
-    2026: '1328498202462126080',
-}
-
-# The 2019 startup draft ID — all other drafts are rookie drafts
-STARTUP_DRAFT_ID = 424730242209304576
+from app.league_history import LEAGUE_HISTORY, STARTUP_DRAFT_ID
 
 
 def backfill_draft_picks():

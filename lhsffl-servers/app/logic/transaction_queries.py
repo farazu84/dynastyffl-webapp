@@ -1,6 +1,7 @@
 import logging
 from collections import defaultdict
-from sqlalchemy import or_, and_
+from sqlalchemy import or_, and_, func, case
+from app import db
 from app.models.transactions import Transactions
 from app.models.transaction_players import TransactionPlayers
 from app.models.transaction_rosters import TransactionRosters
@@ -8,6 +9,8 @@ from app.models.transaction_draft_picks import TransactionDraftPicks
 from app.models.teams import Teams
 from app.models.players import Players
 from app.models.draft_picks import DraftPicks
+from app.models.player_weekly_stats import PlayerWeeklyStats
+from app.models.league_state import LeagueState
 
 
 def get_trade_tree(player_sleeper_id):
@@ -47,10 +50,199 @@ def get_trade_tree(player_sleeper_id):
     return player_info, txns
 
 
+def _build_expansion_selections():
+    """
+    Map "<feeding_drop_transaction_id>:<player_sleeper_id>" -> {team_name, round, pick_no}
+    for every expansion draft selection.
+
+    The "feeding drop" is the latest drop of that player at or before the expansion selection
+    date — i.e. the move that sent the player into the expansion pool (the expansion txn's own
+    drop for 'atomic' picks, or the prior free_agent drop for 'pre-dropped' picks). Keying on
+    that specific transaction lets the trade tree relabel exactly that drop as the selection while
+    leaving any later (post-expansion) drop of the same player untouched.
+    """
+    exp_picks = DraftPicks.query.filter_by(type='expansion').all()
+    if not exp_picks:
+        return {}
+
+    roster_ids = {p.drafting_roster_id for p in exp_picks}
+    team_names = {
+        t.sleeper_roster_id: t.team_name
+        for t in Teams.query.filter(Teams.sleeper_roster_id.in_(roster_ids)).all()
+    }
+    player_ids = {p.player_sleeper_id for p in exp_picks}
+
+    # Selection date per player = created_at of the expansion transaction that added them.
+    selection_date = {}
+    add_rows = db.session.query(
+        TransactionPlayers.player_sleeper_id, Transactions.created_at
+    ).join(
+        Transactions, Transactions.transaction_id == TransactionPlayers.transaction_id
+    ).filter(
+        Transactions.type == 'expansion',
+        TransactionPlayers.action == 'add',
+        TransactionPlayers.player_sleeper_id.in_(player_ids),
+    ).all()
+    for pid, created_at in add_rows:
+        selection_date[pid] = created_at
+
+    # All drops of those players; pick the latest one at/before the selection date per player.
+    drop_rows = db.session.query(
+        TransactionPlayers.player_sleeper_id,
+        TransactionPlayers.transaction_id,
+        Transactions.created_at,
+    ).join(
+        Transactions, Transactions.transaction_id == TransactionPlayers.transaction_id
+    ).filter(
+        TransactionPlayers.action == 'drop',
+        TransactionPlayers.player_sleeper_id.in_(player_ids),
+    ).all()
+
+    feeding_txn = {}  # player -> (created_at, transaction_id)
+    for pid, txn_id, created_at in drop_rows:
+        sel = selection_date.get(pid)
+        if sel is None or created_at is None:
+            continue
+        # Feeding drop = the latest drop on or before the selection DAY. Compare by date, not exact
+        # timestamp: the synthetic expansion txn is stamped at midnight, while a same-day free_agent
+        # drop (the pre-dropped case) happens later that day and must still count as the feeding drop.
+        # A genuine post-expansion drop (a later day) is still correctly excluded.
+        if created_at.date() > sel.date():
+            continue
+        best = feeding_txn.get(pid)
+        if best is None or created_at >= best[0]:
+            feeding_txn[pid] = (created_at, txn_id)
+
+    selections = {}
+    for p in exp_picks:
+        feeding = feeding_txn.get(p.player_sleeper_id)
+        if not feeding:
+            continue
+        key = f"{feeding[1]}:{p.player_sleeper_id}"
+        selections[key] = {
+            'team_name': team_names.get(p.drafting_roster_id, f'Roster {p.drafting_roster_id}'),
+            'round': p.round,
+            'pick_no': p.pick_no,
+        }
+    return selections
+
+
+def _attach_production(teams_data, pick_metadata):
+    """
+    Attach starter-points production analytics to each branch in teams_data (in place).
+
+    Per asset:  teams_data[rid]['production'][player_sleeper_id] =
+                  {starter_points, games_started, total_points, ppg}
+                — how much that player produced while rostered by this side (branch).
+    Per side:   teams_data[rid]['production_totals'] = the rollup across the side's assets.
+
+    Sourced from PlayerWeeklyStats, where sleeper_roster_id is the team that held the player that
+    week, so tenure is handled automatically. Only weeks the player started count toward
+    starter_points / games_started / ppg; total_points includes bench weeks.
+    """
+    for rid in teams_data:
+        teams_data[rid]['production'] = {}
+        teams_data[rid]['production_totals'] = {
+            'starter_points': 0.0, 'games_started': 0, 'total_points': 0.0, 'ppg': 0.0,
+        }
+
+    # The asset player ids that belong to EACH branch — i.e. exactly the assets that branch displays
+    # (initial acquisitions, downstream acquisitions made BY this branch, and the players its picks
+    # were used to draft). Crucially this is per-branch: a player from another side's lineage is
+    # never counted here just because they happened to be rostered by this team in some unrelated
+    # week, which is what was inflating the per-side totals.
+    branch_players = {rid: set() for rid in teams_data}
+    for rid, data in teams_data.items():
+        bp = branch_players[rid]
+        for p in data['acquired_players']:
+            if p.get('sleeper_id'):
+                bp.add(p['sleeper_id'])
+        for pk in data['acquired_picks']:
+            dp = pk.get('drafted_player')
+            if dp and dp.get('sleeper_id'):
+                bp.add(dp['sleeper_id'])
+        for txn in data['transactions']:
+            for pm in (txn.get('player_moves') or []):
+                if (pm.get('action') == 'add' and pm.get('sleeper_roster_id') == rid
+                        and pm.get('player_sleeper_id')):
+                    bp.add(pm['player_sleeper_id'])
+            for dpm in (txn.get('draft_pick_moves') or []):
+                if dpm.get('owner_id') == rid:
+                    meta = pick_metadata.get(
+                        f"{dpm.get('season')}:{dpm.get('round')}:{dpm.get('roster_id')}")
+                    drafted = meta.get('drafted_player') if meta else None
+                    if drafted and drafted.get('sleeper_id'):
+                        bp.add(drafted['sleeper_id'])
+
+    all_player_ids = set()
+    for bp in branch_players.values():
+        all_player_ids |= bp
+    roster_ids = list(teams_data.keys())
+    if not all_player_ids or not roster_ids:
+        return
+
+    filters = [
+        PlayerWeeklyStats.player_sleeper_id.in_(all_player_ids),
+        PlayerWeeklyStats.sleeper_roster_id.in_(roster_ids),
+    ]
+    # Only count weeks that have actually been PLAYED. Sleeper pre-populates the upcoming season's
+    # weeks with the set lineup and 0 points, so without this bound those unplayed weeks would be
+    # counted as games started (e.g. an upcoming season inflating GS by ~18 and tanking PPG).
+    league_state = LeagueState.query.filter_by(current=True).first()
+    if league_state:
+        filters.append(or_(
+            PlayerWeeklyStats.year < league_state.year,
+            and_(PlayerWeeklyStats.year == league_state.year,
+                 PlayerWeeklyStats.week < league_state.week),
+        ))
+
+    rows = db.session.query(
+        PlayerWeeklyStats.player_sleeper_id,
+        PlayerWeeklyStats.sleeper_roster_id,
+        func.sum(case((PlayerWeeklyStats.is_starter.is_(True), PlayerWeeklyStats.points), else_=0)),
+        func.sum(case((PlayerWeeklyStats.is_starter.is_(True), 1), else_=0)),
+        func.sum(PlayerWeeklyStats.points),
+    ).filter(
+        *filters
+    ).group_by(
+        PlayerWeeklyStats.player_sleeper_id,
+        PlayerWeeklyStats.sleeper_roster_id,
+    ).all()
+
+    prod_by_pair = {}
+    for player_id, rid, starter_points, games_started, total_points in rows:
+        sp = round(float(starter_points or 0), 1)
+        gs = int(games_started or 0)
+        tp = round(float(total_points or 0), 1)
+        prod_by_pair[(player_id, rid)] = {
+            'starter_points': sp,
+            'games_started': gs,
+            'total_points': tp,
+            'ppg': round(sp / gs, 1) if gs else 0.0,
+        }
+
+    # Attribute production to a branch ONLY for that branch's own asset players, on that roster.
+    for rid in teams_data:
+        totals = teams_data[rid]['production_totals']
+        for player_id in branch_players[rid]:
+            entry = prod_by_pair.get((player_id, rid))
+            if not entry:
+                continue
+            teams_data[rid]['production'][player_id] = entry
+            totals['starter_points'] += entry['starter_points']
+            totals['games_started'] += entry['games_started']
+            totals['total_points'] += entry['total_points']
+        totals['starter_points'] = round(totals['starter_points'], 1)
+        totals['total_points'] = round(totals['total_points'], 1)
+        totals['ppg'] = (round(totals['starter_points'] / totals['games_started'], 1)
+                         if totals['games_started'] else 0.0)
+
+
 def get_full_trade_tree(transaction_id):
     """
     Given a transaction, build a trade tree showing the ripple effect for each
-    team involved. Returns (origin, teams_data, pick_metadata) or (None, None, None) if not found.
+    team involved. Returns (origin, teams_data, pick_metadata, expansion_selections) or
+    (None, None, None, None) if not found.
 
     Response structure for teams_data:
     {
@@ -67,7 +259,9 @@ def get_full_trade_tree(transaction_id):
     """
     origin = Transactions.query.get(transaction_id)
     if not origin:
-        return None, None, None
+        return None, None, None, None
+
+    expansion_selections = _build_expansion_selections()
 
     # 1. Get origin transaction details
     origin_player_moves = TransactionPlayers.query.filter_by(transaction_id=transaction_id).all()
@@ -75,7 +269,7 @@ def get_full_trade_tree(transaction_id):
     origin_rosters = TransactionRosters.query.filter_by(transaction_id=transaction_id).all()
     
     if not origin_player_moves and not origin_pick_moves:
-        return origin, {}, {}
+        return origin, {}, {}, expansion_selections
 
     # 2. Initialize Branch Data
     teams_data = {}
@@ -163,7 +357,7 @@ def get_full_trade_tree(transaction_id):
 
     # 4. Fetch ALL future transactions for these rosters
     if not branch_roster_ids:
-        return origin, teams_data, {}
+        return origin, teams_data, {}, expansion_selections
 
     # We fetch potentially relevant transactions: those created after origin, involving our rosters
     future_txns = Transactions.query \
@@ -316,4 +510,6 @@ def get_full_trade_tree(transaction_id):
                 }
             pick_metadata[key] = meta
 
-    return origin, teams_data, pick_metadata
+    _attach_production(teams_data, pick_metadata)
+
+    return origin, teams_data, pick_metadata, expansion_selections

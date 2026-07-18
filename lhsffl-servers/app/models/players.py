@@ -54,29 +54,31 @@ class Players(db.Model):
 
     practice_participation = db.Column(db.String(32), nullable=True)
 
-    espn_id = db.Column(db.Integer(), nullable=True)
+    # External provider IDs are opaque and can exceed a signed INT (e.g. oddsjam_id),
+    # so all numeric ones are BIGINT to avoid "Out of range value" failures.
+    espn_id = db.Column(db.BigInteger(), nullable=True)
 
-    yahoo_id = db.Column(db.Integer(), nullable=True)
+    yahoo_id = db.Column(db.BigInteger(), nullable=True)
 
-    fantasy_data_id = db.Column(db.Integer(), nullable=True)
+    fantasy_data_id = db.Column(db.BigInteger(), nullable=True)
 
-    rotowire_id = db.Column(db.Integer(), nullable=True)
+    rotowire_id = db.Column(db.BigInteger(), nullable=True)
 
-    rotoworld_id = db.Column(db.Integer(), nullable=True)
+    rotoworld_id = db.Column(db.BigInteger(), nullable=True)
 
     sportradar_id = db.Column(db.String(64), nullable=True)
 
-    stats_id = db.Column(db.Integer(), nullable=True)
+    stats_id = db.Column(db.BigInteger(), nullable=True)
 
     gsis_id = db.Column(db.String(32), nullable=True)
 
-    oddsjam_id = db.Column(db.Integer(), nullable=True)
+    oddsjam_id = db.Column(db.BigInteger(), nullable=True)
 
-    pandascore_id = db.Column(db.Integer(), nullable=True)
+    pandascore_id = db.Column(db.BigInteger(), nullable=True)
 
-    opta_id = db.Column(db.Integer(), nullable=True)
+    opta_id = db.Column(db.BigInteger(), nullable=True)
 
-    swish_id = db.Column(db.Integer(), nullable=True)
+    swish_id = db.Column(db.BigInteger(), nullable=True)
 
 
 
