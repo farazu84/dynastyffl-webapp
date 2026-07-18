@@ -49,11 +49,11 @@ def get_all_time_records():
 
 @teams.route('/teams/recent_champions', methods=['GET', 'OPTIONS'])
 def get_recent_champions():
-    """The last 5 league champions with their record (W-L, PF, PA) from that season."""
+    """All league champions with their record (W-L, PF, PA) from that season, newest first."""
     from app.logic.history import champion_roster_by_year
 
     champ_by_year = champion_roster_by_year()
-    recent_years = sorted(champ_by_year.keys(), reverse=True)[:5]
+    recent_years = sorted(champ_by_year.keys(), reverse=True)
 
     roster_ids = [champ_by_year[y] for y in recent_years]
     teams_by_roster = {

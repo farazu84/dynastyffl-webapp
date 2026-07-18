@@ -57,6 +57,44 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, .18);
 }
 
+.champions-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 14px;
+}
+
+.champions-pagination button {
+    background: transparent;
+    border: none;
+    color: var(--ink);
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: var(--r-sm);
+    transition: opacity 0.15s;
+}
+
+.champions-pagination button:disabled {
+    opacity: 0.25;
+    cursor: default;
+}
+
+.champions-pagination button:not(:disabled):hover {
+    opacity: 0.7;
+}
+
+.champions-pagination .year-range {
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--gold);
+    min-width: 7ch;
+    text-align: center;
+}
+
 @media (max-width: 1024px) {
     .archive-history-row {
         flex-direction: column;
