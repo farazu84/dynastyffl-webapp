@@ -41,7 +41,7 @@ const NewsBar = ({ articles }) => {
             : title;
     };
 
-    if (teamNews.length === 0) {
+    if (items.length === 0) {
         return (
             <div className="nb-bar">
                 <div className="nb-label">

@@ -41,6 +41,18 @@ const Admin = () => {
     const [processError, setProcessError] = useState(null);
     const [processing, setProcessing] = useState(false);
 
+    // Sync status
+    const [syncStatus, setSyncStatus] = useState(null);
+    const [syncBusy, setSyncBusy] = useState(null);
+    const [syncMessage, setSyncMessage] = useState(null);
+    const [syncError, setSyncError] = useState(null);
+
+    // Backfill
+    const [backfillDataset, setBackfillDataset] = useState('scores');
+    const [backfillYear, setBackfillYear] = useState('');
+    const [backfillMessage, setBackfillMessage] = useState(null);
+    const [backfillError, setBackfillError] = useState(null);
+
     const fetchUnpublished = useCallback(async () => {
         try {
             const res = await authFetch('/admin/articles/unpublished');

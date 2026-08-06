@@ -38,14 +38,81 @@ class Articles(db.Model):
         return ArticlesJSONSchema().dump(self)
 
     @staticmethod
-    def _chat_completion(system_prompt, user_prompt, *, online=True, temperature=0.4, top_p=0.9, max_tokens=4000, response_format=None):
+    def _provider():
+        return os.environ.get("ARTICLE_LLM_PROVIDER", "anthropic")
+
+    @staticmethod
+    def _article_model_name():
+        if Articles._provider() == "anthropic":
+            return os.environ.get("ANTHROPIC_MODEL", "claude-sonnet-4-6")
+        return os.environ["OPENROUTER_MODEL"]
+
+    @staticmethod
+    def _chat_completion(system_prompt, user_prompt, *, online=True, temperature=0.4, top_p=0.9, max_tokens=4000, response_format=None, model_override=None):
+        '''
+        Call the configured LLM provider (ARTICLE_LLM_PROVIDER: anthropic | openrouter)
+        and return the response content, or None on any failure.
+        '''
+        if Articles._provider() == "anthropic":
+            return Articles._chat_completion_anthropic(
+                system_prompt, user_prompt,
+                online=online, temperature=temperature,
+                max_tokens=max_tokens, response_format=response_format,
+                model_override=model_override,
+            )
+        return Articles._chat_completion_openrouter(
+            system_prompt, user_prompt,
+            online=online, temperature=temperature, top_p=top_p,
+            max_tokens=max_tokens, response_format=response_format,
+            model_override=model_override,
+        )
+
+    @staticmethod
+    def _chat_completion_anthropic(system_prompt, user_prompt, *, online, temperature, max_tokens, response_format=None, model_override=None):
+        '''
+        Call the Anthropic API directly. When online, the native web search tool
+        lets the model run multiple searches and read the results itself.
+        '''
+        import anthropic
+
+        model = model_override or os.environ.get("ANTHROPIC_MODEL", "claude-sonnet-4-6")
+        tools = [{"type": "web_search_20260209", "name": "web_search", "max_uses": 8}] if online else []
+
+        if response_format:
+            system_prompt += "\nRespond with a single valid JSON object and nothing else."
+
+        messages = [{"role": "user", "content": user_prompt}]
+        try:
+            client = anthropic.Anthropic()
+            for _ in range(5):
+                response = client.messages.create(
+                    model=model,
+                    max_tokens=max_tokens,
+                    # Claude 4+ rejects requests that set both temperature and top_p
+                    temperature=temperature,
+                    system=system_prompt,
+                    messages=messages,
+                    tools=tools,
+                )
+                if response.stop_reason != "pause_turn":
+                    break
+                # Server-side search loop paused; append the assistant turn and re-send to resume
+                messages.append({"role": "assistant", "content": response.content})
+        except anthropic.AnthropicError as e:
+            print(f"Anthropic request failed: {e}")
+            return None
+
+        text = "".join(block.text for block in response.content if block.type == "text")
+        return text or None
+
+    @staticmethod
+    def _chat_completion_openrouter(system_prompt, user_prompt, *, online, temperature, top_p, max_tokens, response_format=None, model_override=None):
         '''
         Call OpenRouter and return the response content, or None on any failure.
         '''
-        model = os.environ["OPENROUTER_MODEL"] + (":online" if online else "")
+        model = (model_override or os.environ["OPENROUTER_MODEL"]) + (":online" if online else "")
 
         payload = {
-            "transforms": ["middle-out"],
             "model": model,
             "temperature": temperature,
             "top_p": top_p,
@@ -121,7 +188,7 @@ class Articles(db.Model):
     def _create_article(article_type, title, content, team_ids):
         article = Articles(
             article_type=article_type,
-            author=os.environ["OPENROUTER_MODEL"],
+            author=Articles._article_model_name(),
             title=title,
             content=content,
             thumbnail='',
@@ -139,26 +206,71 @@ class Articles(db.Model):
         return article
 
     @staticmethod
-    def _team_context(team, include_bench=False, recent_results=0):
+    def _season_stats_map(sleeper_ids):
+        '''
+        Bulk-load this season's weekly fantasy points for the given players.
+        Returns {sleeper_id: {season_points, games_played, ppg}}.
+        '''
+        from app.models.player_weekly_stats import PlayerWeeklyStats
+        from app.league_state_manager import get_current_year
+
+        sleeper_ids = [sleeper_id for sleeper_id in sleeper_ids if sleeper_id]
+        if not sleeper_ids:
+            return {}
+
+        rows = db.session.query(
+            PlayerWeeklyStats.player_sleeper_id,
+            PlayerWeeklyStats.points,
+        ).filter(
+            PlayerWeeklyStats.year == get_current_year(),
+            PlayerWeeklyStats.player_sleeper_id.in_(sleeper_ids),
+        ).all()
+
+        weekly = {}
+        for sleeper_id, points in rows:
+            weekly.setdefault(sleeper_id, []).append(points)
+
+        stats_map = {}
+        for sleeper_id, games in weekly.items():
+            season_points = round(sum(games), 1)
+            stats_map[sleeper_id] = {
+                'season_points': season_points,
+                'games_played': len(games),
+                'ppg': round(season_points / len(games), 1),
+            }
+        return stats_map
+
+    @staticmethod
+    def _team_context(team, include_bench=False, recent_results=0, stats_map=None):
         '''
         Build the JSON-serializable context for a team that gets fed to the model.
         '''
+        stats_map = stats_map or {}
+
+        def player_context(player):
+            data = player.ai_serialize()
+            data['fantasy_stats_this_season'] = stats_map.get(player.sleeper_id, 'no games recorded this season')
+            return data
+
         context = {
-            'starters': [player.ai_serialize() for player in team.starters],
+            'starters': [player_context(player) for player in team.starters],
             'owner_names': [f"{owner.first_name} {owner.last_name}" for owner in team.owners],
         }
 
         if include_bench:
-            context['bench'] = [player.ai_serialize() for player in team.players if not player.starter and not player.taxi]
-            context['taxi_squad'] = [player.ai_serialize() for player in team.players if player.taxi]
+            context['bench'] = [player_context(player) for player in team.players if not player.starter and not player.taxi]
+            context['taxi_squad'] = [player_context(player) for player in team.players if player.taxi]
 
         record = team.current_team_record
         if record:
+            games_played = record.wins + record.losses
             context['record'] = {
                 'wins': record.wins,
                 'losses': record.losses,
                 'points_for': record.points_for,
                 'points_against': record.points_against,
+                'avg_points_per_week': round(record.points_for / max(games_played, 1), 1),
+                'avg_points_against_per_week': round(record.points_against / max(games_played, 1), 1),
             }
 
         if recent_results:
@@ -184,12 +296,93 @@ class Articles(db.Model):
         return context
 
     @staticmethod
+    def _data_fidelity_rules():
+        from datetime import date
+        return textwrap.dedent(f"""\
+        ## Data Fidelity Rules (critical)
+        - Today's date is {date.today().isoformat()}. Facts you remember from training may be outdated — the provided JSON is current.
+        - The provided JSON is the single source of truth for: rosters, player ages, years of experience, current NFL team, injury status, league records, scores, and all fantasy point totals.
+        - Fantasy scoring is provided per player as "fantasy_stats_this_season" (season points, games played, PPG). Cite these numbers directly; never compute, estimate, or invent fantasy point values.
+        - Use web search only for real-NFL context (yardage, touchdowns, usage, news), and attribute searched stats to the current season explicitly.
+        - If you cannot verify a real-NFL statistic via search, describe the player qualitatively without a number. Fewer numbers beats a wrong number.
+        - Only mention an injury if it appears in the JSON injury_status or in a current-season search result. Never infer or recall injuries.""")
+
+    @staticmethod
+    def _fact_check(content, source_data):
+        '''
+        Cheap post-generation pass: list contradictions between the article and
+        the data it was generated from. Never raises — returns None on failure
+        or when disabled via ARTICLE_FACT_CHECK.
+        '''
+        if os.environ.get("ARTICLE_FACT_CHECK", "false").lower() != "true":
+            return None
+
+        if Articles._provider() == "anthropic":
+            model = os.environ.get("ANTHROPIC_FACT_CHECK_MODEL", "claude-haiku-4-5")
+        else:
+            model = os.environ.get("OPENROUTER_FACT_CHECK_MODEL", "anthropic/claude-haiku-4.5")
+
+        system_prompt = textwrap.dedent("""\
+        ## Role
+        You are a fact-checker for a fantasy football league site.
+
+        ## Instructions
+        - Compare the article against the source data it was generated from
+        - List every factual contradiction: wrong records, wrong scores, wrong fantasy point totals, players attributed to the wrong team, or injuries that do not appear in the source data
+        - Ignore real-NFL statistics (yardage, touchdowns) that are not in the source data — those come from web search and cannot be checked here
+        - Return a short markdown bullet list of contradictions, or exactly "No contradictions found." if there are none
+        """)
+
+        try:
+            return Articles._chat_completion(
+                system_prompt,
+                f"## Source Data\n{source_data}\n\n## Article\n{content}",
+                online=False,
+                temperature=0.0,
+                max_tokens=1000,
+                model_override=model,
+            )
+        except Exception as e:
+            print(f"Fact check failed: {e}")
+            return None
+
+    @staticmethod
     def generate_pregame_report(matchup):
         '''
         Generate a pregame report for a matchup.
         '''
+        from app.models.matchups import Matchups
+
         teams = [matchup.team, matchup.opponent_team]
-        team_dict = {team.team_name: Articles._team_context(team, recent_results=3) for team in teams}
+        stats_map = Articles._season_stats_map([player.sleeper_id for team in teams for player in team.starters])
+        team_dict = {team.team_name: Articles._team_context(team, recent_results=3, stats_map=stats_map) for team in teams}
+
+        h2h = Matchups.query.filter(
+            Matchups.sleeper_roster_id == matchup.sleeper_roster_id,
+            Matchups.opponent_sleeper_roster_id == matchup.opponent_sleeper_roster_id,
+            Matchups.completed == True,
+            Matchups.matchup_id != matchup.matchup_id,
+        ).order_by(Matchups.year.desc(), Matchups.week.desc()).all()
+
+        if h2h:
+            wins = sum(1 for m in h2h if m.points_for > m.points_against)
+            losses = sum(1 for m in h2h if m.points_for < m.points_against)
+            head_to_head = {
+                'all_time_record': f"{wins}-{losses} from {matchup.team.team_name}'s perspective",
+                'recent_meetings': [
+                    {
+                        'year': m.year,
+                        'week': m.week,
+                        'score': f'{m.points_for}-{m.points_against}',
+                        'winner': matchup.team.team_name if m.points_for > m.points_against
+                                  else matchup.opponent_team.team_name if m.points_for < m.points_against
+                                  else 'tie',
+                    }
+                    for m in h2h[:5]
+                ],
+            }
+        else:
+            head_to_head = 'no previous meetings'
 
         system_prompt = textwrap.dedent(f"""\
         ## Role
@@ -200,14 +393,17 @@ class Articles(db.Model):
         Starting lineup: 1 QB, 2 RB, 3 WR, 1 TE, 1 Flex (RB/WR/TE), 1 K.
 
         ## Instructions
-        - Analyze the two teams using the JSON provided (rosters, records, recent results)
+        - Analyze the two teams using the JSON provided (rosters, records, recent results, this-season fantasy stats)
         - Use web search to look up current season stats, recent performance, and matchup context for the players
+        - Reference the head_to_head history provided when framing the storyline
         - Only cite statistics and facts that come from the provided data or your web search results
         - Do not fabricate any statistics, scores, or rankings
 
+        {Articles._data_fidelity_rules()}
+
         ## Required Structure
         1. A headline storyline that frames the matchup
-        2. A capsule for each team: record, recent form, and how the roster sets up this week
+        2. A capsule for each team: record, recent form, and how the roster sets up this week (cite the provided PPG and season points)
         3. Key positional matchups (use the player positions provided)
         4. Injury watch: flag any players with an injury status and what it means for the lineup
         5. X-Factor: one player on each side who could swing the matchup
@@ -221,7 +417,8 @@ class Articles(db.Model):
         Keep the tone professional and analytical.
         """)
 
-        user_prompt = f"Here are the teams for this week's matchup:\n{json.dumps(team_dict, indent=2)}"
+        payload = {'teams': team_dict, 'head_to_head': head_to_head}
+        user_prompt = f"Here are the teams for this week's matchup:\n{json.dumps(payload, indent=2)}"
 
         content = Articles._chat_completion(system_prompt, user_prompt, temperature=0.5, max_tokens=3500)
         if content is None:
@@ -240,7 +437,9 @@ class Articles(db.Model):
         Generate a rumor article.
         '''
         teams = db.session.query(Teams).filter(Teams.team_id.in_(team_ids)).all()
-        team_dict = {team.team_name: Articles._team_context(team, include_bench=True) for team in teams}
+        all_player_ids = [p.sleeper_id for team in teams for p in team.players]
+        stats_map = Articles._season_stats_map(all_player_ids)
+        team_dict = {team.team_name: Articles._team_context(team, include_bench=True, stats_map=stats_map) for team in teams}
 
         system_prompt = textwrap.dedent(f"""\
         ## Role
@@ -253,6 +452,8 @@ class Articles(db.Model):
         - Only cite statistics and facts from the provided data or your web search results
         - Do not propose any trade unless it is explicitly mentioned in the rumor
         - Do not fabricate any statistics, scores, or rankings
+
+        {Articles._data_fidelity_rules()}
 
         ## Teams Involved
         {json.dumps(team_dict, indent=2)}
@@ -291,7 +492,8 @@ class Articles(db.Model):
         the article.
         '''
         teams = db.session.query(Teams).all()
-        team_dict = {team.team_name: Articles._team_context(team, include_bench=True, recent_results=3) for team in teams}
+        stats_map = Articles._season_stats_map([player.sleeper_id for team in teams for player in team.players])
+        team_dict = {team.team_name: Articles._team_context(team, include_bench=True, recent_results=3, stats_map=stats_map) for team in teams}
 
         from app.league_state_manager import get_current_year, get_current_week
 
@@ -325,6 +527,8 @@ class Articles(db.Model):
         - Only cite statistics and facts from the provided data or your web search results
         - Do not fabricate any statistics, scores, or rankings
         {movement_instructions}
+        {Articles._data_fidelity_rules()}
+
         ## Scoring Reference (do not include in article)
         PPR | 0.04 pts/passing yard | 0.1 pts/rushing+receiving yard | 6 pts/rushing+receiving TD | 4 pts/passing TD | -4/INT | -2/fumble lost
 
@@ -363,6 +567,7 @@ class Articles(db.Model):
         ranking_instructions = textwrap.dedent("""\
         - These rankings are about the current season: records, points for/against, and recent results are the primary signal
         - Weigh how each team is performing right now — hot and cold streaks, lineup health, and weekly scoring matter more than long-term roster value
+        - Ground each team's analysis in its record, avg points per week, and its players' provided fantasy stats
         - Prospects and stashed players only matter here if they are contributing (or about to contribute) this season
         """)
 
@@ -425,17 +630,25 @@ class Articles(db.Model):
         if not unique_matchups:
             return None
 
+        all_player_ids = [
+            p.sleeper_id
+            for m in unique_matchups
+            for team in [m.team, m.opponent_team]
+            for p in team.starters
+        ]
+        stats_map = Articles._season_stats_map(all_player_ids)
+
         games = []
         team_ids = []
         for matchup in unique_matchups:
             games.append({
                 matchup.team.team_name: {
                     'points': matchup.points_for,
-                    **Articles._team_context(matchup.team),
+                    **Articles._team_context(matchup.team, stats_map=stats_map),
                 },
                 matchup.opponent_team.team_name: {
                     'points': matchup.points_against,
-                    **Articles._team_context(matchup.opponent_team),
+                    **Articles._team_context(matchup.opponent_team, stats_map=stats_map),
                 },
             })
             team_ids.extend([matchup.team.team_id, matchup.opponent_team.team_id])
@@ -452,6 +665,8 @@ class Articles(db.Model):
         - Use web search to add context about how the key players actually performed this week
         - Only cite statistics and facts from the provided data or your web search results
         - Do not fabricate any player stat lines, scores, or rankings
+
+        {Articles._data_fidelity_rules()}
 
         ## Required Structure
         - A short intro paragraph on the week as a whole
@@ -486,7 +701,9 @@ class Articles(db.Model):
         if team is None:
             return None
 
-        team_context = Articles._team_context(team, include_bench=True, recent_results=5)
+        all_player_ids = [p.sleeper_id for p in team.players]
+        stats_map = Articles._season_stats_map(all_player_ids)
+        team_context = Articles._team_context(team, include_bench=True, recent_results=5, stats_map=stats_map)
 
         from app.league_state_manager import get_current_year, get_current_week
 
@@ -504,6 +721,8 @@ class Articles(db.Model):
         - Use web search for current season stats, player news, and injuries
         - Only cite statistics and facts from the provided data or your web search results
         - Do not fabricate any statistics, scores, or rankings
+
+        {Articles._data_fidelity_rules()}
 
         ## Required Structure
         1. Opening verdict: is this team a contender, a fringe playoff team, or a rebuilder?

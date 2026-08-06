@@ -78,6 +78,7 @@ CREATE TABLE Articles (
     thumbnail VARCHAR(128) NOT NULL,
     creation_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     published BOOLEAN DEFAULT FALSE,
+    fact_check TEXT DEFAULT NULL,
     PRIMARY KEY (article_id)
 )
 
