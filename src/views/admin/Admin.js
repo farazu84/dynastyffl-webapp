@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthFetch } from '../../hooks/useAuthFetch';
 import { useAuth } from '../../hooks/useAuth';
 import CompactArticleCard from '../../components/articles/CompactArticleCard';
+import ArticleGenerator from './ArticleGenerator';
 import './Admin.css';
 
 const currentYear = new Date().getFullYear();
@@ -40,31 +41,34 @@ const Admin = () => {
     const [processError, setProcessError] = useState(null);
     const [processing, setProcessing] = useState(false);
 
-    // Data Sync & Backfill
-    const [syncBusy, setSyncBusy] = useState(null); // which sync type is running
+    // Sync status
+    const [syncStatus, setSyncStatus] = useState(null);
+    const [syncBusy, setSyncBusy] = useState(null);
     const [syncMessage, setSyncMessage] = useState(null);
     const [syncError, setSyncError] = useState(null);
-    const [backfillDataset, setBackfillDataset] = useState('playoffs');
+
+    // Backfill
+    const [backfillDataset, setBackfillDataset] = useState('scores');
     const [backfillYear, setBackfillYear] = useState('');
     const [backfillMessage, setBackfillMessage] = useState(null);
     const [backfillError, setBackfillError] = useState(null);
-    const [syncStatus, setSyncStatus] = useState(null);
+
+    const fetchUnpublished = useCallback(async () => {
+        try {
+            const res = await authFetch('/admin/articles/unpublished');
+            if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+            const data = await res.json();
+            setArticles(data.articles.slice(0, 5));
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setIsLoading(false);
+        }
+    }, [authFetch]);
 
     useEffect(() => {
-        const fetchUnpublished = async () => {
-            try {
-                const res = await authFetch('/admin/articles/unpublished');
-                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-                const data = await res.json();
-                setArticles(data.articles.slice(0, 5));
-            } catch (err) {
-                setError(err.message);
-            } finally {
-                setIsLoading(false);
-            }
-        };
         fetchUnpublished();
-    }, [authFetch]);
+    }, [fetchUnpublished]);
 
     useEffect(() => {
         const fetchOwners = async () => {
@@ -322,6 +326,8 @@ const Admin = () => {
                     )}
                 </div>
             </section>
+
+            <ArticleGenerator onGenerated={fetchUnpublished} />
 
             <section className="admin-section">
                 <h2 className="admin-section-title">Data Sync &amp; Backfill</h2>

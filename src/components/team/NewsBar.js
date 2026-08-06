@@ -19,6 +19,28 @@ const formatDate = (dateString) => {
 const NewsBar = ({ articles }) => {
     const items = articles ? articles.slice(0, 4) : [];
 
+    const getArticleTypeLabel = (type) => {
+        const typeLabels = {
+            'power_ranking': 'Rankings',
+            'franchise_ranking': 'Franchise',
+            'team_analysis': 'Analysis',
+            'rumors': 'Rumors',
+            'trade_analysis': 'Trades',
+            'injury': 'Injury',
+            'matchup_analysis': 'Matchup',
+            'matchup_breakdown': 'Preview',
+            'weekly_recap': 'Recap'
+        };
+        return typeLabels[type] || 'News';
+    };
+
+    const truncateTitle = (title, maxLength = 60) => {
+        if (!title) return 'Untitled';
+        return title.length > maxLength 
+            ? title.substring(0, maxLength) + '...'
+            : title;
+    };
+
     if (items.length === 0) {
         return (
             <div className="nb-bar">
