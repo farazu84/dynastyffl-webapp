@@ -12,6 +12,7 @@ from app.models.players import Players
 from app.models.teams import Teams
 from app import db
 from app.league_state_manager import get_current_year
+from app.logic.money import to_money
 from app.logic.udfa import serialize_udfa_player, calculate_carryover, settle_bids
 
 admin = Blueprint('admin', __name__)
@@ -158,7 +159,7 @@ def seed_udfa_budgets():
         budget = BidBudget(
             team_id=team.team_id,
             year=year,
-            starting_balance=100 + carryover,
+            starting_balance=to_money(100 + carryover),
             waiver_order=order
         )
         db.session.add(budget)

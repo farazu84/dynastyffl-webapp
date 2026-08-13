@@ -1,3 +1,5 @@
+import { formatMoney } from '../../utils/formatters';
+
 const EditIcon = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
@@ -41,7 +43,7 @@ const PlayerRow = ({ player, onPlaceBid, onEditBid, onRetractBid }) => {
                     <div className="bid-active">
                         <div className="bid-active-info">
                             <span className="bid-active-label">ACTIVE BID</span>
-                            <span className="bid-active-amount">${my_bid.amount}</span>
+                            <span className="bid-active-amount">${formatMoney(my_bid.amount)}</span>
                         </div>
                         <button className="bid-icon-btn" onClick={() => onEditBid(player)} title="Edit bid">
                             <EditIcon />

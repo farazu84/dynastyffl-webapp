@@ -9,7 +9,13 @@ from app.models.players import Players
 from app.models.team_owners import TeamOwners
 from app import db
 from app.league_state_manager import get_current_year
-from app.logic.udfa import get_udfa_player_pool, serialize_udfa_player
+from app.logic.money import ZERO, format_money, to_money
+from app.logic.udfa import (
+    get_udfa_player_pool,
+    parse_bid_amount,
+    serialize_udfa_player,
+    validate_fractional_bid,
+)
 
 udfa = Blueprint('udfa', __name__)
 
@@ -95,7 +101,7 @@ def get_udfa_results():
             grouped[pid] = {'player': players_map.get(pid), 'my_bid': None, 'all_bids': []}
         entry = {
             'team_name': teams_map.get(bid.team_id, 'Unknown'),
-            'amount': bid.amount,
+            'amount': float(to_money(bid.amount)),
             'status': bid.status,
             'waiver_order': waiver_map.get(bid.team_id),
             'is_mine': bid.team_id == team_id,
@@ -172,8 +178,11 @@ def place_bid():
 
     if player_sleeper_id is None:
         return jsonify(success=False, error='player_sleeper_id is required'), 400
-    if not isinstance(amount, int) or amount < 1:
-        return jsonify(success=False, error='Amount must be a whole dollar amount of at least $1'), 400
+
+    try:
+        amount = parse_bid_amount(amount)
+    except ValueError as err:
+        return jsonify(success=False, error=str(err)), 400
 
     # Verify this player is actually in the UDFA pool
     eligible_ids = {p.sleeper_id for p in get_udfa_player_pool(year)}
@@ -188,12 +197,27 @@ def place_bid():
         team_id=team_id, player_sleeper_id=player_sleeper_id, year=year
     ).first()
 
+    # Every other bid this team holds this year. Excludes the one being edited so that changing a
+    # fractional bid in place doesn't trip the "fraction already used" rule against itself.
+    other_bids = [
+        b for b in UDFABids.query.filter_by(team_id=team_id, year=year).all()
+        if not existing or b.bid_id != existing.bid_id
+    ]
+
+    try:
+        validate_fractional_bid(budget, amount, other_bids)
+    except ValueError as err:
+        return jsonify(success=False, error=str(err)), 400
+
     # When updating, add back the current bid so it doesn't count against available
-    current_for_player = existing.amount if existing else 0
-    available = budget.starting_balance - budget.committed + current_for_player
+    current_for_player = to_money(existing.amount) if existing else ZERO
+    available = budget.available + current_for_player
 
     if amount > available:
-        return jsonify(success=False, error=f'Insufficient balance. Available: ${available}'), 400
+        return jsonify(
+            success=False,
+            error=f'Insufficient balance. Available: ${format_money(available)}'
+        ), 400
 
     if existing:
         existing.amount = amount

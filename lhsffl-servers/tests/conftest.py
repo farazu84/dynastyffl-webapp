@@ -536,8 +536,14 @@ def with_udfa_scenario(
     year: int = 2026,
     window_open: bool = True,
     window_processed: bool = False,
+    starting_balance=100,
 ):
-    """Decorator: seed a complete UDFA scenario (3 teams, 6 players, bidding window)."""
+    """
+    Decorator: seed a complete UDFA scenario (3 teams, 6 players, bidding window).
+
+    Pass a fractional `starting_balance` (e.g. '110.50') to exercise the fractional bid rules —
+    the budget's cents are the fraction those rules govern.
+    """
     def decorator(fn):
         def wrapper(*args, **kwargs):
             from app.models.users import Users
@@ -548,6 +554,7 @@ def with_udfa_scenario(
             from app.models.draft_picks import DraftPicks
             from app.models.bid_budget import BidBudget
             from app.models.bidding_window import BiddingWindow
+            from app.logic.money import to_money
 
             db = kwargs['db']
 
@@ -565,7 +572,9 @@ def with_udfa_scenario(
                 db.session.add_all([t, u])
                 db.session.flush()
                 db.session.add(TeamOwners(user_id=u.user_id, team_id=i, primary_owner=True))
-                db.session.add(BidBudget(team_id=i, year=year, starting_balance=100, waiver_order=i))
+                db.session.add(BidBudget(team_id=i, year=year,
+                                         starting_balance=to_money(starting_balance),
+                                         waiver_order=i))
                 db.session.flush()
 
             # eligible: rookie, unrostered, not in DraftPicks

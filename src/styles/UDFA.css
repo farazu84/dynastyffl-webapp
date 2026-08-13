@@ -461,6 +461,17 @@
 /* PRESERVED: available budget shown in green */
 .bid-modal-budget strong { color: #4caf7d; }
 
+/* States the fractional-bid rule up front, so it isn't discovered via a validation error */
+.bid-modal-fraction-hint {
+    font-family: var(--mono);
+    font-size: 11px;
+    line-height: 1.5;
+    color: var(--muted);
+    margin: -8px 0 16px;
+    padding-left: 10px;
+    border-left: 2px solid rgba(76, 175, 125, .4);
+}
+
 /* ── Pagination styles now live in shared src/styles/Pagination.css ─ */
 
 /* ── Bid Results ───────────────────────────────────────────────── */

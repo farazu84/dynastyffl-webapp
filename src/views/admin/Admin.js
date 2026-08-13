@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthFetch } from '../../hooks/useAuthFetch';
 import { useAuth } from '../../hooks/useAuth';
 import CompactArticleCard from '../../components/articles/CompactArticleCard';
+import { formatMoney } from '../../utils/formatters';
 import './Admin.css';
 
 const currentYear = new Date().getFullYear();
@@ -314,7 +315,7 @@ const Admin = () => {
                                 {processResults.map(r => (
                                     <div key={r.player_sleeper_id} className="admin-process-result-row">
                                         <span className="admin-process-result-team">{r.winner_team_name}</span>
-                                        <span className="admin-process-result-amount">${r.winning_amount}</span>
+                                        <span className="admin-process-result-amount">${formatMoney(r.winning_amount)}</span>
                                     </div>
                                 ))}
                             </div>
