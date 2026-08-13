@@ -5,6 +5,7 @@ import PlayerTable from '../../components/udfa/PlayerTable';
 import BidModal from '../../components/udfa/BidModal';
 import BidWindowCountdown from '../../components/udfa/BidWindowCountdown';
 import BidResults from '../../components/udfa/BidResults';
+import { centsOf } from '../../utils/formatters';
 import '../../styles/UDFA.css';
 import '../../styles/TradeTree.css';
 
@@ -58,6 +59,10 @@ const UDFA = () => {
         ));
         setBudget(updatedBudget);
     }, []);
+
+    // The budget's fraction may be spent on only one player, so find who currently holds it (if
+    // anyone) and let BidModal enforce that against the player being bid on.
+    const fractionHolder = players.find(p => p.my_bid && centsOf(p.my_bid.amount) !== 0) ?? null;
 
     const handleRetractBid = useCallback(async (bidId) => {
         try {
@@ -120,6 +125,7 @@ const UDFA = () => {
                         <BidModal
                             player={modalPlayer}
                             budget={budget}
+                            fractionHolder={fractionHolder}
                             onClose={() => setModalPlayer(null)}
                             onSuccess={handleBidSuccess}
                         />

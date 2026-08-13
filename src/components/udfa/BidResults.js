@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuthFetch } from '../../hooks/useAuthFetch';
+import { formatMoney } from '../../utils/formatters';
 
 const TrophyIcon = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
@@ -35,7 +36,7 @@ const PlayerResultCard = ({ entry }) => {
                 {my_bid && (
                     <div className={`result-card-outcome result-card-outcome--${won ? 'won' : 'lost'}`}>
                         <span className="result-card-outcome-label">{won ? 'ACQUIRED' : 'OUTBID'}</span>
-                        <span className="result-card-outcome-amount">${my_bid.amount}</span>
+                        <span className="result-card-outcome-amount">${formatMoney(my_bid.amount)}</span>
                     </div>
                 )}
             </div>
@@ -68,7 +69,7 @@ const PlayerResultCard = ({ entry }) => {
                                 <span className="result-bids-waiver">
                                     {bid.show_waiver && bid.waiver_order != null ? `#${bid.waiver_order}` : '—'}
                                 </span>
-                                <span className="result-bids-amount">${bid.amount}</span>
+                                <span className="result-bids-amount">${formatMoney(bid.amount)}</span>
                                 {isWinner && (
                                     <span className="result-bids-winner-icon"><TrophyIcon /></span>
                                 )}
@@ -123,7 +124,7 @@ const BidResults = ({ budget: initialBudget }) => {
                 </div>
                 <div className="bid-results-stat">
                     <span className="bid-results-stat-label">Total Spent</span>
-                    <span className="bid-results-stat-value">${totalSpent}</span>
+                    <span className="bid-results-stat-value">${formatMoney(totalSpent)}</span>
                 </div>
                 <div className="bid-results-stat">
                     <span className="bid-results-stat-label">Bids Placed</span>
@@ -132,7 +133,7 @@ const BidResults = ({ budget: initialBudget }) => {
                 {budget && (
                     <div className="bid-results-stat">
                         <span className="bid-results-stat-label">Starting Budget</span>
-                        <span className="bid-results-stat-value">${budget.starting_balance}</span>
+                        <span className="bid-results-stat-value">${formatMoney(budget.starting_balance)}</span>
                     </div>
                 )}
             </div>

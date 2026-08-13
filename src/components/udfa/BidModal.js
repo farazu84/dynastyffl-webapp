@@ -1,23 +1,53 @@
 import { useState } from 'react';
 import { useAuthFetch } from '../../hooks/useAuthFetch';
+import { centsOf, formatMoney, isWholeCents } from '../../utils/formatters';
 
-const BidModal = ({ player, budget, onClose, onSuccess }) => {
+// `fractionHolder` is the player already carrying this team's fractional bid, if any.
+const BidModal = ({ player, budget, fractionHolder, onClose, onSuccess }) => {
     const authFetch = useAuthFetch();
     const existingBid = player.my_bid;
 
     // When editing, the existing bid amount is freed up, so add it back to available
     const available = budget.available + (existingBid?.amount ?? 0);
 
+    // The one fraction this team may spend. 0 when the budget is a whole dollar amount.
+    const budgetCents = centsOf(budget.starting_balance);
+    // Editing the bid that already holds the fraction must not trip the "already used" rule
+    // against itself.
+    const fractionUsedElsewhere = fractionHolder && fractionHolder.sleeper_id !== player.sleeper_id;
+
     const [amount, setAmount] = useState(existingBid?.amount ?? '');
     const [error, setError] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+    // Mirrors validate_fractional_bid() in app/logic/udfa.py. The server stays authoritative;
+    // this exists so a violation is caught before submit and the rule is visible in the UI.
     const validate = (val) => {
         const n = Number(val);
         if (!val && val !== 0) return 'Amount is required.';
-        if (!Number.isInteger(n)) return 'Amount must be a whole dollar amount.';
+        if (Number.isNaN(n)) return 'Amount must be a dollar amount.';
+        if (!isWholeCents(n)) return 'Amount cannot be more precise than cents.';
         if (n < 1) return 'Amount must be at least $1.';
-        if (n > available) return `Amount exceeds your available budget of $${available}.`;
+        if (n > available) return `Amount exceeds your available budget of $${formatMoney(available)}.`;
+
+        const amountCents = centsOf(n);
+        if (amountCents !== 0) {
+            // R1 — you must have a fraction to use one.
+            if (budgetCents === 0) {
+                return 'Your budget has no cents to spend, so bids must be whole dollars.';
+            }
+            // R2 — if you use the fraction, you use the whole fraction.
+            if (amountCents !== budgetCents) {
+                return `A fractional bid must use your full $${formatMoney(budgetCents / 100)} `
+                    + `— $${formatMoney(amountCents / 100)} is not allowed.`;
+            }
+            // R3 — the fraction is used once.
+            if (fractionUsedElsewhere) {
+                return `You have already used your $${formatMoney(budgetCents / 100)} on `
+                    + `${fractionHolder.first_name} ${fractionHolder.last_name}. `
+                    + 'Retract that bid to move it.';
+            }
+        }
         return null;
     };
 
@@ -74,8 +104,19 @@ const BidModal = ({ player, budget, onClose, onSuccess }) => {
                 </div>
 
                 <div className="bid-modal-budget">
-                    Available budget: <strong>${available}</strong>
+                    Available budget: <strong>${formatMoney(available)}</strong>
                 </div>
+
+                {budgetCents > 0 && (
+                    <p className="bid-modal-fraction-hint">
+                        {fractionUsedElsewhere
+                            ? `Your $${formatMoney(budgetCents / 100)} is on `
+                              + `${fractionHolder.first_name} ${fractionHolder.last_name} `
+                              + '— this bid must be a whole dollar amount.'
+                            : `You may use your $${formatMoney(budgetCents / 100)} on one player, `
+                              + 'all of it or none of it.'}
+                    </p>
+                )}
 
                 <form onSubmit={handleSubmit}>
                     <div className="modal-field">
@@ -84,7 +125,9 @@ const BidModal = ({ player, budget, onClose, onSuccess }) => {
                             id="bid-amount"
                             type="number"
                             min="1"
-                            step="1"
+                            /* "any" so the browser's own step validation doesn't fight the
+                               fractional rules — validate() above is the real gate. */
+                            step="any"
                             value={amount}
                             onChange={e => { setAmount(e.target.value); setError(null); }}
                             placeholder="Enter amount"

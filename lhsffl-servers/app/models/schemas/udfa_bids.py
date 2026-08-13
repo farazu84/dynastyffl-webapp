@@ -7,7 +7,7 @@ class UDFABidsJSONSchema(Schema):
     team_id = fields.Int()
     player_sleeper_id = fields.Int()
     year = fields.Int()
-    amount = fields.Int()
+    amount = fields.Float()
     status = fields.Str()
     placed_at = fields.DateTime()
     updated_at = fields.DateTime()

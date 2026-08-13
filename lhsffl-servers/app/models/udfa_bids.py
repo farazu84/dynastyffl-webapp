@@ -19,7 +19,7 @@ class UDFABids(db.Model):
 
     year = db.Column(db.Integer(), nullable=False)
 
-    amount = db.Column(db.Integer(), nullable=False)
+    amount = db.Column(db.Numeric(7, 2), nullable=False)
 
     status = db.Column(db.Enum('pending', 'won', 'lost'), nullable=False, default='pending')
 

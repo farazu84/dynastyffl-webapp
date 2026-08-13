@@ -1,3 +1,5 @@
+import { formatMoney } from '../../utils/formatters';
+
 const BudgetBar = ({ budget }) => {
     const { starting_balance, committed, available, waiver_order } = budget;
     const pct = starting_balance > 0 ? Math.round((committed / starting_balance) * 100) : 0;
@@ -7,15 +9,15 @@ const BudgetBar = ({ budget }) => {
             <div className="budget-stats">
                 <div className="budget-stat">
                     <span className="budget-label starting">STARTING BALANCE</span>
-                    <span className="budget-value">${starting_balance}</span>
+                    <span className="budget-value">${formatMoney(starting_balance)}</span>
                 </div>
                 <div className="budget-stat">
                     <span className="budget-label committed">COMMITTED</span>
-                    <span className="budget-value committed">${committed}</span>
+                    <span className="budget-value committed">${formatMoney(committed)}</span>
                 </div>
                 <div className="budget-stat">
                     <span className="budget-label available">AVAILABLE</span>
-                    <span className="budget-value">${available}</span>
+                    <span className="budget-value">${formatMoney(available)}</span>
                 </div>
                 {waiver_order != null && (
                     <div className="budget-stat">

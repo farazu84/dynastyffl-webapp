@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from decimal import Decimal
 
 from flask_jwt_extended import create_access_token
 
@@ -168,7 +169,8 @@ class TestPlaceBid:
     """
     POST /v1/udfa/bids — team_owner_required.
     Upserts a bid for the authenticated team. Enforces window open, player
-    eligibility, integer amounts ≥ $1, and available budget.
+    eligibility, amounts ≥ $1 to the cent, the fractional bid rules (see
+    TestFractionalBids), and available budget.
     """
 
     def _place(self, client, token, player_sleeper_id, amount):
@@ -233,7 +235,8 @@ class TestPlaceBid:
         assert self._place(client, _owner_tok(app), 501, -5).status_code == 400
 
     @with_udfa_scenario()
-    def test_non_integer_amount_rejected(self, app, client, db):
+    def test_fractional_amount_rejected_on_whole_dollar_budget(self, app, client, db):
+        """The default $100 budget has no cents, so nothing fractional is legal (R1)."""
         assert self._place(client, _owner_tok(app), 501, 9.99).status_code == 400
 
     @with_udfa_scenario()
@@ -259,6 +262,152 @@ class TestPlaceBid:
 
     def test_unauthenticated_returns_401(self, client, db):
         assert client.post('/v1/udfa/bids', json={}).status_code == 401
+
+
+
+class TestFractionalBids:
+    """
+    A budget can carry a fraction (the $0.50 of a $110.50 budget, from the 10% carryover), and
+    that fraction is a single indivisible unit:
+
+      R1  You must have a fraction to use one — a whole-dollar budget permits none.
+      R2  If you use the fraction, you use the whole fraction — a fractional bid's cents must
+          equal the budget's cents exactly. No partial spend, no splitting across players.
+      R3  The fraction is used once — at most one of a team's bids may be fractional.
+
+    So every legal bid is either a whole dollar amount, or a whole dollar amount plus exactly the
+    budget's cents. Enforced by validate_fractional_bid() and mirrored in BidModal.js.
+    """
+
+    def _place(self, client, token, player_sleeper_id, amount):
+        return client.post('/v1/udfa/bids',
+                           json={'player_sleeper_id': player_sleeper_id, 'amount': amount},
+                           headers=_bearer(token))
+
+    # ── Happy path ────────────────────────────────────────────────────────────
+
+    @with_udfa_scenario(starting_balance='110.50')
+    def test_fractional_bid_matching_budget_cents_accepted(self, app, client, db):
+        res = self._place(client, _owner_tok(app), 501, 10.50)
+        assert res.status_code == 200
+        assert res.get_json()['bid']['amount'] == 10.50
+
+    @with_udfa_scenario(starting_balance='110.50')
+    def test_whole_dollar_bids_unaffected_on_fractional_budget(self, app, client, db):
+        tok = _owner_tok(app)
+        assert self._place(client, tok, 501, 10).status_code == 200
+        assert self._place(client, tok, 502, 100).status_code == 200
+
+    @with_udfa_scenario(starting_balance='110.50')
+    def test_the_users_example_whole_plus_fractional(self, app, client, db):
+        """$10 on one player and $100.50 on another — the whole $110.50, one fractional bid."""
+        tok = _owner_tok(app)
+        assert self._place(client, tok, 501, 10).status_code == 200
+        assert self._place(client, tok, 502, 100.50).status_code == 200
+
+    # ── R1: you must have a fraction to use one ───────────────────────────────
+
+    @with_udfa_scenario(starting_balance=100)
+    def test_r1_whole_dollar_budget_rejects_any_fraction(self, app, client, db):
+        res = self._place(client, _owner_tok(app), 501, 10.50)
+        assert res.status_code == 400
+        assert 'no cents to spend' in res.get_json()['error']
+
+    # ── R2: all of the fraction or none of it ─────────────────────────────────
+
+    @with_udfa_scenario(starting_balance='110.50')
+    def test_r2_partial_fraction_rejected(self, app, client, db):
+        """$0.25 against a $0.50 budget — under-spending the fraction is not allowed."""
+        res = self._place(client, _owner_tok(app), 501, 10.25)
+        assert res.status_code == 400
+        assert 'full $0.50' in res.get_json()['error']
+
+    @with_udfa_scenario(starting_balance='110.50')
+    def test_r2_larger_mismatched_fraction_rejected(self, app, client, db):
+        assert self._place(client, _owner_tok(app), 501, 10.75).status_code == 400
+
+    @with_udfa_scenario(starting_balance='110.50')
+    def test_r2_the_users_counterexample_split_fraction(self, app, client, db):
+        """$10.25 + $100.25 sums to $110.50 but splits the fraction — both bids are illegal."""
+        tok = _owner_tok(app)
+        assert self._place(client, tok, 501, 10.25).status_code == 400
+        assert self._place(client, tok, 502, 100.25).status_code == 400
+
+    @with_udfa_scenario(starting_balance='111.05')
+    def test_r2_matches_cents_below_a_dime(self, app, client, db):
+        """A $0.05 budget fraction — guards against float remainder comparison."""
+        tok = _owner_tok(app)
+        assert self._place(client, tok, 501, 10.05).status_code == 200
+        assert self._place(client, tok, 502, 10.50).status_code == 400
+
+    @with_udfa_scenario(starting_balance='110.50')
+    def test_sub_cent_precision_rejected(self, app, client, db):
+        assert self._place(client, _owner_tok(app), 501, 10.505).status_code == 400
+
+    # ── R3: the fraction is used once ─────────────────────────────────────────
+
+    @with_udfa_scenario(starting_balance='110.50')
+    def test_r3_second_fractional_bid_rejected(self, app, client, db):
+        tok = _owner_tok(app)
+        assert self._place(client, tok, 501, 10.50).status_code == 200
+        res = self._place(client, tok, 502, 20.50)
+        assert res.status_code == 400
+        assert 'already used your $0.50' in res.get_json()['error']
+        assert 'Jerry Rice' in res.get_json()['error']
+
+    @with_udfa_scenario(starting_balance='110.50')
+    def test_r3_limit_is_per_team_not_league_wide(self, app, client, db):
+        """Team 1 using its fraction must not block team 2 from using its own."""
+        assert self._place(client, _owner_tok(app, 1), 501, 10.50).status_code == 200
+        assert self._place(client, _owner_tok(app, 2), 501, 20.50).status_code == 200
+
+    @with_udfa_scenario(starting_balance='110.50')
+    def test_r3_editing_the_fractional_bid_in_place_allowed(self, app, client, db):
+        """The bid being edited must be excluded from the check, or it fails against itself."""
+        tok = _owner_tok(app)
+        assert self._place(client, tok, 501, 10.50).status_code == 200
+        res = self._place(client, tok, 501, 30.50)
+        assert res.status_code == 200
+        assert res.get_json()['bid']['amount'] == 30.50
+
+    @with_udfa_scenario(starting_balance='110.50')
+    def test_r3_fraction_freed_when_bid_becomes_whole_dollar(self, app, client, db):
+        tok = _owner_tok(app)
+        self._place(client, tok, 501, 10.50)
+        assert self._place(client, tok, 501, 10).status_code == 200      # give the fraction back
+        assert self._place(client, tok, 502, 20.50).status_code == 200   # spend it elsewhere
+
+    @with_udfa_scenario(starting_balance='110.50')
+    def test_r3_fraction_reusable_after_retracting(self, app, client, db):
+        tok = _owner_tok(app)
+        bid_id = self._place(client, tok, 501, 10.50).get_json()['bid']['bid_id']
+        assert client.delete(f'/v1/udfa/bids/{bid_id}', headers=_bearer(tok)).status_code == 200
+        assert self._place(client, tok, 502, 20.50).status_code == 200
+
+    # ── Budget accounting ─────────────────────────────────────────────────────
+
+    @with_udfa_scenario(starting_balance='110.50')
+    def test_fractional_budget_accounting_to_the_cent(self, app, client, db):
+        tok = _owner_tok(app)
+        self._place(client, tok, 501, 10.50)
+        budget = client.get(f'/v1/udfa/bids?year={YEAR}', headers=_bearer(tok)).get_json()['budget']
+        assert budget['starting_balance'] == 110.50
+        assert budget['committed'] == 10.50
+        assert budget['available'] == 100
+        assert budget['cents'] == 0.50
+
+    @with_udfa_scenario(starting_balance='110.50')
+    def test_can_spend_the_entire_fractional_budget(self, app, client, db):
+        tok = _owner_tok(app)
+        assert self._place(client, tok, 501, 110.50).status_code == 200
+
+    @with_udfa_scenario(starting_balance='110.50')
+    def test_cannot_exceed_fractional_budget(self, app, client, db):
+        """$111.50 passes R1-R3 (its cents match) but is a dollar over the balance."""
+        res = self._place(client, _owner_tok(app), 501, 111.50)
+        assert res.status_code == 400
+        assert 'Insufficient balance' in res.get_json()['error']
+        assert '110.50' in res.get_json()['error']
 
 
 
@@ -526,8 +675,10 @@ class TestAdminSeedBudgets:
     """
     POST /v1/admin/udfa/budgets — admin_required.
     Seeds BidBudget rows for a new year. Starting balance = $100 + carryover,
-    where carryover = floor((prev_balance - won_bids) / 10). Skips teams that
-    already have a budget for the target year.
+    where carryover = (prev_balance - won_bids) / 10 to the cent, rounded down. Skips teams
+    that already have a budget for the target year.
+
+    The cents this produces are what the fractional bid rules govern — see TestFractionalBids.
     """
 
     @with_udfa_scenario()
@@ -540,13 +691,25 @@ class TestAdminSeedBudgets:
 
     @with_udfa_scenario()
     @create_resource('UDFABids', bid_budget_id=1, team_id=1, player_sleeper_id=501, year=YEAR, amount=65, status='won')
-    def test_carryover_math_floor_10_percent_of_remaining(self, app, client, db):
-        """Team 1: $100 - $65 won = $35 remaining → floor(35 / 10) = 3 → 2027 balance = $103."""
+    def test_carryover_keeps_cents(self, app, client, db):
+        """Team 1: $100 - $65 won = $35 remaining → 35 / 10 = $3.50 → 2027 balance = $103.50."""
         from app.models.bid_budget import BidBudget
         client.post('/v1/admin/udfa/budgets',
                     json={'year': 2027, 'waiver_orders': {'1': 1, '2': 2, '3': 3}},
                     headers=_bearer(_admin_tok(app)))
-        assert BidBudget.query.filter_by(team_id=1, year=2027).first().starting_balance == 103
+        budget = BidBudget.query.filter_by(team_id=1, year=2027).first()
+        assert budget.starting_balance == Decimal('103.50')
+        assert budget.cents == Decimal('0.50')
+
+    @with_udfa_scenario()
+    @create_resource('UDFABids', bid_budget_id=1, team_id=1, player_sleeper_id=501, year=YEAR, amount=64, status='won')
+    def test_carryover_rounds_down_to_the_cent(self, app, client, db):
+        """$36 remaining → 36 / 10 = $3.60 exactly; carryover never rounds up and invents money."""
+        from app.models.bid_budget import BidBudget
+        client.post('/v1/admin/udfa/budgets',
+                    json={'year': 2027, 'waiver_orders': {'1': 1, '2': 2, '3': 3}},
+                    headers=_bearer(_admin_tok(app)))
+        assert BidBudget.query.filter_by(team_id=1, year=2027).first().starting_balance == Decimal('103.60')
 
     def test_no_previous_year_defaults_to_100(self, app, client, db):
         """No prior-year budget data → carryover = 0 → starting balance = $100."""
@@ -623,6 +786,25 @@ class TestSettlement:
         results = {r['player_sleeper_id']: r
                    for r in self._process(client, _admin_tok(app)).get_json()['results']}
         assert results[501]['winner_team_id'] == 2
+
+    @with_udfa_scenario(starting_balance='110.50')
+    @create_resource('UDFABids', bid_budget_id=1, team_id=1, player_sleeper_id=501, year=YEAR, amount=Decimal('50.00'))
+    @create_resource('UDFABids', bid_budget_id=2, team_id=2, player_sleeper_id=501, year=YEAR, amount=Decimal('50.50'))
+    def test_cents_beat_a_whole_dollar_bid(self, app, client, db):
+        """The point of the fraction: $50.50 outbids $50 despite the worse waiver order."""
+        results = {r['player_sleeper_id']: r
+                   for r in self._process(client, _admin_tok(app)).get_json()['results']}
+        assert results[501]['winner_team_id'] == 2
+        assert results[501]['winning_amount'] == 50.50
+
+    @with_udfa_scenario(starting_balance='110.50')
+    @create_resource('UDFABids', bid_budget_id=1, team_id=1, player_sleeper_id=501, year=YEAR, amount=Decimal('50.50'))
+    @create_resource('UDFABids', bid_budget_id=2, team_id=2, player_sleeper_id=501, year=YEAR, amount=Decimal('50.50'))
+    def test_equal_fractional_bids_still_fall_through_to_waiver_order(self, app, client, db):
+        """Guards the exact-comparison assumption: two $50.50 bids must register as a tie."""
+        results = {r['player_sleeper_id']: r
+                   for r in self._process(client, _admin_tok(app)).get_json()['results']}
+        assert results[501]['winner_team_id'] == 1  # waiver_order=1 beats waiver_order=2
 
     @with_udfa_scenario()
     @create_resource('UDFABids', bid_budget_id=1, team_id=1, player_sleeper_id=501, year=YEAR, amount=60)
